@@ -5,7 +5,6 @@
  * Now with persistent Knowledge Base and improved structural search.
  */
 
-import { pipeline } from '@xenova/transformers';
 import OpenAI from 'openai';
 
 // Simple IndexedDB Wrapper
@@ -67,8 +66,6 @@ const saveToKB = async (entry) => {
 export class KuralAI {
     constructor(dataset) {
         this.dataset = dataset;
-        this.extractor = null;
-        this.embeddings = [];
         this.openai = null;
     }
 
@@ -76,62 +73,38 @@ export class KuralAI {
         if (apiKey) {
             this.openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
         }
-
-        this.extractor = await pipeline('feature-extraction', 'Xenova/paraphrase-multilingual-MiniLM-L12-v2');
-        
-        const cached = await loadFromDB(STORE_NAME, 'embeddings_' + EMBED_CACHE_VERSION);
-        if (cached && cached.length === this.dataset.length) {
-            this.embeddings = cached;
-            if (window.onNeuralProgress) window.onNeuralProgress(100);
-        } else {
-            await this.generateEmbeddings();
-        }
-    }
-
-    async generateEmbeddings() {
-        this.embeddings = [];
-        const batchSize = 10; // Reduced for much smoother UI updates
-        for (let i = 0; i < this.dataset.length; i += batchSize) {
-            const batch = this.dataset.slice(i, i + batchSize);
-            const batchPromises = batch.map(async (k) => {
-                const text = `${k.Line1} ${k.Line2}`; // Further slimmed context for speed
-                const output = await this.extractor(text, { pooling: 'mean', normalize: true });
-                return Array.from(output.data);
-            });
-
-            const results = await Promise.all(batchPromises);
-            this.embeddings.push(...results);
-            
-            if (window.onNeuralProgress) {
-                window.onNeuralProgress(Math.round(((i + batchSize) / this.dataset.length) * 100));
-            }
-            // Yield longer to allow browser to handle interactions
-            await new Promise(r => setTimeout(r, 20)); 
-        }
-        await saveToDB(STORE_NAME, 'embeddings_' + EMBED_CACHE_VERSION, this.embeddings);
+        // Instantaneous ready state
         if (window.onNeuralProgress) window.onNeuralProgress(100);
     }
 
-    async getEmbedding(text) {
-        const output = await this.extractor(text, { pooling: 'mean', normalize: true });
-        return Array.from(output.data);
-    }
-
-    dotProduct(a, b) {
-        return a.reduce((sum, val, i) => sum + val * b[i], 0);
-    }
-
-    async semanticSearch(query) {
-        const userVector = await this.getEmbedding(query.toLowerCase().trim());
-        const scores = this.embeddings.map((kVector, index) => ({
-            index,
-            score: this.dotProduct(userVector, kVector)
-        }));
+    // High-speed Lexical Search (Keyword + Structural)
+    async search(query) {
+        const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 2);
         
-        return scores
+        // Boost matches based on occurrences in verse and explanations
+        return this.dataset
+            .map(k => {
+                let score = 0;
+                const content = `${k.Line1} ${k.Line2} ${k.mv || ''} ${k.sp || ''} ${k.explanation || ''}`.toLowerCase();
+                
+                terms.forEach(t => {
+                    if (content.includes(t)) score += 1;
+                    if (k.Line1.toLowerCase().includes(t) || k.Line2.toLowerCase().includes(t)) score += 2;
+                });
+
+                // Match number
+                if (query.includes(k.Number.toString())) score += 10;
+
+                return { ...k, score };
+            })
+            .filter(k => k.score > 0)
             .sort((a, b) => b.score - a.score)
-            .slice(0, 5)
-            .map(m => this.dataset[m.index]);
+            .slice(0, 10);
+    }
+
+    // Legacy search points to new fast search
+    async semanticSearch(query) {
+        return this.search(query);
     }
 
     async getKB() {
