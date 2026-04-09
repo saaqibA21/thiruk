@@ -22,11 +22,13 @@ const App = () => {
   const [showSettings, setShowSettings] = useState(false);
   const chatEndRef = useRef(null);
   const engineRef = useRef(null);
+  const initRef = useRef(false);
 
   useEffect(() => {
     window.onNeuralProgress = (progress) => setInitProgress(progress);
     const loadData = async () => {
-        if (engineRef.current) return;
+        if (initRef.current) return;
+        initRef.current = true;
         try {
             const res = await fetch('thirukkural.json');
             const data = await res.json();
@@ -35,7 +37,10 @@ const App = () => {
             engineRef.current = engine;
             await engine.init(apiKey); 
             setAiEngine(engine);
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            console.error(err); 
+            initRef.current = false;
+        }
     };
     loadData();
   }, [apiKey]);
@@ -105,6 +110,12 @@ const App = () => {
           {activeTab === 'ask' ? (
             <motion.div key="ask" className="chat-view" initial={{opacity:0}} animate={{opacity:1}}>
                <div className="chat-window">
+                  {initProgress > 0 && initProgress < 100 && (
+                    <div className="init-progress-bar">
+                       <div className="p-label">ஆய்வுத் தரவுகள் தயார் செய்யப்படுகின்றன... {initProgress}%</div>
+                       <div className="p-track"> <div className="p-fill" style={{width: `${initProgress}%`}}></div> </div>
+                    </div>
+                  )}
                   {messages.map((m, i) => (
                     <div key={i} className={`chat-bubble-container ${m.role}`}>
                        <div className="chat-bubble">
@@ -341,6 +352,11 @@ const App = () => {
 
         .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        .init-progress-bar { padding: 1.5rem; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 1.5rem; margin-bottom: 2rem; }
+        .p-label { font-size: 0.85rem; font-weight: 900; color: #92400e; margin-bottom: 0.75rem; }
+        .p-track { height: 8px; background: #fef3c7; border-radius: 10px; overflow: hidden; }
+        .p-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
 
         /* History Enhancements */
         .history-visual-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }

@@ -12,7 +12,7 @@ import OpenAI from 'openai';
 const DB_NAME = 'NeuralKuralIndex';
 const STORE_NAME = 'embeddings_cache';
 const KB_STORE_NAME = 'knowledge_base';
-const EMBED_CACHE_VERSION = 'v3.3_optimized'; // Optimized for speed
+const EMBED_CACHE_VERSION = 'v3.5_optimized_ui'; 
 
 const getDB = () => new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 2); 
@@ -47,7 +47,10 @@ const getAllFromDB = async (store) => {
     const db = await getDB();
     const tx = db.transaction(store, 'readonly');
     const request = tx.objectStore(store).getAll();
-    return new Promise(r => request.onsuccess = () => r(request.result));
+    return new Promise(r => {
+        request.onsuccess = () => r(request.result);
+        request.onerror = () => r([]);
+    });
 };
 
 const saveToKB = async (entry) => {
@@ -87,12 +90,11 @@ export class KuralAI {
 
     async generateEmbeddings() {
         this.embeddings = [];
-        const batchSize = 30; // Increased for faster processing
+        const batchSize = 10; // Reduced for much smoother UI updates
         for (let i = 0; i < this.dataset.length; i += batchSize) {
             const batch = this.dataset.slice(i, i + batchSize);
             const batchPromises = batch.map(async (k) => {
-                // Focus on core semantic content to reduce inference time
-                const text = `${k.Line1} ${k.Line2} ${k.explanation || ''}`;
+                const text = `${k.Line1} ${k.Line2}`; // Further slimmed context for speed
                 const output = await this.extractor(text, { pooling: 'mean', normalize: true });
                 return Array.from(output.data);
             });
@@ -103,8 +105,8 @@ export class KuralAI {
             if (window.onNeuralProgress) {
                 window.onNeuralProgress(Math.round(((i + batchSize) / this.dataset.length) * 100));
             }
-            // Yield control to prevent UI freezing
-            await new Promise(r => setTimeout(r, 0));
+            // Yield longer to allow browser to handle interactions
+            await new Promise(r => setTimeout(r, 20)); 
         }
         await saveToDB(STORE_NAME, 'embeddings_' + EMBED_CACHE_VERSION, this.embeddings);
         if (window.onNeuralProgress) window.onNeuralProgress(100);
