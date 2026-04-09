@@ -1,0 +1,26 @@
+# Build & Dependencies
+node_modules/
+dist/
+dist-ssr/
+build/
+app/build/
+.gradle/
+.bubblewrap/
+
+# OS/IDEs
+.DS_Store
+.idea/
+.vscode/
+
+# Environment/Secrets (CRITICAL)
+*.local
+local.properties
+android.keystore
+*.jks
+*.apk
+*.aab
+
+# Logs
+hs_err_pid*
+*.log
+npm-debug.log*
