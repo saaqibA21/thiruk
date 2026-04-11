@@ -340,6 +340,32 @@ const App = () => {
                      </div>
                   </section>
 
+                  {/* Technical & Cultural Depth */}
+                  <section className="h-details-grid three-col">
+                     <div className="h-detail-card highlight">
+                        <div className="d-icon"><Quote size={24}/></div>
+                        <h4>நூலின் சிறப்புப் பெயர்கள்</h4>
+                        <p>திருக்குறள் அதன் பெருமையால் பல பெயர்களில் அழைக்கப்படுகிறது:</p>
+                        <ul className="h-dot-list">
+                           <li><strong>தமிழ் மறை:</strong> தமிழர்களின் வேதம்.</li>
+                           <li><strong>பொய்யாமொழி:</strong> மாறாத உண்மை.</li>
+                           <li><strong>தெய்வநூல்:</strong> தெய்வீகத் தன்மை கொண்ட நூல்.</li>
+                           <li><strong>உலகப் பொதுமறை:</strong> உலகினர் அனைவருக்கும் பொதுவானது.</li>
+                        </ul>
+                     </div>
+                     <div className="h-detail-card highlight">
+                        <div className="d-icon"><Feather size={24}/></div>
+                        <h4>பதின்மர் உரைகள் (Commentaries)</h4>
+                        <p>பண்டைய காலத்தில் பத்து சிறந்த அறிஞர்கள் இதற்கு உரை எழுதினர். அவர்களுள் <strong>பரிமேலழகர்</strong> உரை மிகவும் சிறப்பானதாகக் கருதப்படுகிறது.</p>
+                        <p className="tiny-text">தருமர், மணக்குடவர், தாமத்தர், நச்சர், பரிதி, பரிமேலழகர், திருமலையார், மல்லர், பரிப்பெருமாள், காலிங்கர் ஆகியோரே அந்தப் பதின்மர்.</p>
+                     </div>
+                     <div className="h-detail-card highlight">
+                        <div className="d-icon"><Zap size={24}/></div>
+                        <h4>வெண்பா யாப்பு முறை</h4>
+                        <p>திருக்குறள் 'குறள் வெண்பா' என்னும் யாப்பு முறையில் அமைந்தது. இது தமிழில் மிகவும் கடினமான மற்றும் செறிவான கவிதை வடிவமாகும்.</p>
+                     </div>
+                  </section>
+
                   {/* Scholarly Resources */}
                   <div className="h-resources-section">
                     <h3>கல்வி மற்றும் ஆய்வு ஆதாரங்கள்</h3>
@@ -559,6 +585,13 @@ const App = () => {
           text-decoration: none; font-weight: 800; font-size: 0.9rem; transition: 0.3s;
         }
         .res-link:hover { border-color: var(--primary); color: var(--primary); background: #fff7ed; transform: translateY(-3px); }
+
+        .h-details-grid.three-col { grid-template-columns: repeat(3, 1fr); }
+        .h-detail-card.highlight { border-top: 4px solid var(--primary); background: #fffcfb; }
+        .tiny-text { font-size: 0.75rem; color: #94a3b8; line-height: 1.4; margin-top: 1rem; font-weight: 600; }
+        .h-dot-list { list-style: none; padding: 0; margin-top: 1rem; }
+        .h-dot-list li { margin-bottom: 0.5rem; font-size: 0.85rem; color: #475569; display: flex; align-items: center; gap: 8px; }
+        .h-dot-list li::before { content: ''; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; opacity: 0.3; }
 
         .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
