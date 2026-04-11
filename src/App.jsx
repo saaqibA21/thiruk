@@ -433,11 +433,12 @@ const App = () => {
 
         /* Modals - Fixed and optimized */
         .tamil-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-        .tamil-modal { background: white; padding: 2.5rem 3rem; border-radius: 2.5rem; width: 100%; max-width: 850px; max-height: 90vh; overflow-y: auto; box-shadow: 0 40px 80px rgba(0,0,0,0.3); position: relative; }
-        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: sticky; top: -2.5rem; background: white; padding-top: 1rem; padding-bottom: 1rem; z-index: 10; border-bottom: 1px solid #f1f5f9; }
+        .tamil-modal { background: white; padding: 2rem 3rem; border-radius: 2.5rem; width: 100%; max-width: 950px; max-height: 92vh; overflow-y: auto; box-shadow: 0 40px 80px rgba(0,0,0,0.3); position: relative; }
+        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: sticky; top: -2rem; background: white; padding-top: 1rem; padding-bottom: 1rem; z-index: 10; border-bottom: 1px solid #f1f5f9; }
         .m-badge { background: #fff7ed; color: var(--primary); padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 950; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; border: 1px solid #ffedd5; }
-        .m-verse-box { background: #fffaf7; padding: 2rem; border-radius: 2rem; margin-bottom: 2.5rem; border: 1px solid #ffedd5; }
-        .m-verse-box h3 { font-size: 2rem; margin: 0; line-height: 1.4; font-weight: 950; color: #431407; word-break: break-word; }
+        .m-verse-box { background: #fffaf7; padding: 2.5rem 2rem; border-radius: 2rem; margin-bottom: 2.5rem; border: 1px solid #ffedd5; text-align: center; }
+        .m-verse-box h3 { font-size: 1.8rem; margin: 0; line-height: 1.6; font-weight: 950; color: #431407; white-space: nowrap; }
+        .m-verse-box h3:first-child { margin-bottom: 0.5rem; }
         .m-explanations-stack { display: flex; flex-direction: column; gap: 2rem; }
         .e-block h5 { margin: 0 0 0.6rem; color: var(--primary); font-weight: 950; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
         .e-block p { margin: 0; font-size: 1.25rem; line-height: 1.6; font-weight: 700; color: #1e293b; }
