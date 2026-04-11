@@ -259,7 +259,7 @@
                 loader.classList.remove('hidden');
                 status.classList.remove('hidden');
                 try {
-                    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ta&dt=t&q=${encodeURIComponent(q)}`);
+                    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(q)}`);
                     const data = await res.json();
                     if (data && data[0] && data[0][0] && data[0][0][0]) {
                         const translated = data[0][0][0];
