@@ -62,10 +62,10 @@ const App = () => {
       return;
     }
 
-    // Skip if already in Tamil or too short
-    const isTamil = /[\u0B80-\u0BFF]/.test(query);
-    if (isTamil || query.length < 3) {
-      setTranslatedQuery('');
+    // check if there are any English characters to translate
+    const hasEnglish = /[a-zA-Z]/.test(query);
+    if (!hasEnglish || query.length < 3) {
+      setIsTranslating(false);
       return;
     }
 
