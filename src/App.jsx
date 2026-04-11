@@ -339,6 +339,23 @@ const App = () => {
                         <div className="img-overlay">உலகின் பல மொழிகளில் திருக்குறள்</div>
                      </div>
                   </section>
+
+                  {/* Scholarly Resources */}
+                  <div className="h-resources-section">
+                    <h3>கல்வி மற்றும் ஆய்வு ஆதாரங்கள்</h3>
+                    <p>திருக்குறள் குறித்த விரிவான ஆய்வுகளுக்கு கீழ்க்கண்ட தளங்களைப் பார்வையிடலாம்:</p>
+                    <div className="resource-links-grid">
+                      <a href="https://en.wikipedia.org/wiki/Tirukkuṟaḷ" target="_blank" rel="noreferrer" className="res-link">
+                         <Globe size={18}/> <span>விக்கிப்பீடியா (Wikipedia)</span>
+                      </a>
+                      <a href="http://www.projectmadurai.org/pm_etexts/utf8/pmutf80001.html" target="_blank" rel="noreferrer" className="res-link">
+                         <Database size={18}/> <span>புராஜெக்ட் மதுரை (Project Madurai)</span>
+                      </a>
+                      <a href="https://archive.org/details/thesacredkurals00popeuoft" target="_blank" rel="noreferrer" className="res-link">
+                         <BookOpen size={18}/> <span>ஜி.யு. போப் ஆவணங்கள் (G.U. Pope Archives)</span>
+                      </a>
+                    </div>
+                  </div>
                </div>
 
                <div className="h-legacy-footer">
@@ -531,6 +548,17 @@ const App = () => {
         .h-legacy-footer h3 { font-size: 2rem; font-weight: 950; margin-bottom: 1.5rem; color: #fbbf24; position: relative; }
         .h-legacy-footer p { max-width: 700px; margin: 0 auto; line-height: 1.8; color: #cbd5e1; font-weight: 700; position: relative; }
         .footer-srm-tag { margin-top: 3rem; font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; position: relative; z-index: 2; }
+
+        .h-resources-section { margin-top: 4rem; padding: 4rem; background: #fff; border: 1px solid #f1f5f9; border-radius: 3rem; text-align: center; }
+        .h-resources-section h3 { font-size: 1.8rem; font-weight: 950; color: var(--text); margin-bottom: 1rem; }
+        .h-resources-section p { color: var(--muted); font-weight: 700; margin-bottom: 2.5rem; }
+        .resource-links-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .res-link { 
+          display: flex; align-items: center; justify-content: center; gap: 10px; padding: 1.25rem; 
+          background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 1.25rem; color: var(--text); 
+          text-decoration: none; font-weight: 800; font-size: 0.9rem; transition: 0.3s;
+        }
+        .res-link:hover { border-color: var(--primary); color: var(--primary); background: #fff7ed; transform: translateY(-3px); }
 
         .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
