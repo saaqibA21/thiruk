@@ -138,9 +138,9 @@ const App = () => {
            </div>
         </div>
         <nav className="header-nav-tabs">
-          <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={18}/> <span>கேள்வி-பதில்</span> </button>
-          <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={18}/> <span>நூல்நிலையம்</span> </button>
-          <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <Info size={18}/> <span>வரலாற்றுப் பின்னணி</span> </button>
+          <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16}/> <span>கேள்வி-பதில்</span> </button>
+          <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16}/> <span>நூல்நிலையம்</span> </button>
+          <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16}/> <span>வரலாற்றுப் பின்னணி</span> </button>
         </nav>
       </header>
 
@@ -226,8 +226,14 @@ const App = () => {
           ) : (
             <motion.div key="history" className="history-view" initial={{opacity:0}} animate={{opacity:1}}>
                <div className="history-hero">
+                  <div className="h-decorator"></div>
                   <motion.h2 initial={{y:20}} animate={{y:0}} className="h-title">திருக்குறள்: ஒரு மாபெரும் வரலாறு</motion.h2>
-                  <p className="h-subtitle">2000 ஆண்டுகால ஞானம், உலகப் பொதுமறையின் மகத்துவம்.</p>
+                  <p className="h-subtitle">2000 ஆண்டுகால ஞானம் • உலகப் பொதுமறை • வாழ்வியல் தத்துவம்</p>
+                  <div className="h-hero-chips">
+                    <span><Zap size={14}/> 133 அதிகாரங்கள்</span>
+                    <span><Feather size={14}/> 1330 குறட்பாக்கள்</span>
+                    <span><Globe size={14}/> 80+ மொழிகள்</span>
+                  </div>
                </div>
 
                <div className="history-content-sections">
@@ -237,18 +243,45 @@ const App = () => {
                         <h3>தெய்வப்புலவர் திருவள்ளுவர்</h3>
                         <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு ஒப்பற்ற ஞானி. இவரது பிறப்பு மற்றும் சமயம் குறித்து பல விவாதங்கள் இருந்தாலும், இவரது கருத்துக்கள் சாதி, மதம், இனம் கடந்து அனைவருக்குமான பொது நீதியாகத் திகழ்கின்றன.</p>
                         <ul className="h-list">
-                           <li><strong>காலம்:</strong> கி.மு. 31 (திருவள்ளுவர் ஆண்டு)</li>
-                           <li><strong>பட்டங்கள்:</strong> நாயனார், தேவர், முதற்பாவலர், தெய்வப்புலவர்.</li>
+                           <li><User size={20}/> <strong>காலம்:</strong> கி.மு. 31 (திருவள்ளுவர் ஆண்டு)</li>
+                           <li><Award size={20}/> <strong>பட்டங்கள்:</strong> நாயனார், தேவர், முதற்பாவலர், தெய்வப்புலவர்.</li>
+                           <li><Quote size={20}/> <strong>தத்துவம்:</strong> உலகளாவிய மனிதநேயம்.</li>
                         </ul>
                      </div>
                      <div className="h-image-wrap">
                         <img src="statue.png" alt="திருவள்ளுவர்" />
+                        <div className="img-overlay">கன்னியாகுமரி திருவள்ளுவர் சிலை</div>
                      </div>
                   </section>
+
+                  <div className="h-timeline-section">
+                    <div className="h-tl-item">
+                      <div className="h-tl-dot"></div>
+                      <div className="h-tl-content">
+                        <h4>சங்க காலம்</h4>
+                        <p>மதுரை தமிழ்ச் சங்கத்தில் அரங்கேற்றப்பட்டதாகக் கூறப்படும் காலம்.</p>
+                      </div>
+                    </div>
+                    <div className="h-tl-item">
+                      <div className="h-tl-dot"></div>
+                      <div className="h-tl-content">
+                        <h4>ஆங்கில மொழிபெயர்ப்பு</h4>
+                        <p>1886-ல் ஜி.யு. போப் அவர்களால் முதன்முதலில் ஆங்கிலத்தில் முழுமையாக மொழிபெயர்க்கப்பட்டது.</p>
+                      </div>
+                    </div>
+                    <div className="h-tl-item">
+                      <div className="h-tl-dot"></div>
+                      <div className="h-tl-content">
+                        <h4>நவீன யுகம்</h4>
+                        <p>இன்று SRM AI மூலம் டிஜிட்டல் வடிவில் உலகெங்கும் கொண்டு செல்லப்படுகிறது.</p>
+                      </div>
+                    </div>
+                  </div>
 
                   <section className="h-section">
                      <div className="h-image-wrap">
                         <img src="manuscript.png" alt="ஓலைச்சுவடி" />
+                        <div className="img-overlay">பண்டைக்கால ஓலைச்சுவடிகள்</div>
                      </div>
                      <div className="h-text-block">
                         <span className="h-label">நூல் அமைப்பு</span>
@@ -266,8 +299,11 @@ const App = () => {
                      <div className="h-text-block">
                         <span className="h-label">உலகளாவியது</span>
                         <h3>உலகப் பொதுமறை</h3>
-                        <p>திருக்குறள் பைபிள் மற்றும் குரானுக்கு அடுத்தபடியாக உலகிலேயே அதிக மொழிகளில் (80-க்கும் மேற்பட்ட மொழிகள்) மொழிபெயர்க்கப்பட்ட நூலாகும். இது மனித வாழ்வின் அனைத்து பரிமாணங்களையும் - அரசியல், பொருளாதாரம், குடும்பம், காதல் - தெளிவாக விளக்குகிறது.</p>
-                        <p className="h-quote">"திருக்குறள் என்பது மனிதன் மனிதனாக வாழ, மனிதன் மனிதனுக்குச் சொன்ன உன்னத நெறி."</p>
+                        <p>திருக்குறள் பைபிள் மற்றும் குரானுக்கு அடுத்தபடியாக உலகிலேயே அதிக மொழிகளில் (100-க்கும் மேற்பட்ட மொழிகள்) மொழிபெயர்க்கப்பட்ட நூலாகும். இது மனித வாழ்வின் அனைத்து பரிமாணங்களையும் தெளிவாக விளக்குகிறது.</p>
+                        <div className="h-quote-box">
+                          <Quote className="q-icon-big" size={40}/>
+                          <p className="h-quote">"திருக்குறள் என்பது மனிதன் மனிதனாக வாழ, மனிதன் மனிதனுக்குச் சொன்ன உன்னத நெறி."</p>
+                        </div>
                      </div>
                      <div className="h-image-wrap">
                         <img src="translations.png" alt="உலகத்தரம்" />
@@ -276,6 +312,7 @@ const App = () => {
                </div>
 
                <div className="h-legacy-footer">
+                  <div className="footer-glow"></div>
                   <h3>காலம் கடந்த வழிகாட்டி</h3>
                   <p>இன்று நவீன செயற்கை நுண்ணறிவு யுகத்திலும், திருக்குறள் நமக்கு வாழ்வியல் தீர்வுகளை வழங்குகிறது. SRM ஆய்வு மையம் இந்த டிஜிட்டல் தளத்தின் மூலம் திருவள்ளுவரின் புகழை உலகெங்கும் கொண்டு செல்கிறது.</p>
                </div>
@@ -331,110 +368,124 @@ const App = () => {
         h1, h2, h3, h4, .app-title-group { font-family: 'Outfit', sans-serif; }
 
         .scholarly-app { min-height: 100vh; display: flex; flex-direction: column; }
-        .main-header { padding: 2rem 4rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; }
-        .header-top-row { display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; }
-        .srm-logo-top { height: 60px; object-fit: contain; }
-        .main-title { font-size: 1.8rem; margin: 0; color: var(--primary); font-weight: 950; }
-        .sub-title { margin: 0; font-weight: 800; color: var(--muted); font-size: 0.9rem; }
+        .main-header { padding: 1rem 4rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .header-top-row { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
+        .srm-logo-top { height: 45px; object-fit: contain; }
+        .main-title { font-size: 1.4rem; margin: 0; color: var(--primary); font-weight: 950; letter-spacing: -0.02em; }
+        .sub-title { margin: 0; font-weight: 800; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        .header-nav-tabs { display: flex; gap: 1.5rem; align-items: center; }
+        .header-nav-tabs { display: flex; gap: 1rem; align-items: center; }
         .header-nav-tabs button { 
-           background: none; border: none; padding: 0.75rem 1.5rem; cursor: pointer; color: var(--muted);
-           display: flex; align-items: center; gap: 8px; font-weight: 800; border-radius: 0.75rem; transition: 0.3s;
+           background: none; border: none; padding: 0.5rem 1.25rem; cursor: pointer; color: var(--muted);
+           display: flex; align-items: center; gap: 6px; font-weight: 800; border-radius: 0.5rem; transition: 0.3s;
+           font-size: 0.85rem;
         }
         .header-nav-tabs button.active { background: var(--primary); color: white; }
         .header-nav-tabs button:hover:not(.active) { background: #f1f5f9; color: var(--text); }
 
-        .content-container { flex: 1; padding: 3rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .content-container { flex: 1; padding: 2rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
         /* Chat View */
-        .chat-view { display: flex; flex-direction: column; height: calc(100vh - 300px); }
-        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 2rem; padding-bottom: 2rem; }
+        .chat-view { display: flex; flex-direction: column; height: calc(100vh - 220px); }
+        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 1.5rem; }
         .chat-bubble-container { display: flex; width: 100%; }
         .chat-bubble-container.user { justify-content: flex-end; }
-        .chat-bubble { max-width: 80%; padding: 1.5rem; background: var(--white); border-radius: 1.5rem; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .chat-bubble { max-width: 80%; padding: 1.25rem; background: var(--white); border-radius: 1.25rem; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .user .chat-bubble { background: var(--primary); color: white; border: none; }
-        .bubble-meta { font-size: 0.75rem; font-weight: 900; color: var(--muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .bubble-meta { font-size: 0.7rem; font-weight: 950; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
         
         .bubble-text p { margin: 0 0 1rem; line-height: 1.6; }
-        .tamil-k-header { color: var(--primary); font-weight: 900; margin: 1.5rem 0 0.5rem; border-left: 4px solid var(--primary); padding-left: 1rem; }
-        .tamil-verse { font-weight: 950; font-size: 1.2rem; background: #f8fafc; padding: 1rem; border-radius: 1rem; color: #334155; }
-        .tamil-exp { font-style: italic; color: #475569; margin-bottom: 1rem; }
+        .tamil-k-header { color: var(--primary); font-weight: 900; margin: 1rem 0 0.5rem; border-left: 4px solid var(--primary); padding-left: 1rem; }
+        .tamil-verse { font-weight: 950; font-size: 1.1rem; background: #f8fafc; padding: 1rem; border-radius: 1rem; color: #334155; }
+        .tamil-exp { color: #475569; margin-bottom: 1rem; font-weight: 600; line-height: 1.5; }
 
         .kural-source-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem; }
-        .k-src-tag { font-size: 0.75rem; font-weight: 900; color: var(--primary); background: #fff7ed; padding: 0.4rem 0.8rem; border-radius: 2rem; cursor: pointer; }
+        .k-src-tag { font-size: 0.7rem; font-weight: 900; color: var(--primary); background: #fff7ed; padding: 0.4rem 0.8rem; border-radius: 2rem; cursor: pointer; }
 
-        .chat-input-row { padding-top: 1.5rem; }
-        .tamil-input-box { display: flex; background: var(--white); padding: 0.5rem; border: 2px solid var(--border); border-radius: 3rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .tamil-input-box input { flex: 1; border: none; outline: none; padding: 0.5rem 1.5rem; font-size: 1.1rem; }
-        .tamil-input-box button { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .chat-input-row { padding-top: 1rem; }
+        .tamil-input-box { display: flex; background: var(--white); padding: 0.4rem; border: 2px solid var(--border); border-radius: 3rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .tamil-input-box input { flex: 1; border: none; outline: none; padding: 0.4rem 1.25rem; font-size: 1rem; }
+        .tamil-input-box button { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         /* Library Cards */
-        .paal-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-        .paal-card { background: white; padding: 3rem; border-radius: 2rem; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.3s; }
-        .paal-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .paal-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .paal-card { background: white; padding: 2.5rem; border-radius: 1.5rem; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.3s; }
+        .paal-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
         .paal-card.aram { border-top: 6px solid #fbbf24; }
         .paal-card.porul { border-top: 6px solid #10b981; }
         .paal-card.inbam { border-top: 6px solid #ef4444; }
-        .paal-card h3 { font-size: 1.6rem; margin: 0 0 0.5rem; }
-        .paal-card p { margin: 0; font-weight: 700; color: var(--muted); }
+        .paal-card h3 { font-size: 1.4rem; margin: 0 0 0.5rem; }
+        .paal-card p { margin: 0; font-weight: 700; color: var(--muted); font-size: 0.9rem; }
 
         .chapter-view { display: flex; flex-direction: column; }
-        .tamil-back { background: none; border: none; color: var(--primary); font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 2rem; text-transform: uppercase; font-size: 0.8rem; }
-        .chapter-header-text { font-size: 2rem; font-weight: 950; margin-bottom: 2rem; }
-        .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
-        .chapter-tile { background: white; border: 1px solid var(--border); padding: 1.25rem; border-radius: 1.25rem; font-weight: 800; text-align: left; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
-        .chapter-tile span { opacity: 0.3; font-size: 0.8rem; }
+        .tamil-back { background: none; border: none; color: var(--primary); font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 1.5rem; text-transform: uppercase; font-size: 0.75rem; }
+        .chapter-header-text { font-size: 1.8rem; font-weight: 950; margin-bottom: 1.5rem; }
+        .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; }
+        .chapter-tile { background: white; border: 1px solid var(--border); padding: 1rem; border-radius: 1rem; font-weight: 800; text-align: left; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .chapter-tile span { opacity: 0.3; font-size: 0.7rem; }
         .chapter-tile:hover { border-color: var(--primary); background: #fdf5f2; }
 
-        .kural-grid-stack { display: flex; flex-direction: column; gap: 1.5rem; }
-        .kural-item-card { background: white; border: 1.5px solid var(--border); padding: 2rem; border-radius: 2rem; cursor: pointer; transition: 0.3s; }
-        .kural-item-card:hover { border-color: var(--primary); transform: translateX(10px); }
-        .kural-item-card p { margin: 0; font-weight: 900; font-size: 1.3rem; }
-        .k-header-row { font-size: 0.75rem; font-weight: 950; color: var(--primary); margin-bottom: 0.75rem; opacity: 0.6; }
+        .kural-grid-stack { display: flex; flex-direction: column; gap: 1rem; }
+        .kural-item-card { background: white; border: 1.5px solid var(--border); padding: 1.5rem; border-radius: 1.5rem; cursor: pointer; transition: 0.3s; }
+        .kural-item-card:hover { border-color: var(--primary); transform: translateX(5px); }
+        .kural-item-card p { margin: 0; font-weight: 900; font-size: 1.1rem; }
+        .k-header-row { font-size: 0.7rem; font-weight: 950; color: var(--primary); margin-bottom: 0.5rem; opacity: 0.6; }
 
-        /* Modals - Enlarged & Enhanced */
-        .tamil-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(12px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-        .tamil-modal { background: white; padding: 4rem 5rem; border-radius: 3.5rem; width: 100%; max-width: 1000px; max-height: 92vh; overflow-y: auto; box-shadow: 0 30px 60px rgba(0,0,0,0.2); }
-        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
-        .m-badge { background: #fee2e2; color: var(--primary); padding: 0.75rem 2rem; border-radius: 2rem; font-weight: 950; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; }
-        .m-verse-box { background: #fdf5f2; padding: 3rem; border-radius: 2.5rem; margin-bottom: 3.5rem; border: 1.5px solid #fed7aa; }
-        .m-verse-box h3 { font-size: 2.6rem; margin: 0; line-height: 1.4; font-weight: 950; color: #431407; }
-        .m-explanations-stack { display: flex; flex-direction: column; gap: 2.5rem; }
-        .e-block h5 { margin: 0 0 0.8rem; color: var(--primary); font-weight: 900; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        .e-block p { margin: 0; font-size: 1.4rem; line-height: 1.7; font-weight: 700; color: #1e293b; }
-        .e-block.en { background: #f8fafc; padding: 2.5rem; border-radius: 2rem; border-left: 6px solid var(--primary); }
-        .e-block.en p { color: #475569; font-style: italic; font-weight: 800; }
+        /* Modals - Fixed and optimized */
+        .tamil-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .tamil-modal { background: white; padding: 2.5rem 3rem; border-radius: 2.5rem; width: 100%; max-width: 850px; max-height: 90vh; overflow-y: auto; box-shadow: 0 40px 80px rgba(0,0,0,0.3); position: relative; }
+        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: sticky; top: -2.5rem; background: white; padding-top: 1rem; padding-bottom: 1rem; z-index: 10; border-bottom: 1px solid #f1f5f9; }
+        .m-badge { background: #fff7ed; color: var(--primary); padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 950; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; border: 1px solid #ffedd5; }
+        .m-verse-box { background: #fffaf7; padding: 2rem; border-radius: 2rem; margin-bottom: 2.5rem; border: 1px solid #ffedd5; }
+        .m-verse-box h3 { font-size: 2rem; margin: 0; line-height: 1.4; font-weight: 950; color: #431407; word-break: break-word; }
+        .m-explanations-stack { display: flex; flex-direction: column; gap: 2rem; }
+        .e-block h5 { margin: 0 0 0.6rem; color: var(--primary); font-weight: 950; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
+        .e-block p { margin: 0; font-size: 1.25rem; line-height: 1.6; font-weight: 700; color: #1e293b; }
+        .e-block.en { background: #f8fafc; padding: 2rem; border-radius: 1.5rem; border-left: 6px solid var(--primary); }
+        .e-block.en p { color: #475569; font-style: italic; font-weight: 800; font-size: 1.1rem; }
 
         /* History - Premium Museum Layout */
-        .history-view { max-width: 1100px; margin: 0 auto; width: 100%; }
-        .history-hero { text-align: center; padding: 4rem 0; margin-bottom: 4rem; border-bottom: 2px solid var(--border); }
-        .h-title { font-size: 3rem; font-weight: 950; color: var(--primary); margin: 0 0 1rem; }
-        .h-subtitle { font-size: 1.2rem; color: var(--muted); font-weight: 800; }
+        .history-view { max-width: 1000px; margin: 0 auto; width: 100%; }
+        .history-hero { text-align: center; padding: 3rem 0; margin-bottom: 3rem; border-bottom: 2px solid var(--border); position: relative; }
+        .h-decorator { width: 60px; height: 4px; background: var(--primary); margin: 0 auto 1.5rem; border-radius: 2px; }
+        .h-title { font-size: 2.5rem; font-weight: 950; color: var(--primary); margin: 0 0 1rem; letter-spacing: -0.01em; }
+        .h-subtitle { font-size: 1rem; color: var(--muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+        .h-hero-chips { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+        .h-hero-chips span { background: #fdf5f2; color: var(--primary); padding: 0.5rem 1rem; border-radius: 2rem; font-weight: 900; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; border: 1px solid #fee2e2; }
 
-        .h-section { display: flex; align-items: center; gap: 5rem; padding: 6rem 0; border-bottom: 1px solid #f1f5f9; }
+        .h-section { display: flex; align-items: center; gap: 4rem; padding: 5rem 0; border-bottom: 1px solid #f1f5f9; }
         .h-section.alternate { flex-direction: row-reverse; }
-        .h-text-block { flex: 1; }
-        .h-image-wrap { flex: 1; border-radius: 3rem; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: 0.5s; }
-        .h-image-wrap:hover { transform: scale(1.02); }
-        .h-image-wrap img { width: 100%; height: 500px; object-fit: cover; }
+        .h-text-block { flex: 1.2; }
+        .h-image-wrap { flex: 1; border-radius: 2rem; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.1); transition: 0.5s; position: relative; }
+        .h-image-wrap:hover { transform: translateY(-10px); }
+        .h-image-wrap img { width: 100%; height: 400px; object-fit: cover; }
+        .img-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; padding: 1.5rem; font-weight: 800; font-size: 0.9rem; }
 
-        .h-label { display: block; font-size: 0.75rem; font-weight: 950; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; }
-        .h-text-block h3 { font-size: 2.5rem; font-weight: 950; margin: 0 0 2rem; color: #0f172a; }
-        .h-text-block p { font-size: 1.25rem; line-height: 1.8; color: #475569; margin-bottom: 2rem; font-weight: 600; }
-        .h-list { list-style: none; padding: 0; margin: 0; }
-        .h-list li { font-size: 1.1rem; font-weight: 800; color: #334155; margin-bottom: 0.75rem; display: flex; gap: 1rem; align-items: center; }
-        .h-list li::before { content: '•'; color: var(--primary); font-size: 2rem; }
+        .h-label { display: block; font-size: 0.7rem; font-weight: 950; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; }
+        .h-text-block h3 { font-size: 2rem; font-weight: 950; margin: 0 0 1.5rem; color: #0f172a; }
+        .h-text-block p { font-size: 1.1rem; line-height: 1.8; color: #475569; margin-bottom: 1.5rem; font-weight: 600; }
+        .h-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; }
+        .h-list li { font-size: 1rem; font-weight: 800; color: #334155; display: flex; gap: 0.8rem; align-items: center; }
+        .h-list li strong { color: var(--primary); }
+        
+        .h-timeline-section { padding: 4rem 2rem; background: #fffaf7; border-radius: 2.5rem; margin: 2rem 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .h-tl-item { position: relative; }
+        .h-tl-dot { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; margin-bottom: 1rem; ring: 4px solid #fee2e2; }
+        .h-tl-content h4 { margin: 0 0 0.5rem; color: #1e293b; font-weight: 950; font-size: 1.1rem; }
+        .h-tl-content p { font-size: 0.85rem; color: #64748b; font-weight: 700; margin: 0; line-height: 1.5; }
 
-        .h-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
-        .h-stat { background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; text-align: center; font-weight: 900; color: #1e293b; font-size: 0.9rem; border: 1px solid #e2e8f0; }
-        .h-stat span { display: block; font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .h-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; }
+        .h-stat { background: white; padding: 1.25rem; border-radius: 1.25rem; text-align: center; font-weight: 900; color: #1e293b; font-size: 0.8rem; border: 1.5px solid #f1f5f9; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .h-stat span { display: block; font-size: 1.8rem; color: var(--primary); margin-bottom: 0.25rem; }
 
-        .h-quote { border-left: 8px solid var(--primary); padding: 2rem 3rem; background: #fff7ed; border-radius: 0 2rem 2rem 0; font-size: 1.5rem; font-weight: 900; color: #7c2d12; font-style: italic; }
+        .h-quote-box { margin-top: 2rem; position: relative; padding: 2rem; }
+        .q-icon-big { color: var(--primary); opacity: 0.1; position: absolute; top: 0; left: 0; }
+        .h-quote { font-size: 1.4rem; font-weight: 900; color: #7c2d12; font-style: italic; position: relative; line-height: 1.5; padding-left: 1rem; border-left: 6px solid var(--primary); }
 
-        .h-legacy-footer { text-align: center; padding: 8rem 4rem; background: #fafaf9; border-radius: 4rem; margin-top: 6rem; }
-        .h-legacy-footer h3 { font-size: 2rem; font-weight: 950; margin-bottom: 1.5rem; color: var(--primary); }
-        .h-legacy-footer p { max-width: 800px; margin: 0 auto; line-height: 1.8; color: #64748b; font-weight: 700; }
+        .h-legacy-footer { text-align: center; padding: 6rem 3rem; background: #1e293b; color: white; border-radius: 3rem; margin-top: 5rem; position: relative; overflow: hidden; }
+        .footer-glow { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(154,52,18,0.3) 0%, transparent 70%); }
+        .h-legacy-footer h3 { font-size: 2rem; font-weight: 950; margin-bottom: 1.5rem; color: #fbbf24; position: relative; }
+        .h-legacy-footer p { max-width: 700px; margin: 0 auto; line-height: 1.8; color: #cbd5e1; font-weight: 700; position: relative; }
 
         .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
