@@ -305,4 +305,4 @@ Meaning: ${i.explanation}`).join(`
           .tamil-modal { padding: 2rem; border-radius: 2rem; width: 95%; }
           .m-verse-box h3 { font-size: 1.5rem; }
         }
-      `}})]})};Dl.createRoot(document.getElementById("root")).render(S.jsx(Aw.StrictMode,{children:S.jsx(AE,{})}));"serviceWorker"in navigator&&window.addEventListener("load",()=>{navigator.serviceWorker.register("/sw.js").catch(e=>console.log("SW registration failed:",e))});
+      `}})]})};Dl.createRoot(document.getElementById("root")).render(S.jsx(Aw.StrictMode,{children:S.jsx(AE,{})}));"serviceWorker"in navigator&&window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(e=>console.log("SW registration failed:",e))});
