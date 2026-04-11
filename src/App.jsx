@@ -76,14 +76,18 @@ const App = () => {
         const res = await fetch(url);
         const data = await res.json();
         if (data && data[0] && data[0][0] && data[0][0][0]) {
-          setTranslatedQuery(data[0][0][0]);
+          const translated = data[0][0][0];
+          // Auto-convert if the translated text is significantly different (to avoid loops)
+          if (translated !== query) {
+            setQuery(translated);
+          }
         }
       } catch (err) {
         console.error("Translation error:", err);
       } finally {
         setIsTranslating(false);
       }
-    }, 600);
+    }, 800); // Debounce to allow user to finish a phrase
 
     return () => clearTimeout(timer);
   }, [query]);
@@ -178,23 +182,9 @@ const App = () => {
                   <div ref={chatEndRef} />
                </div>
                <div className="chat-input-row">
-                  <AnimatePresence>
-                    {translatedQuery && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }} 
-                        animate={{ opacity: 1, y: 0 }} 
-                        exit={{ opacity: 0, y: 10 }}
-                        className="translation-hint"
-                        onClick={() => { setQuery(translatedQuery); setTranslatedQuery(''); }}
-                      >
-                        <Sparkles size={12} className="sparkle-icon" />
-                        <span>தமிழ் மொழிபெயர்ப்பு: <strong>{translatedQuery}</strong> (பயன்படுத்து)</span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                   <div className="tamil-input-box">
                     <input 
-                      placeholder="ஒழுக்கம், கல்வி அல்லது நட்பு பற்றி கேளுங்கள்..." 
+                      placeholder="Type in English (it will auto-translate)..." 
                       value={query} 
                       onChange={(e) => setQuery(e.target.value)} 
                       onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)} 
@@ -203,6 +193,7 @@ const App = () => {
                       {isTranslating ? <div className="mini-loader"></div> : <Send size={20}/>}
                     </button>
                   </div>
+                  {isTranslating && <div className="auto-trans-status">Translating...</div>}
                </div>
             </motion.div>
           ) : activeTab === 'list' ? (
@@ -451,6 +442,16 @@ const App = () => {
           border-top-color: white;
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
+        }
+
+        .auto-trans-status {
+          font-size: 0.7rem;
+          color: var(--muted);
+          margin-top: 0.5rem;
+          margin-left: 1.5rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
