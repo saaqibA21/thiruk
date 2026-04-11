@@ -72,7 +72,7 @@ const App = () => {
     const timer = setTimeout(async () => {
       setIsTranslating(true);
       try {
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
         const res = await fetch(url);
         const data = await res.json();
         if (data && data[0] && data[0][0] && data[0][0][0]) {
