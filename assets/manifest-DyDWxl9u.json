@@ -1,10 +1,10 @@
 {
-  "name": "குறள் AI - நுண்மதி ஆய்வு",
-  "short_name": "குறள் AI",
-  "start_url": "./index.html",
+  "name": "திருக்குறள் நிபுணர் - நுண்மதி ஆய்வுத் தளம்",
+  "short_name": "திருக்குறள்",
+  "start_url": "./",
   "display": "standalone",
-  "background_color": "#010409",
-  "theme_color": "#2563eb",
+  "background_color": "#fdfcfa",
+  "theme_color": "#9a3412",
   "description": "அதிவேகத் திருக்குறள் நுண்மதி ஆய்வுத் தளம்",
   "icons": [
     {
