@@ -85,22 +85,16 @@
 
         <!-- Floating Input -->
         <div id="input" class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[92%] max-w-2xl transition-all">
-            <!-- Translation Hint -->
-            <div id="trans-hint" class="hidden glass-card p-3 mb-2 animate-in cursor-pointer border-green-500/30 bg-green-500/5 hover:bg-green-500/10 transition-all">
-                <p class="text-[10px] text-green-400 font-bold flex items-center gap-2">
-                    <i data-lucide="languages" class="w-3 h-3"></i> 
-                    Tamil Suggestion: <span id="trans-text" class="text-white"></span>
-                </p>
-            </div>
             <div class="glass-card p-3 shadow-2xl">
                 <div class="flex gap-4">
-                    <input type="text" id="ask-input" placeholder="Ask your query..." onkeypress="if(event.key==='Enter') runAsk()" oninput="handleTranslate()" class="flex-1 bg-transparent border-none outline-none px-6 text-lg font-bold">
+                    <input type="text" id="ask-input" placeholder="Type in English (it will auto-translate)..." onkeypress="if(event.key==='Enter') runAsk()" oninput="handleTranslate()" class="flex-1 bg-transparent border-none outline-none px-6 text-lg font-bold">
                     <button onclick="runAsk()" class="w-12 h-12 neural-gradient rounded-full flex items-center justify-center hover:scale-105 transition-all">
                         <i data-lucide="send" id="send-btn-icon" class="w-5 h-5 text-white"></i>
                         <div id="input-loader" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     </button>
                 </div>
             </div>
+            <div id="auto-trans-status" class="hidden text-[10px] text-blue-400 font-bold mt-2 ml-6 uppercase tracking-widest opacity-60">Translating...</div>
         </div>
     </div>
 
@@ -249,13 +243,12 @@
         let transTimer;
         window.handleTranslate = () => {
             const q = UI.input.value.trim();
-            const hint = document.getElementById('trans-hint');
-            const hintText = document.getElementById('trans-text');
             const icon = document.getElementById('send-btn-icon');
             const loader = document.getElementById('input-loader');
+            const status = document.getElementById('auto-trans-status');
 
             if (!q || q.length < 3 || /[\u0B80-\u0BFF]/.test(q)) {
-                hint.classList.add('hidden');
+                status.classList.add('hidden');
                 return;
             }
 
@@ -263,25 +256,24 @@
             transTimer = setTimeout(async () => {
                 icon.classList.add('hidden');
                 loader.classList.remove('hidden');
+                status.classList.remove('hidden');
                 try {
                     const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ta&dt=t&q=${encodeURIComponent(q)}`);
                     const data = await res.json();
                     if (data && data[0] && data[0][0] && data[0][0][0]) {
                         const translated = data[0][0][0];
-                        hintText.innerText = translated;
-                        hint.classList.remove('hidden');
-                        hint.onclick = () => {
+                        if (translated !== UI.input.value) {
                             UI.input.value = translated;
-                            hint.classList.add('hidden');
-                        };
+                        }
                     }
                 } catch (err) {
                     console.error("Translation error:", err);
                 } finally {
                     icon.classList.remove('hidden');
                     loader.classList.add('hidden');
+                    status.classList.add('hidden');
                 }
-            }, 600);
+            }, 800);
         };
 
         init();
