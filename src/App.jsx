@@ -18,6 +18,9 @@ const App = () => {
   const [aiEngine, setAiEngine] = useState(null);
   const [initProgress, setInitProgress] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [translatedQuery, setTranslatedQuery] = useState('');
+  const [isTranslating, setIsTranslating] = useState(false);
+
   // Prioritize Vercel Env, then Obfuscated Key
   const getInitialKey = () => {
     const envKey = import.meta.env.VITE_OPENAI_API_KEY;
@@ -51,6 +54,39 @@ const App = () => {
     };
     loadData();
   }, [apiKey]);
+
+  // Real-time Translation Logic
+  useEffect(() => {
+    if (!query.trim()) {
+      setTranslatedQuery('');
+      return;
+    }
+
+    // Skip if already in Tamil or too short
+    const isTamil = /[\u0B80-\u0BFF]/.test(query);
+    if (isTamil || query.length < 3) {
+      setTranslatedQuery('');
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsTranslating(true);
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data[0] && data[0][0] && data[0][0][0]) {
+          setTranslatedQuery(data[0][0][0]);
+        }
+      } catch (err) {
+        console.error("Translation error:", err);
+      } finally {
+        setIsTranslating(false);
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const ATHIGARAMS = [ "கடவுள் வாழ்த்து", "வான் சிறப்பு", "நீத்தார் பெருமை", "அறன் வலியுறுத்தல்", "இல்வாழ்க்கை", "வாழ்க்கைத் துணைநலம்", "மக்கட்பேறு", "அன்புடைமை", "விருந்தோம்பல்", "இனியவை கூறல்", "செய்ந்நன்றியறிதல்", "நடுவுநிலைமை", "அடக்கமுடைமை", "ஒழுக்கமுடைமை", "பிறனில் விழையாமை", "பொறையுடைமை", "அழுக்காறாமை", "வெஃகாமை", "புறங்கூறாமை", "பயனில சொல்லாமை", "தீவினையச்சம்", "ஒப்புரவறிதல்", "ஈகை", "புகழ்", "அருளுடைமை", "புலால் மறுத்தல்", "தவம்", "கூடாஒழுக்கம்", "கள்ளாமை", "வாய்மை", "வெகுளாமை", "இன்னா செய்யாமை", "கொல்லாமை", "நிலையாமை", "துறவு", "மெய்யணர்தல்", "அவாவறுத்தல்", "ஊழ்", "இறைமாட்சி", "கல்வி", "கல்லாமை", "கேள்வி", "அறிவுடைமை", "குற்றங்கடிதல்", "பெரியாரைத் துணைக்கோடல்", "சிற்றினம் சேராமை", "தெரிந்துசெயல்வகை", "வலியறிதல்", "காலமறிதல்", "இடனறிதல்", "தெரிந்துதெளிதல்", "தெரிந்துவினையாடல்", "சுற்றந்தழால்", "பொச்சாவாமை", "செங்கோன்மை", "கொடுங்கோன்மை", "வெருவந்த செய்யாமை", "கண்ணோட்டம்", "ஒற்றாடல்", "ஊக்கமுடைமை", "மடியின்மை", "ஆள்வினையுடைமை", "இடுக்கண் அழியாமை", "அமைச்சு", "சொல்வன்மை", "வினைத்தூய்மை", "வினைத்திட்பம்", "வினைசெயல்வகை", "தூது", "மன்னரைச் சேர்ந்தொழுதல்", "குறிப்பறிதல்", "அவையறிதல்", "அவையஞ்சாமை", "நாடு", "அரண்", "பொருள்செயல்வகை", "படைமாட்சி", "படைச்செருக்கு", "நட்பு", "நட்பாராய்தல்", "பழைமை", "தீய நட்பு", "கூடா நட்பு", "பேதைமை", "புல்லறிவாண்மை", "இகல்", "பகைமாட்சி", "பகைத்திறந்தெரிதல்", "உட்பகை", "பெரியாரைப் பிழையாமை", "பெண்வழிச் சேறல்", "வரைவின் மகளிர்", "கள்ளுண்ணாமை", "சூது", "மருந்து", "குடிமை", "மானம்பருமை", "சான்றாண்மை", "பண்புடைமை", "நன்றியில் செல்வம்", "நாணுடைமை", "குடிசெயல்வகை", "உழவு", "நல்குரவு", "இரவு", "இரவச்சம்", "கயமை", "தகையணங்குறுத்தல்", "குறிப்பறிதல்", "புணர்ச்சி மகிழ்தல்", "நலம்புனைந்துரைத்தல்", "காதல் சிறப்புரைத்தல்", "நாணுத்துறவுரைத்தல்", "அலரறிவுறுத்தல்", "பிரிவாற்றாமை", "படர்மெலிந்திரங்கல்", "கண்விதுப்பழிதல்", "பசப்புறு பருவரல்", "தனிப்படர் மிகுதி", "நினைந்தவர் புலம்பல்", "கனவுநிலை உரைத்தல்", "பொழுதுகண்டு இரங்கல்", "உறுப்புநலன் அழிதல்", "நெஞ்சொடு கிளத்தல்", "நிறையழிதல்", "அவர்வயின் விதும்பல்", "குறிப்பறிவுறுத்தல்", "புணர்ச்சி விதும்பல்", "நெஞ்சொடு புலத்தல்", "புலவி", "புலவி நுணுக்கம்", "ஊடலுவகை" ];
 
@@ -142,9 +178,30 @@ const App = () => {
                   <div ref={chatEndRef} />
                </div>
                <div className="chat-input-row">
+                  <AnimatePresence>
+                    {translatedQuery && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        exit={{ opacity: 0, y: 10 }}
+                        className="translation-hint"
+                        onClick={() => { setQuery(translatedQuery); setTranslatedQuery(''); }}
+                      >
+                        <Sparkles size={12} className="sparkle-icon" />
+                        <span>தமிழ் மொழிபெயர்ப்பு: <strong>{translatedQuery}</strong> (பயன்படுத்து)</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   <div className="tamil-input-box">
-                    <input placeholder="ஒழுக்கம், கல்வி அல்லது நட்பு பற்றி கேளுங்கள்..." value={query} onChange={(e) => setQuery(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)} />
-                    <button onClick={() => handleAsk(query)} disabled={loading}><Send size={20}/></button>
+                    <input 
+                      placeholder="ஒழுக்கம், கல்வி அல்லது நட்பு பற்றி கேளுங்கள்..." 
+                      value={query} 
+                      onChange={(e) => setQuery(e.target.value)} 
+                      onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)} 
+                    />
+                    <button onClick={() => handleAsk(query)} disabled={loading}>
+                      {isTranslating ? <div className="mini-loader"></div> : <Send size={20}/>}
+                    </button>
                   </div>
                </div>
             </motion.div>
@@ -364,6 +421,39 @@ const App = () => {
         .p-label { font-size: 0.85rem; font-weight: 900; color: #92400e; margin-bottom: 0.75rem; }
         .p-track { height: 8px; background: #fef3c7; border-radius: 10px; overflow: hidden; }
         .p-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
+
+        /* Translation Hint Styles */
+        .translation-hint {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: #f0fdf4;
+          border: 1px solid #dcfce7;
+          border-radius: 1rem;
+          padding: 0.6rem 1.2rem;
+          margin-bottom: 0.75rem;
+          font-size: 0.85rem;
+          color: #166534;
+          cursor: pointer;
+          transition: 0.2s;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .translation-hint:hover {
+          background: #dcfce7;
+          transform: translateY(-2px);
+        }
+        .sparkle-icon { color: #f59e0b; }
+        
+        .mini-loader {
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255,255,255,0.3);
+          border-top-color: white;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* History Enhancements */
         .history-visual-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
