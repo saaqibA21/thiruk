@@ -62,9 +62,9 @@ const App = () => {
       return;
     }
 
-    // check if there are any English characters to translate
-    const hasEnglish = /[a-zA-Z]/.test(query);
-    if (!hasEnglish || query.length < 3) {
+    // Check if there are any English words or clusters to translate
+    const hasEnglish = /[a-z]{2,}/i.test(query); // At least 2 English letters
+    if (!hasEnglish) {
       setIsTranslating(false);
       return;
     }

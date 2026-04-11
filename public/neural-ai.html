@@ -247,8 +247,8 @@
             const loader = document.getElementById('input-loader');
             const status = document.getElementById('auto-trans-status');
 
-            const hasEnglish = /[a-zA-Z]/.test(q);
-            if (!q || q.length < 3 || !hasEnglish) {
+            const hasEnglish = /[a-z]{2,}/i.test(q); 
+            if (!q || !hasEnglish) {
                 status.classList.add('hidden');
                 return;
             }
