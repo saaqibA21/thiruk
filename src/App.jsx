@@ -232,74 +232,103 @@ const App = () => {
                   <div className="h-hero-chips">
                     <span><Zap size={14}/> 133 அதிகாரங்கள்</span>
                     <span><Feather size={14}/> 1330 குறட்பாக்கள்</span>
-                    <span><Globe size={14}/> 80+ மொழிகள்</span>
+                    <span><Globe size={14}/> 100+ மொழிகள்</span>
                   </div>
                </div>
 
                <div className="history-content-sections">
+                  {/* Creator Section */}
                   <section className="h-section alternate">
                      <div className="h-text-block">
-                        <span className="h-label">படைப்பாளர்</span>
+                        <span className="h-label">படைப்பாளர்: காலத்தைக் கடந்த ஞானி</span>
                         <h3>தெய்வப்புலவர் திருவள்ளுவர்</h3>
                         <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு ஒப்பற்ற ஞானி. இவரது பிறப்பு மற்றும் சமயம் குறித்து பல விவாதங்கள் இருந்தாலும், இவரது கருத்துக்கள் சாதி, மதம், இனம் கடந்து அனைவருக்குமான பொது நீதியாகத் திகழ்கின்றன.</p>
+                        <p>அவர் எந்த ஒரு குறிப்பிட்ட மதத்தையும் முன்னிறுத்தாமல், "பிறப்பொக்கும் எல்லா உயிர்க்கும்" என்ற சமத்துவக் கொள்கையை உலகுக்கு உணர்த்தினார். இவரை 'நாயனார்', 'தேவர்', 'தெய்வப்புலவர்', 'முதற்பாவலர்' எனப் பல பெயர்களில் தமிழர்கள் போற்றுகின்றனர்.</p>
                         <ul className="h-list">
-                           <li><User size={20}/> <strong>காலம்:</strong> கி.மு. 31 (திருவள்ளுவர் ஆண்டு)</li>
-                           <li><Award size={20}/> <strong>பட்டங்கள்:</strong> நாயனார், தேவர், முதற்பாவலர், தெய்வப்புலவர்.</li>
-                           <li><Quote size={20}/> <strong>தத்துவம்:</strong> உலகளாவிய மனிதநேயம்.</li>
+                           <li><User size={20}/> <strong>காலம்:</strong> கி.மு. 31 (இதனை அடிப்படையாகக் கொண்டே திருவள்ளுவர் ஆண்டு கணக்கிடப்படுகிறது).</li>
+                           <li><Award size={20}/> <strong>தத்துவம்:</strong> உலகளாவிய மனிதநேயம் மற்றும் வாழ்வியல் நெறிமுறைகள்.</li>
                         </ul>
                      </div>
                      <div className="h-image-wrap">
                         <img src="statue.png" alt="திருவள்ளுவர்" />
-                        <div className="img-overlay">கன்னியாகுமரி திருவள்ளுவர் சிலை</div>
+                        <div className="img-overlay">கன்னியாகுமரி: 133 அடி உயர திருவள்ளுவர் சிலை</div>
                      </div>
                   </section>
 
+                  {/* Structural Philosophy */}
+                  <section className="h-details-grid">
+                     <div className="h-detail-card">
+                        <div className="d-icon"><Database size={24}/></div>
+                        <h4>முப்பாலில் அடங்கிய ஞானம்</h4>
+                        <p>திருக்குறள் அறம், பொருள், இன்பம் என்ற மூன்று பிரிவுகளைக் கொண்டது. இது மனித வாழ்வின் அனைத்துப் பரிமாணங்களையும் உள்ளடக்கியது.</p>
+                        <ul>
+                           <li><strong>அறத்துப்பால்:</strong> (38 அதிகாரங்கள்) - தனிமனித ஒழுக்கம் மற்றும் அறநெறி.</li>
+                           <li><strong>பொருட்பால்:</strong> (70 அதிகாரங்கள்) - அரசியல், பொருளாதாரம் மற்றும் சமூகம்.</li>
+                           <li><strong>இன்பத்துப்பால்:</strong> (25 அதிகாரங்கள்) - காதல் மற்றும் அகவாழ்வு.</li>
+                        </ul>
+                     </div>
+                     <div className="h-detail-card">
+                        <div className="d-icon"><Zap size={24}/></div>
+                        <h4>7 சொற்களின் ரகசியம்</h4>
+                        <p>ஒவ்வொரு குறளும் இரண்டு அடிகளையும், சரியாக ஏழு சொற்களையும் (4+3) கொண்டது. இந்த ஏழு சொற்கள் ஏழு பிறவிகளையும் அல்லது பிரபஞ்சத்தின் ஏழு நிலைகளையும் குறிப்பதாக அறிஞர்கள் கருதுகின்றனர்.</p>
+                     </div>
+                  </section>
+
+                  {/* Preservation Timeline */}
                   <div className="h-timeline-section">
                     <div className="h-tl-item">
                       <div className="h-tl-dot"></div>
                       <div className="h-tl-content">
-                        <h4>சங்க காலம்</h4>
-                        <p>மதுரை தமிழ்ச் சங்கத்தில் அரங்கேற்றப்பட்டதாகக் கூறப்படும் காலம்.</p>
+                        <h4>சங்க காலம் (கி.மு. / கி.பி.)</h4>
+                        <p>மதுரை தமிழ்ச் சங்கத்தில் 'திருவள்ளுவ மாலை' சான்றோர் முன்னிலையில் அரங்கேற்றப்பட்டதாக வரலாறு கூறுகிறது.</p>
                       </div>
                     </div>
                     <div className="h-tl-item">
                       <div className="h-tl-dot"></div>
                       <div className="h-tl-content">
-                        <h4>ஆங்கில மொழிபெயர்ப்பு</h4>
-                        <p>1886-ல் ஜி.யு. போப் அவர்களால் முதன்முதலில் ஆங்கிலத்தில் முழுமையாக மொழிபெயர்க்கப்பட்டது.</p>
+                        <h4>அச்சியந்திர காலம் (1812)</h4>
+                        <p>தஞ்சை ஞானப்பிரகாசம் அவர்களால் முதன்முதலில் திருக்குறள் நூல் வடிவில் அச்சிடப்பட்டது.</p>
                       </div>
                     </div>
                     <div className="h-tl-item">
                       <div className="h-tl-dot"></div>
                       <div className="h-tl-content">
-                        <h4>நவீன யுகம்</h4>
-                        <p>இன்று SRM AI மூலம் டிஜிட்டல் வடிவில் உலகெங்கும் கொண்டு செல்லப்படுகிறது.</p>
+                        <h4>உலகளாவிய அங்கீகாரம் (1886)</h4>
+                        <p>ஜி.யு. போப் (G.U. Pope) அவர்களால் திருக்குறள் ஆங்கிலத்தில் முழுமையாக மொழிபெயர்க்கப்பட்டு உலக நாடுகளின் பார்வைக்குச் சென்றது.</p>
                       </div>
                     </div>
                   </div>
 
+                  {/* Preservation Section */}
                   <section className="h-section">
                      <div className="h-image-wrap">
-                        <img src="manuscript.png" alt="ஓலைச்சுவடி" />
-                        <div className="img-overlay">பண்டைக்கால ஓலைச்சுவடிகள்</div>
+                        <img src="palm_leaf_manuscript_1775941365363.png" alt="ஓலைச்சுவடி" />
+                        <div className="img-overlay">பண்டைக்கால ஓலைச்சுவடி (Olai Suvadi)</div>
                      </div>
                      <div className="h-text-block">
-                        <span className="h-label">நூல் அமைப்பு</span>
-                        <h3>முப்பாலில் அடங்கிய ஞானம்</h3>
-                        <p>திருக்குறள் 133 அதிகாரங்களையும், அதிகாரத்திற்கு 10 குறள்கள் வீதம் 1330 குறட்பாக்களையும் கொண்டுள்ளது. இது அறம், பொருள், இன்பம் என்ற மூன்று பெரும் பிரிவுகளாக (முப்பால்) பிரிக்கப்பட்டுள்ளது.</p>
+                        <span className="h-label">பாதுகாப்பு மற்றும் மீட்டெடுப்பு</span>
+                        <h3>ஓலைச்சுவடியிலிருந்து டிஜிட்டல் வரை</h3>
+                        <p>திருக்குறள் பல நூற்றாண்டுகளாக ஓலைச்சுவடிகளில் மட்டுமே பாதுகாக்கப்பட்டது. 'எழுத்தாணி' கொண்டு பனை ஓலைகளில் செதுக்கப்பட்ட இந்த வரிகள், இயற்கை சீற்றங்களைக் கடந்து நம்மிடம் வந்து சேர்ந்தது ஒரு அதிசயம்.</p>
+                        <p>தமிழ் தாத்தா உ.வே. சாமிநாதையர் மற்றும் அறிஞர்களின் அயராத உழைப்பால் ஊர் ஊராகச் சென்று ஓலைச்சுவடிகள் சேகரிக்கப்பட்டு நூல் வடிவம் பெற்றன. இன்று SRM AI மூலம் இது டிஜிட்டல் யுகத்திலும் உயிர்ப்புடன் இருக்கிறது.</p>
                         <div className="h-stats-grid">
                            <div className="h-stat"><span>133</span> அத்தியாயங்கள்</div>
                            <div className="h-stat"><span>1330</span> குறட்பாக்கள்</div>
-                           <div className="h-stat"><span>7</span> சொற்கள்</div>
+                           <div className="h-stat"><span>100+</span> மொழிகள்</div>
                         </div>
                      </div>
                   </section>
 
+                  {/* Global Influence */}
                   <section className="h-section alternate">
                      <div className="h-text-block">
-                        <span className="h-label">உலகளாவியது</span>
-                        <h3>உலகப் பொதுமறை</h3>
-                        <p>திருக்குறள் பைபிள் மற்றும் குரானுக்கு அடுத்தபடியாக உலகிலேயே அதிக மொழிகளில் (100-க்கும் மேற்பட்ட மொழிகள்) மொழிபெயர்க்கப்பட்ட நூலாகும். இது மனித வாழ்வின் அனைத்து பரிமாணங்களையும் தெளிவாக விளக்குகிறது.</p>
+                        <span className="h-label">உலகளாவிய தாக்கம்</span>
+                        <h3>உலகத் தலைவர்களின் வழிகாட்டி</h3>
+                        <p>திருக்குறள் ஒரு மதச்சார்பற்ற நூல் என்பதால், இது உலகத் தலைவர்கள் பலரை ஈர்த்துள்ளது. மகாத்மா காந்தி, லியோ டால்ஸ்டாய் மற்றும் ஆல்பர்ட் சுவைட்சர் போன்றோர் திருக்குறளின் அறநெறிகளால் ஈர்க்கப்பட்டனர்.</p>
+                        <ul className="h-list-fancy">
+                          <li><strong>மகாத்மா காந்தி:</strong> திருக்குறளில் உள்ள 'இன்னா செய்தாரையும்' என்ற கருத்தே அவரது அகிம்சை கொள்கைக்கு அடித்தளம்.</li>
+                          <li><strong>லியோ டால்ஸ்டாய்:</strong> ரஷ்யாவிலிருந்து திருக்குறளை மொழிபெயர்த்து படித்து வியந்தவர்.</li>
+                          <li><strong>ஆல்பர்ட் சுவைட்சர்:</strong> "திருக்குறளைப் போல வாழ்வின் அனைத்துப் பகுதிகளுக்கும் வழிகாட்டும் மற்றொரு நூல் உலகில் இல்லை" எனக் குறிப்பிட்டவர்.</li>
+                        </ul>
                         <div className="h-quote-box">
                           <Quote className="q-icon-big" size={40}/>
                           <p className="h-quote">"திருக்குறள் என்பது மனிதன் மனிதனாக வாழ, மனிதன் மனிதனுக்குச் சொன்ன உன்னத நெறி."</p>
@@ -307,6 +336,7 @@ const App = () => {
                      </div>
                      <div className="h-image-wrap">
                         <img src="translations.png" alt="உலகத்தரம்" />
+                        <div className="img-overlay">உலகின் பல மொழிகளில் திருக்குறள்</div>
                      </div>
                   </section>
                </div>
@@ -315,6 +345,7 @@ const App = () => {
                   <div className="footer-glow"></div>
                   <h3>காலம் கடந்த வழிகாட்டி</h3>
                   <p>இன்று நவீன செயற்கை நுண்ணறிவு யுகத்திலும், திருக்குறள் நமக்கு வாழ்வியல் தீர்வுகளை வழங்குகிறது. SRM ஆய்வு மையம் இந்த டிஜிட்டல் தளத்தின் மூலம் திருவள்ளுவரின் புகழை உலகெங்கும் கொண்டு செல்கிறது.</p>
+                  <div className="footer-srm-tag">SRM Institute of Science and Technology • Tamil Research Centre</div>
                </div>
             </motion.div>
           )}
@@ -483,10 +514,23 @@ const App = () => {
         .q-icon-big { color: var(--primary); opacity: 0.1; position: absolute; top: 0; left: 0; }
         .h-quote { font-size: 1.4rem; font-weight: 900; color: #7c2d12; font-style: italic; position: relative; line-height: 1.5; padding-left: 1rem; border-left: 6px solid var(--primary); }
 
+        .h-details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin: 4rem 0; }
+        .h-detail-card { background: white; padding: 2.5rem; border-radius: 2.5rem; border: 1.5px solid #f1f5f9; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .h-detail-card h4 { font-size: 1.4rem; color: var(--primary); margin: 1.5rem 0 1rem; }
+        .h-detail-card p { font-size: 0.95rem; color: #64748b; line-height: 1.6; }
+        .h-detail-card ul { padding-left: 1.25rem; margin-top: 1rem; }
+        .h-detail-card li { margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 700; color: #334155; }
+        .d-icon { width: 50px; height: 50px; background: #fff7ed; color: var(--primary); border-radius: 1rem; display: flex; align-items: center; justify-content: center; }
+
+        .h-list-fancy { list-style: none; padding: 0; margin: 2rem 0; }
+        .h-list-fancy li { background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1rem; border-left: 5px solid var(--primary); font-size: 1rem; font-weight: 600; color: #334155; }
+        .h-list-fancy li strong { color: var(--primary); display: block; font-size: 1.1rem; margin-bottom: 0.4rem; }
+
         .h-legacy-footer { text-align: center; padding: 6rem 3rem; background: #1e293b; color: white; border-radius: 3rem; margin-top: 5rem; position: relative; overflow: hidden; }
         .footer-glow { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(154,52,18,0.3) 0%, transparent 70%); }
         .h-legacy-footer h3 { font-size: 2rem; font-weight: 950; margin-bottom: 1.5rem; color: #fbbf24; position: relative; }
         .h-legacy-footer p { max-width: 700px; margin: 0 auto; line-height: 1.8; color: #cbd5e1; font-weight: 700; position: relative; }
+        .footer-srm-tag { margin-top: 3rem; font-size: 0.75rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; position: relative; z-index: 2; }
 
         .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
