@@ -13,15 +13,12 @@ const App = () => {
     { role: 'ai', content: 'வணக்கம்! நான் உங்கள் திருக்குறள் நிபுணர். திருக்குறளின் ஆழமான வாழ்வியல் நெறிகளைப் பற்றி நீங்கள் என்னிடம் உரையாடலாம்.', sources: [] }
   ]);
   const [loading, setLoading] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(50);
-  const [kuralData, setKuralData] = useState([]);
-  const [aiEngine, setAiEngine] = useState(null);
   const [initProgress, setInitProgress] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [translatedQuery, setTranslatedQuery] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
+  const [kuralData, setKuralData] = useState([]);
+  const [aiEngine, setAiEngine] = useState(null);
 
-  // Prioritize Vercel Env, then Obfuscated Key
   const getInitialKey = () => {
     const envKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (envKey && envKey.startsWith('sk-')) return envKey;
@@ -31,7 +28,6 @@ const App = () => {
   const [apiKey, setApiKey] = useState(getInitialKey());
   const [showSettings, setShowSettings] = useState(false);
   const chatEndRef = useRef(null);
-  const engineRef = useRef(null);
   const initRef = useRef(false);
 
   useEffect(() => {
@@ -44,7 +40,6 @@ const App = () => {
             const data = await res.json();
             setKuralData(data.kural);
             const engine = new KuralAI(data.kural);
-            engineRef.current = engine;
             await engine.init(apiKey); 
             setAiEngine(engine);
         } catch (err) { 
@@ -55,15 +50,9 @@ const App = () => {
     loadData();
   }, [apiKey]);
 
-  // Real-time Translation Logic
   useEffect(() => {
-    if (!query.trim()) {
-      setTranslatedQuery('');
-      return;
-    }
-
-    // Check if there are any English words or clusters to translate
-    const hasEnglish = /[a-z]{2,}/i.test(query); // At least 2 English letters
+    if (!query.trim()) return;
+    const hasEnglish = /[a-z]{2,}/i.test(query);
     if (!hasEnglish) {
       setIsTranslating(false);
       return;
@@ -77,7 +66,6 @@ const App = () => {
         const data = await res.json();
         if (data && data[0] && data[0][0] && data[0][0][0]) {
           const translated = data[0][0][0];
-          // Auto-convert if the translated text is significantly different (to avoid loops)
           if (translated !== query) {
             setQuery(translated);
           }
@@ -87,7 +75,7 @@ const App = () => {
       } finally {
         setIsTranslating(false);
       }
-    }, 800); // Debounce to allow user to finish a phrase
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [query]);
@@ -134,6 +122,10 @@ const App = () => {
     if (selectedChapter) list = list.filter(k => Math.ceil(k.Number / 10) === selectedChapter);
     return list.filter(k => k.Number.toString().includes(searchQuery) || (k.Line1 && k.Line1.includes(searchQuery)));
   }, [kuralData, searchQuery, selectedPaal, selectedChapter]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   return (
     <div className="scholarly-app">
@@ -233,37 +225,59 @@ const App = () => {
             </motion.div>
           ) : (
             <motion.div key="history" className="history-view" initial={{opacity:0}} animate={{opacity:1}}>
-               <div className="history-content-scroll">
-                  <div className="h-hero-section-clean">
-                    <h2>திருவள்ளுவர் வரலாறு</h2>
-                    <p>உலகப் பொதுமறையாய் திகழும் திருக்குறளின் அருமை மற்றும் அதன் வரலாற்றுப் பின்னணி.</p>
-                  </div>
-                  
-                  <div className="history-visual-grid">
-                     <div className="h-story-card">
-                        <img src="statue.png" alt="திருவள்ளுவர் சிலை" />
-                        <div className="h-card-info">
-                           <h3>தெய்வப்புலவர் திருவள்ளுவர்</h3>
-                           <p>சுமார் 2,000 ஆண்டுகளுக்கு முன்னால் வாழ்ந்த தெய்வப்புலவர் திருவள்ளுவர் அவர்களால் படைக்கப்பட்டது.</p>
-                        </div>
-                     </div>
+               <div className="history-hero">
+                  <motion.h2 initial={{y:20}} animate={{y:0}} className="h-title">திருக்குறள்: ஒரு மாபெரும் வரலாறு</motion.h2>
+                  <p className="h-subtitle">2000 ஆண்டுகால ஞானம், உலகப் பொதுமறையின் மகத்துவம்.</p>
+               </div>
 
-                     <div className="h-story-card">
+               <div className="history-content-sections">
+                  <section className="h-section alternate">
+                     <div className="h-text-block">
+                        <span className="h-label">படைப்பாளர்</span>
+                        <h3>தெய்வப்புலவர் திருவள்ளுவர்</h3>
+                        <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு ஒப்பற்ற ஞானி. இவரது பிறப்பு மற்றும் சமயம் குறித்து பல விவாதங்கள் இருந்தாலும், இவரது கருத்துக்கள் சாதி, மதம், இனம் கடந்து அனைவருக்குமான பொது நீதியாகத் திகழ்கின்றன.</p>
+                        <ul className="h-list">
+                           <li><strong>காலம்:</strong> கி.மு. 31 (திருவள்ளுவர் ஆண்டு)</li>
+                           <li><strong>பட்டங்கள்:</strong> நாயனார், தேவர், முதற்பாவலர், தெய்வப்புலவர்.</li>
+                        </ul>
+                     </div>
+                     <div className="h-image-wrap">
+                        <img src="statue.png" alt="திருவள்ளுவர்" />
+                     </div>
+                  </section>
+
+                  <section className="h-section">
+                     <div className="h-image-wrap">
                         <img src="manuscript.png" alt="ஓலைச்சுவடி" />
-                        <div className="h-card-info">
-                           <h3>ஓலைச்சுவடி பாதுகாப்பு</h3>
-                           <p>திருக்குறள் பல நூற்றாண்டுகளாக ஓலைச்சுவடிகளிலேயே பாதுகாக்கப்பட்டு வந்தது. இது தமிழர்களின் அறிவாற்றலுக்குச் சான்றாகும்.</p>
+                     </div>
+                     <div className="h-text-block">
+                        <span className="h-label">நூல் அமைப்பு</span>
+                        <h3>முப்பாலில் அடங்கிய ஞானம்</h3>
+                        <p>திருக்குறள் 133 அதிகாரங்களையும், அதிகாரத்திற்கு 10 குறள்கள் வீதம் 1330 குறட்பாக்களையும் கொண்டுள்ளது. இது அறம், பொருள், இன்பம் என்ற மூன்று பெரும் பிரிவுகளாக (முப்பால்) பிரிக்கப்பட்டுள்ளது.</p>
+                        <div className="h-stats-grid">
+                           <div className="h-stat"><span>133</span> அத்தியாயங்கள்</div>
+                           <div className="h-stat"><span>1330</span> குறட்பாக்கள்</div>
+                           <div className="h-stat"><span>7</span> சொற்கள்</div>
                         </div>
                      </div>
+                  </section>
 
-                     <div className="h-story-card">
-                        <img src="translations.png" alt="உலகளாவிய தாக்கம்" />
-                        <div className="h-card-info">
-                           <h3>அமைப்பு மற்றும் சிறப்புகள்</h3>
-                           <p>133 அதிகாரங்கள், 1330 குறட்பாக்கள். ஒவ்வொன்றும் ஏழு சொற்களால் ஆன ஈரடிப் பாடல்கள். உலக மொழிகள் பலவற்றிலும் இது மொழிபெயர்க்கப்பட்டுள்ளது.</p>
-                        </div>
+                  <section className="h-section alternate">
+                     <div className="h-text-block">
+                        <span className="h-label">உலகளாவியது</span>
+                        <h3>உலகப் பொதுமறை</h3>
+                        <p>திருக்குறள் பைபிள் மற்றும் குரானுக்கு அடுத்தபடியாக உலகிலேயே அதிக மொழிகளில் (80-க்கும் மேற்பட்ட மொழிகள்) மொழிபெயர்க்கப்பட்ட நூலாகும். இது மனித வாழ்வின் அனைத்து பரிமாணங்களையும் - அரசியல், பொருளாதாரம், குடும்பம், காதல் - தெளிவாக விளக்குகிறது.</p>
+                        <p className="h-quote">"திருக்குறள் என்பது மனிதன் மனிதனாக வாழ, மனிதன் மனிதனுக்குச் சொன்ன உன்னத நெறி."</p>
                      </div>
-                  </div>
+                     <div className="h-image-wrap">
+                        <img src="translations.png" alt="உலகத்தரம்" />
+                     </div>
+                  </section>
+               </div>
+
+               <div className="h-legacy-footer">
+                  <h3>காலம் கடந்த வழிகாட்டி</h3>
+                  <p>இன்று நவீன செயற்கை நுண்ணறிவு யுகத்திலும், திருக்குறள் நமக்கு வாழ்வியல் தீர்வுகளை வழங்குகிறது. SRM ஆய்வு மையம் இந்த டிஜிட்டல் தளத்தின் மூலம் திருவள்ளுவரின் புகழை உலகெங்கும் கொண்டு செல்கிறது.</p>
                </div>
             </motion.div>
           )}
@@ -301,7 +315,7 @@ const App = () => {
           </div>
         )}
       </AnimatePresence>
-
+      
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
         
@@ -330,7 +344,6 @@ const App = () => {
         }
         .header-nav-tabs button.active { background: var(--primary); color: white; }
         .header-nav-tabs button:hover:not(.active) { background: #f1f5f9; color: var(--text); }
-        .config-btn { padding: 10px !important; }
 
         .content-container { flex: 1; padding: 3rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
@@ -342,7 +355,6 @@ const App = () => {
         .chat-bubble { max-width: 80%; padding: 1.5rem; background: var(--white); border-radius: 1.5rem; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .user .chat-bubble { background: var(--primary); color: white; border: none; }
         .bubble-meta { font-size: 0.75rem; font-weight: 900; color: var(--muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        .user .bubble-meta { color: rgba(255,255,255,0.6); }
         
         .bubble-text p { margin: 0 0 1rem; line-height: 1.6; }
         .tamil-k-header { color: var(--primary); font-weight: 900; margin: 1.5rem 0 0.5rem; border-left: 4px solid var(--primary); padding-left: 1rem; }
@@ -381,29 +393,48 @@ const App = () => {
         .kural-item-card p { margin: 0; font-weight: 900; font-size: 1.3rem; }
         .k-header-row { font-size: 0.75rem; font-weight: 950; color: var(--primary); margin-bottom: 0.75rem; opacity: 0.6; }
 
-        /* Modals */
-        .tamil-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-        .tamil-modal { background: white; padding: 4rem; border-radius: 3rem; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
-        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .m-badge { background: #fee2e2; color: var(--primary); padding: 0.5rem 1.5rem; border-radius: 2rem; font-weight: 950; }
-        .m-verse-box h3 { font-size: 2rem; margin: 0; line-height: 1.3; font-weight: 950; }
-        .m-explanations-stack { margin-top: 3rem; display: flex; flex-direction: column; gap: 2rem; }
-        .e-block h5 { margin: 0 0 0.5rem; color: var(--primary); font-weight: 900; font-size: 1rem; }
-        .e-block p { margin: 0; font-size: 1.2rem; line-height: 1.6; font-weight: 600; color: #475569; }
-        .e-block.en { background: #f8fafc; padding: 2rem; border-radius: 1.5rem; }
+        /* Modals - Enlarged & Enhanced */
+        .tamil-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.7); backdrop-filter: blur(12px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        .tamil-modal { background: white; padding: 4rem 5rem; border-radius: 3.5rem; width: 100%; max-width: 1000px; max-height: 92vh; overflow-y: auto; box-shadow: 0 30px 60px rgba(0,0,0,0.2); }
+        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
+        .m-badge { background: #fee2e2; color: var(--primary); padding: 0.75rem 2rem; border-radius: 2rem; font-weight: 950; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; }
+        .m-verse-box { background: #fdf5f2; padding: 3rem; border-radius: 2.5rem; margin-bottom: 3.5rem; border: 1.5px solid #fed7aa; }
+        .m-verse-box h3 { font-size: 2.6rem; margin: 0; line-height: 1.4; font-weight: 950; color: #431407; }
+        .m-explanations-stack { display: flex; flex-direction: column; gap: 2.5rem; }
+        .e-block h5 { margin: 0 0 0.8rem; color: var(--primary); font-weight: 900; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .e-block p { margin: 0; font-size: 1.4rem; line-height: 1.7; font-weight: 700; color: #1e293b; }
+        .e-block.en { background: #f8fafc; padding: 2.5rem; border-radius: 2rem; border-left: 6px solid var(--primary); }
+        .e-block.en p { color: #475569; font-style: italic; font-weight: 800; }
 
-        /* History */
-        .h-hero-section h2 { font-size: 1.8rem; border-bottom: 2px solid var(--primary); display: inline-block; margin-bottom: 2rem; }
-        .h-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-        .h-box { padding: 2rem; border: 1px solid var(--border); border-radius: 1.5rem; background: white; }
-        .h-box h3 { margin-top: 0; color: var(--primary); }
-        .h-box p { font-size: 1.1rem; line-height: 1.7; color: #475569; }
+        /* History - Premium Museum Layout */
+        .history-view { max-width: 1100px; margin: 0 auto; width: 100%; }
+        .history-hero { text-align: center; padding: 4rem 0; margin-bottom: 4rem; border-bottom: 2px solid var(--border); }
+        .h-title { font-size: 3rem; font-weight: 950; color: var(--primary); margin: 0 0 1rem; }
+        .h-subtitle { font-size: 1.2rem; color: var(--muted); font-weight: 800; }
 
-        .settings-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2500; display: flex; align-items: center; justify-content: center; }
-        .settings-modal { background: white; padding: 3rem; border-radius: 2rem; width: 400px; }
-        .set-field label { display: block; font-weight: 900; margin-bottom: 0.5rem; }
-        .set-field input { width: 100%; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--border); margin-bottom: 2rem; }
-        .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 1rem; border-radius: 1rem; font-weight: 900; cursor: pointer; }
+        .h-section { display: flex; align-items: center; gap: 5rem; padding: 6rem 0; border-bottom: 1px solid #f1f5f9; }
+        .h-section.alternate { flex-direction: row-reverse; }
+        .h-text-block { flex: 1; }
+        .h-image-wrap { flex: 1; border-radius: 3rem; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: 0.5s; }
+        .h-image-wrap:hover { transform: scale(1.02); }
+        .h-image-wrap img { width: 100%; height: 500px; object-fit: cover; }
+
+        .h-label { display: block; font-size: 0.75rem; font-weight: 950; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .h-text-block h3 { font-size: 2.5rem; font-weight: 950; margin: 0 0 2rem; color: #0f172a; }
+        .h-text-block p { font-size: 1.25rem; line-height: 1.8; color: #475569; margin-bottom: 2rem; font-weight: 600; }
+        .h-list { list-style: none; padding: 0; margin: 0; }
+        .h-list li { font-size: 1.1rem; font-weight: 800; color: #334155; margin-bottom: 0.75rem; display: flex; gap: 1rem; align-items: center; }
+        .h-list li::before { content: '•'; color: var(--primary); font-size: 2rem; }
+
+        .h-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .h-stat { background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; text-align: center; font-weight: 900; color: #1e293b; font-size: 0.9rem; border: 1px solid #e2e8f0; }
+        .h-stat span { display: block; font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
+
+        .h-quote { border-left: 8px solid var(--primary); padding: 2rem 3rem; background: #fff7ed; border-radius: 0 2rem 2rem 0; font-size: 1.5rem; font-weight: 900; color: #7c2d12; font-style: italic; }
+
+        .h-legacy-footer { text-align: center; padding: 8rem 4rem; background: #fafaf9; border-radius: 4rem; margin-top: 6rem; }
+        .h-legacy-footer h3 { font-size: 2rem; font-weight: 950; margin-bottom: 1.5rem; color: var(--primary); }
+        .h-legacy-footer p { max-width: 800px; margin: 0 auto; line-height: 1.8; color: #64748b; font-weight: 700; }
 
         .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
@@ -412,37 +443,6 @@ const App = () => {
         .p-label { font-size: 0.85rem; font-weight: 900; color: #92400e; margin-bottom: 0.75rem; }
         .p-track { height: 8px; background: #fef3c7; border-radius: 10px; overflow: hidden; }
         .p-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
-
-        /* Translation Hint Styles */
-        .translation-hint {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          background: #f0fdf4;
-          border: 1px solid #dcfce7;
-          border-radius: 1rem;
-          padding: 0.6rem 1.2rem;
-          margin-bottom: 0.75rem;
-          font-size: 0.85rem;
-          color: #166534;
-          cursor: pointer;
-          transition: 0.2s;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-        .translation-hint:hover {
-          background: #dcfce7;
-          transform: translateY(-2px);
-        }
-        .sparkle-icon { color: #f59e0b; }
-        
-        .mini-loader {
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: white;
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
-        }
 
         .auto-trans-status {
           font-size: 0.7rem;
@@ -454,32 +454,21 @@ const App = () => {
           letter-spacing: 0.1em;
         }
 
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* History Enhancements */
-        .history-visual-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
-        .h-story-card { background: white; border-radius: 1.5rem; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        .h-story-card img { width: 100%; height: 250px; object-fit: cover; }
-        .h-card-info { padding: 1.5rem; }
-        .h-card-info h3 { margin: 0 0 0.75rem; color: var(--primary); font-size: 1.25rem; }
-        .h-card-info p { margin: 0; font-size: 1rem; line-height: 1.6; color: var(--muted); font-weight: 600; }
-
-        /* Mobile Friendliness */
         @media (max-width: 768px) {
           .main-header { padding: 1.5rem 1rem; }
-          .header-top-row { gap: 1rem; flex-direction: column; align-items: center; text-align: center; }
-          .srm-logo-top { height: 45px; }
-          .main-title { font-size: 1.3rem; }
-          .header-nav-tabs { width: 100%; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-          .header-nav-tabs button { padding: 0.5rem 0.75rem; font-size: 0.8rem; }
+          .header-top-row { flex-direction: column; text-align: center; }
           .content-container { padding: 1.5rem 1rem; }
-          .chat-window { height: auto; min-height: 400px; }
-          .chat-bubble { max-width: 95%; }
           .paal-cards { grid-template-columns: 1fr; }
-          .chapter-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-          .kural-item-card p { font-size: 1.1rem; }
-          .tamil-modal { padding: 2rem; border-radius: 2rem; width: 95%; }
-          .m-verse-box h3 { font-size: 1.5rem; }
+          .tamil-modal { padding: 2.5rem; border-radius: 2.5rem; width: 98%; }
+          .m-verse-box h3 { font-size: 1.6rem; }
+          .h-title { font-size: 2rem; }
+          .h-section { flex-direction: column !important; gap: 3rem; padding: 4rem 0; }
+          .h-image-wrap img { height: 300px; }
+          .h-text-block h3 { font-size: 1.8rem; }
+          .h-stats-grid { grid-template-columns: 1fr; }
         }
       `}} />
     </div>
