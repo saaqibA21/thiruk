@@ -50,6 +50,8 @@ const App = () => {
     loadData();
   }, [apiKey]);
 
+  const lastTranslatedRef = useRef('');
+
   useEffect(() => {
     if (!query.trim()) return;
     const hasEnglish = /[a-z]{2,}/i.test(query);
@@ -58,15 +60,23 @@ const App = () => {
       return;
     }
 
+    const currentQuery = query;
     const timer = setTimeout(async () => {
+      // Don't translate if the user has already moved on significantly
+      if (currentQuery !== query) return;
+
       setIsTranslating(true);
       try {
         const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
         const res = await fetch(url);
         const data = await res.json();
-        if (data && data[0] && data[0][0] && data[0][0][0]) {
-          const translated = data[0][0][0];
-          if (translated !== query) {
+        
+        if (data && data[0]) {
+          // Merge multiple translation segments if Google splits the sentence
+          const translated = data[0].map(x => x[0]).join('');
+          
+          if (translated && translated !== query && query === currentQuery) {
+            lastTranslatedRef.current = translated;
             setQuery(translated);
           }
         }
@@ -75,7 +85,7 @@ const App = () => {
       } finally {
         setIsTranslating(false);
       }
-    }, 800);
+    }, 1000); // 1s debounce for better typing experience
 
     return () => clearTimeout(timer);
   }, [query]);
@@ -215,8 +225,8 @@ const App = () => {
                        {filteredKurals.map(k => (
                          <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
                             <div className="k-header-row">குறள் எண்: {k.Number}</div>
-                            <p>{k.Line1}</p>
-                            <p>{k.Line2}</p>
+                            <p className="kural-line-1">{k.Line1}</p>
+                            <p className="kural-line-2">{k.Line2}</p>
                          </div>
                        ))}
                     </div>
