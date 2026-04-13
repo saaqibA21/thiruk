@@ -236,38 +236,41 @@ const App = () => {
                ) : activeTab === 'list' ? (
                   <motion.div key="list" className="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                      {!selectedPaal ? (
-                        <div className="paal-cards">
-                           <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> <h3>அறத்துப்பால்</h3> <p>அறநெறிகள்</p> </div>
-                           <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
-                           <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
-                        </div>
-
-                        <div className="library-resource-section">
-                           <h3 className="res-title">கல்வி மற்றும் ஆய்வு ஆதாரங்கள் (Resources)</h3>
-                           <div className="res-grid-premium">
-                              <a href="https://www.tamildigitallibrary.in/book-detail?id=jZY9lKy2kZpc7979ITXlLyeYkZyc" target="_blank" rel="noreferrer" className="res-card-v2">
-                                 <Database className="res-ico" size={24} />
-                                 <div className="res-card-text">
-                                    <strong>தமிழ் டிஜிட்டல் நூலகம்</strong>
-                                    <span>அரிய ஓலைச்சுவடி பதிப்புகள் (PDF)</span>
-                                 </div>
-                              </a>
-                              <a href="https://archive.org/details/thesacredkurals00popeuoft" target="_blank" rel="noreferrer" className="res-card-v2">
-                                 <Feather className="res-ico" size={24} />
-                                 <div className="res-card-text">
-                                    <strong>G.U. Pope Translation</strong>
-                                    <span>Classic English verse (Internet Archive)</span>
-                                 </div>
-                              </a>
-                              <a href="http://www.projectmadurai.org/pm_etexts/utf8/pmutf80001.html" target="_blank" rel="noreferrer" className="res-card-v2">
-                                 <Globe className="res-ico" size={24} />
-                                 <div className="res-card-text">
-                                    <strong>புராஜெக்ட் மதுரை</strong>
-                                    <span>மின்னணு தமிழ் இலக்கியத் தொகுப்பு</span>
-                                 </div>
-                              </a>
+                        <>
+                           <div className="library-resource-header-box">
+                              <h3 className="res-title-main"><BookOpen size={20} /> டிஜிட்டல் ஆராய்ச்சி நூலகம் / Research Archives</h3>
+                              <div className="res-grid-premium">
+                                 <a href="https://www.tamildigitallibrary.in/book-detail?id=jZY9lKy2kZpc7979ITXlLyeYkZyc" target="_blank" rel="noreferrer" className="res-card-v2">
+                                    <Database className="res-ico" size={24} />
+                                    <div className="res-card-text">
+                                       <strong>தமிழ் டிஜிட்டல் நூலகம்</strong>
+                                       <span>அரிய ஓலைச்சுவடி பதிப்புகள் (PDF)</span>
+                                    </div>
+                                 </a>
+                                 <a href="https://archive.org/details/thesacredkurals00popeuoft" target="_blank" rel="noreferrer" className="res-card-v2">
+                                    <Feather className="res-ico" size={24} />
+                                    <div className="res-card-text">
+                                       <strong>G.U. Pope Translation</strong>
+                                       <span>Classic English verse (Internet Archive)</span>
+                                    </div>
+                                 </a>
+                                 <a href="http://www.projectmadurai.org/pm_etexts/utf8/pmutf80001.html" target="_blank" rel="noreferrer" className="res-card-v2">
+                                    <Globe className="res-ico" size={24} />
+                                    <div className="res-card-text">
+                                       <strong>புராஜெக்ட் மதுரை</strong>
+                                       <span>மின்னணு தமிழ் இலக்கியத் தொகுப்பு</span>
+                                    </div>
+                                 </a>
+                              </div>
                            </div>
-                        </div>
+
+                           <div className="library-section-title">மூல நூல்கள் (Main Sections)</div>
+                           <div className="paal-cards">
+                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> <h3>அறத்துப்பால்</h3> <p>அறநெறிகள்</p> </div>
+                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
+                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
+                           </div>
+                        </>
                      ) : !selectedChapter ? (
                         <div className="chapter-view">
                            <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> பால் தெரிவு </button>
@@ -604,8 +607,10 @@ const App = () => {
         .paal-card h3 { font-size: 1.4rem; margin: 0 0 0.5rem; }
         .paal-card p { margin: 0; font-weight: 700; color: var(--muted); font-size: 0.9rem; }
 
-        .library-resource-section { margin-top: 4rem; padding-top: 3rem; border-top: 2px dashed var(--border); }
-        .res-title { font-size: 1.25rem; font-weight: 950; margin-bottom: 2rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+        .library-resource-header-box { margin-bottom: 3rem; background: #f8fafc; padding: 2.5rem; border-radius: 2rem; border: 1px solid var(--border); }
+        .res-title-main { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 950; margin-bottom: 2rem; color: var(--primary); }
+        .library-section-title { font-size: 1.1rem; font-weight: 950; color: #64748b; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
+
         .res-grid-premium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
         .res-card-v2 { 
            display: flex; align-items: center; gap: 1.25rem; background: white; 
@@ -860,7 +865,8 @@ const App = () => {
           .h-section-header-center h3 { font-size: 1.7rem; }
           
           .res-grid-premium { grid-template-columns: 1fr; }
-          .library-resource-section { padding-top: 2rem; margin-top: 2.5rem; }
+          .library-resource-header-box { padding: 1.5rem; margin-bottom: 2rem; }
+          .library-section-title { font-size: 0.9rem; }
           
           .h-pillar-card { padding: 2rem 1.5rem; }
           .h-v-timeline { padding-left: 1.5rem; }
