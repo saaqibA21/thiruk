@@ -140,19 +140,21 @@ const App = () => {
    return (
       <div className="scholarly-app">
          <header className="main-header">
-            <div className="header-top-row">
-               <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
-               <div className="app-title-group">
-                  <h1 className="main-title">திருக்குறள் செயற்கை நுண்ணறிவு நிபுணர்</h1>
-                  <p className="sub-title">SRM உயர்கல்வி நிறுவனம் • தமிழ் ஆய்வு மையம்</p>
-               </div>
-            </div>
-            <nav className="header-nav-tabs">
-               <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>கேள்வி-பதில்</span> </button>
-               <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூல்நிலையம்</span> </button>
-               <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாற்றுப் பின்னணி</span> </button>
-            </nav>
-         </header>
+        <div className="header-top-row">
+           <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
+           <div className="app-title-group">
+              <h1 className="main-title">திருக்குறள் AI நிபுணர்</h1>
+              <p className="sub-title">SRM உயர்கல்வி நிறுவனம்</p>
+           </div>
+        </div>
+        <div className="nav-scroll-wrapper">
+          <nav className="header-nav-tabs">
+            <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>கேள்வி</span> </button>
+            <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
+            <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
+          </nav>
+        </div>
+      </header>
 
          <main className="content-container">
             <AnimatePresence mode="wait">
@@ -476,11 +478,12 @@ const App = () => {
         }
 
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; width: 100%; }
         h1, h2, h3, h4, .app-title-group { font-family: 'Outfit', sans-serif; }
 
-        .scholarly-app { min-height: 100vh; display: flex; flex-direction: column; }
-        .main-header { padding: 1rem 4rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .scholarly-app { min-height: 100vh; display: flex; flex-direction: column; width: 100%; overflow-x: hidden; }
+        .main-header { padding: 1rem 4rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); width: 100%; }
+        .nav-scroll-wrapper { width: 100%; }
         .header-top-row { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
         .srm-logo-top { height: 45px; object-fit: contain; }
         .main-title { font-size: 1.4rem; margin: 0; color: var(--primary); font-weight: 950; letter-spacing: -0.02em; }
@@ -549,7 +552,7 @@ const App = () => {
         .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: sticky; top: -2rem; background: white; padding-top: 1rem; padding-bottom: 1rem; z-index: 10; border-bottom: 1px solid #f1f5f9; }
         .m-badge { background: #fff7ed; color: var(--primary); padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 950; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; border: 1px solid #ffedd5; }
         .m-verse-box { background: #fffaf7; padding: 2.5rem 2rem; border-radius: 2rem; margin-bottom: 2.5rem; border: 1px solid #ffedd5; text-align: center; }
-        .m-verse-box h3 { font-size: 1.8rem; margin: 0; line-height: 1.6; font-weight: 950; color: #431407; white-space: nowrap; }
+        .m-verse-box h3 { font-size: 1.8rem; margin: 0; line-height: 1.6; font-weight: 950; color: #431407; }
         .m-verse-box h3:first-child { margin-bottom: 0.5rem; }
         .m-explanations-stack { display: flex; flex-direction: column; gap: 2rem; }
         .e-block h5 { margin: 0 0 0.6rem; color: var(--primary); font-weight: 950; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
@@ -727,17 +730,51 @@ const App = () => {
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
-          .main-header { padding: 1.5rem 1rem; }
-          .header-top-row { flex-direction: column; text-align: center; }
-          .content-container { padding: 1.5rem 1rem; }
-          .paal-cards { grid-template-columns: 1fr; }
-          .tamil-modal { padding: 2.5rem; border-radius: 2.5rem; width: 98%; }
-          .m-verse-box h3 { font-size: 1.6rem; }
-          .h-title { font-size: 2rem; }
-          .h-section { flex-direction: column !important; gap: 3rem; padding: 4rem 0; }
-          .h-image-wrap img { height: 300px; }
-          .h-text-block h3 { font-size: 1.8rem; }
-          .h-stats-grid { grid-template-columns: 1fr; }
+          .main-header { padding: 1rem; }
+          .header-top-row { gap: 1rem; margin-bottom: 1rem; }
+          .srm-logo-top { width: 50px; height: 50px; }
+          .main-title { font-size: 1.2rem; }
+          .sub-title { font-size: 0.7rem; }
+          
+          .nav-scroll-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -1rem; padding: 0 1rem; }
+          .header-nav-tabs { width: max-content; gap: 0.5rem; }
+          .header-nav-tabs button { padding: 0.6rem 1rem; font-size: 0.8rem; }
+          
+          .content-container { padding: 1rem; }
+          .chat-view { height: calc(100vh - 180px); }
+          .chat-window { gap: 1rem; }
+          .chat-bubble { max-width: 90%; padding: 1rem; }
+          
+          .paal-cards { grid-template-columns: 1fr; gap: 1rem; }
+          .paal-card { padding: 1.5rem; }
+          
+          .tamil-modal { padding: 1.5rem; border-radius: 1.5rem; width: 95%; max-height: 85vh; }
+          .m-verse-box { padding: 1.5rem 1rem; margin-bottom: 1.5rem; }
+          .m-verse-box h3 { font-size: 1.3rem; }
+          .e-block p { font-size: 1.1rem; }
+          .e-block.en p { font-size: 1rem; }
+          
+          .h-title { font-size: 1.8rem; }
+          .h-stat-num { font-size: 1.8rem; }
+          .h-hero-stat-card { min-width: 120px; padding: 1rem; }
+          .h-content-box { padding: 2rem 1.5rem; }
+          .h-content-box h3 { font-size: 1.6rem; }
+          .h-info-grid { grid-template-columns: 1fr; gap: 1rem; }
+          .h-pillars-section { padding: 3rem 0; }
+          .h-section-header-center h3 { font-size: 1.7rem; }
+          .h-pillar-card { padding: 2rem 1.5rem; }
+          .h-v-timeline { padding-left: 1.5rem; }
+          .h-tl-year { position: static; text-align: left; margin-bottom: 0.5rem; }
+          .h-tl-marker { left: -25px; }
+          .h-manuscript-feature { padding: 2rem; border-radius: 2rem; }
+          .h-img-glow img { height: 250px; }
+          .h-feature-text h3 { font-size: 1.6rem; }
+          .h-feature-text p { font-size: 1rem; }
+          .h-mega-quote { padding: 2rem; border-radius: 2rem; }
+          .h-mega-quote blockquote { font-size: 1.3rem; }
+          .h-footer-premium { padding: 4rem 2rem; border-radius: 2rem; }
+          .h-footer-premium h3 { font-size: 1.6rem; }
+          .h-footer-premium p { font-size: 1rem; }
         }
       `}} />
       </div>
