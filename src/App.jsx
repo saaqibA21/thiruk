@@ -189,9 +189,18 @@ const App = () => {
                                  <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
                                  <div className="bubble-text">{parseFormattedContent(m.content)}</div>
                                  {m.sources && m.sources.length > 0 && (
-                                    <div className="kural-source-tags">
+                                    <div className="kural-source-cards">
                                        {m.sources.map((s, idx) => (
-                                          <span key={idx} onClick={() => setSelectedKural(s)} className="k-src-tag">காண்க: குறள் {s.Number}</span>
+                                          <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
+                                             <div className="k-mini-info">
+                                                <span className="k-mini-num">குறள் {s.Number}:</span>
+                                                <div className="k-mini-lines">
+                                                   <p>{s.Line1}</p>
+                                                   <p>{s.Line2}</p>
+                                                </div>
+                                             </div>
+                                             <ChevronRight size={20} className="k-mini-arrow" />
+                                          </div>
                                        ))}
                                     </div>
                                  )}
@@ -530,8 +539,17 @@ const App = () => {
         .tamil-verse { font-weight: 950; font-size: 1.1rem; background: #f8fafc; padding: 1rem; border-radius: 1rem; color: #334155; }
         .tamil-exp { color: #475569; margin-bottom: 1rem; font-weight: 600; line-height: 1.5; }
 
-        .kural-source-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem; }
-        .k-src-tag { font-size: 0.7rem; font-weight: 900; color: var(--primary); background: #fff7ed; padding: 0.4rem 0.8rem; border-radius: 2rem; cursor: pointer; }
+        .kural-source-cards { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
+        .kural-mini-card { 
+           display: flex; align-items: center; justify-content: space-between; 
+           background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 1.25rem; 
+           padding: 1.25rem 1.5rem; cursor: pointer; transition: 0.3s; 
+        }
+        .kural-mini-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #7dd3fc; }
+        .k-mini-info { flex: 1; }
+        .k-mini-num { display: block; font-size: 0.75rem; font-weight: 900; color: #0369a1; margin-bottom: 0.5rem; opacity: 0.8; }
+        .k-mini-lines p { margin: 0; font-size: 1.15rem; font-weight: 950; color: #0c4a6e; line-height: 1.4; }
+        .k-mini-arrow { color: #0369a1; opacity: 0.5; margin-left: 1rem; }
 
         .chat-input-row { padding-top: 1rem; }
         .tamil-input-box { display: flex; background: var(--white); padding: 0.4rem; border: 2px solid var(--border); border-radius: 3rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
