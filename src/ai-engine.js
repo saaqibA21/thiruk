@@ -102,6 +102,26 @@ export class KuralAI {
                     }
                 }
 
+                // Concept/Theme Mapping for Semantic Boosting
+                const themes = {
+                    love: { range: [1081, 1330], keywords: ['love', 'passion', 'desire', 'kaadhal', 'inbam', 'காதல்', 'இன்பம்'] },
+                    friendship: { range: [781, 830], keywords: ['friend', 'friendship', 'natpu', 'thozha', 'நட்பு', 'தோழமை'] },
+                    education: { range: [391, 430], keywords: ['education', 'learning', 'knowledge', 'kalvi', 'கல்வி', 'அறிவு'] },
+                    rain: { range: [11, 20], keywords: ['rain', 'nature', 'vaan', 'வான்', 'மழை'] },
+                    anger: { range: [301, 310], keywords: ['anger', 'vegula', 'கோபம்', 'வெகுளாமை'] },
+                    virtue: { range: [1, 380], keywords: ['virtue', 'aram', 'dharma', 'அறம்'] },
+                    wealth: { range: [381, 1080], keywords: ['wealth', 'money', 'politics', 'porul', 'பொருள்', 'செல்வம்'] }
+                };
+
+                // Apply Thematic Boost if query matches a concept
+                Object.values(themes).forEach(t => {
+                    if (t.keywords.some(kw => cleanQuery.includes(kw))) {
+                        if (k.Number >= t.range[0] && k.Number <= t.range[1]) {
+                            score += 150; // Strong semantic boost
+                        }
+                    }
+                });
+
                 // Filter out common stop-words from the search terms for keyword matching
                 const searchTerms = terms.filter(t => !stopWords.some(sw => t === sw || sw.includes(t)));
 
@@ -113,23 +133,17 @@ export class KuralAI {
 
                 // Keyword matches (only if not already rejected by structural filter)
                 if (!isStructural || hasStructuralMatch) {
-                    // Use searchTerms (filtered) for more accurate keyword scoring
                     const targetTerms = searchTerms.length > 0 ? searchTerms : terms;
-                    
                     targetTerms.forEach(t => {
                         if (fullContent.includes(t)) {
                             score += 2;
-                            // Whole word match is much more reliable in Tamil/Tanglish
                             const tamilWordRegex = new RegExp(`(^|\\s)${t}(\\s|$)`, 'u');
-                            if (tamilWordRegex.test(fullContent)) score += 15; // Increased bonus
-                            
-                            // High priority poetic line match
+                            if (tamilWordRegex.test(fullContent)) score += 15;
                             if (k.Line1.toLowerCase().includes(t) || k.Line2.toLowerCase().includes(t)) score += 20;
                         }
                     });
                 }
 
-                // Number match (bypass structural filter for exact ID searches)
                 if (cleanQuery.includes(k.Number.toString())) score += 1000;
 
                 return { ...k, score };
