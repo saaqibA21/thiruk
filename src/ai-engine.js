@@ -102,6 +102,9 @@ export class KuralAI {
                     }
                 }
 
+                // Filter out common stop-words from the search terms for keyword matching
+                const searchTerms = terms.filter(t => !stopWords.some(sw => t === sw || sw.includes(t)));
+
                 // If a structural match was requested but not found for this kural, 
                 // we treat it as very low relevance unless it's a number match
                 if (isStructural && !hasStructuralMatch) {
@@ -110,12 +113,18 @@ export class KuralAI {
 
                 // Keyword matches (only if not already rejected by structural filter)
                 if (!isStructural || hasStructuralMatch) {
-                    terms.forEach(t => {
+                    // Use searchTerms (filtered) for more accurate keyword scoring
+                    const targetTerms = searchTerms.length > 0 ? searchTerms : terms;
+                    
+                    targetTerms.forEach(t => {
                         if (fullContent.includes(t)) {
                             score += 2;
+                            // Whole word match is much more reliable in Tamil/Tanglish
                             const tamilWordRegex = new RegExp(`(^|\\s)${t}(\\s|$)`, 'u');
-                            if (tamilWordRegex.test(fullContent)) score += 10;
-                            if (k.Line1.toLowerCase().includes(t) || k.Line2.toLowerCase().includes(t)) score += 15;
+                            if (tamilWordRegex.test(fullContent)) score += 15; // Increased bonus
+                            
+                            // High priority poetic line match
+                            if (k.Line1.toLowerCase().includes(t) || k.Line2.toLowerCase().includes(t)) score += 20;
                         }
                     });
                 }
@@ -125,7 +134,7 @@ export class KuralAI {
 
                 return { ...k, score };
             })
-            .filter(k => k.score > 1) 
+            .filter(k => k.score > 2) 
             .sort((a, b) => b.score - a.score)
             .slice(0, 10);
     }
