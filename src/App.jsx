@@ -597,14 +597,15 @@ const App = () => {
         .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: sticky; top: -2rem; background: white; padding-top: 1rem; padding-bottom: 1rem; z-index: 10; border-bottom: 1px solid #f1f5f9; }
         .m-badge { background: #fff7ed; color: var(--primary); padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 950; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; border: 1px solid #ffedd5; }
         .m-verse-box { 
-           background: #fffaf2; padding: 4.5rem 2rem; border-radius: 4rem; 
+           background: #fffaf2; padding: 4.5rem 5%; border-radius: 4rem; 
            margin-bottom: 3.5rem; border: 1.5px solid #fde68a; text-align: center; 
            box-shadow: inset 0 0 80px rgba(154,52,18,0.03), 0 20px 40px rgba(0,0,0,0.02); 
+           width: 100%; overflow: hidden;
         }
         .m-verse-box h3 { 
-           font-size: clamp(1.2rem, 4vw, 2.4rem); 
+           font-size: clamp(1.1rem, 3.2vw, 2.1rem); 
            margin: 0; line-height: 1.4; font-weight: 950; 
-           color: #431407; letter-spacing: -0.01em; 
+           color: #431407; letter-spacing: -0.02em; 
            white-space: nowrap;
         }
         .m-verse-box h3:first-child { margin-bottom: 2rem; }
