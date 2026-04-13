@@ -25,21 +25,31 @@ export class KuralAI {
         const cleanQuery = query.toLowerCase().trim();
         const terms = cleanQuery.split(/\s+/).filter(t => t.length > 1);
         
-        // Detection for structural constraints
-        const isEndsWith = cleanQuery.includes('முடியும்') || cleanQuery.includes('mudiyum') || cleanQuery.includes('ends with');
-        const isStartsWith = cleanQuery.includes('தொடங்கும்') || cleanQuery.includes('thodangum') || cleanQuery.includes('starts with');
+        // Detection for structural constraints (Tamil + Tanglish + English)
+        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்'];
+        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam'];
+        
+        const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
+        const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
+        const isStructural = isEndsWith || isStartsWith;
+        
+        // Words to ignore when picking the target search word
+        const stopWords = [...endKeywords, ...startKeywords, 'என்ற', 'சொல்லுடன்', 'சொல்லும்', 'சொல்', 'வார்த்தை', 'kural', 'குறள்', 'with', 'word', 'the', 'என்பது', 'என்றார்'];
         
         // Target word if structural constraint exists
         let targetWord = '';
-        if (isEndsWith || isStartsWith) {
-            // Pick the most significant word (usually the one before "mudiyum" or after "starts with")
-            // Simple heuristic: first word that isn't a command word
-            targetWord = terms.find(t => !['முடியும்', 'mudiyum', 'ends', 'with', 'தொடங்கும்', 'thodangum', 'starts', 'kural', 'குறள்'].includes(t));
+        if (isStructural) {
+            // Find the most likely target word (longest word that isn't a stopword/command)
+            targetWord = terms
+                .filter(t => !stopWords.some(sw => t === sw || sw.includes(t)))
+                .sort((a, b) => b.length - a.length)[0] || '';
         }
 
         return this.dataset
             .map(k => {
                 let score = 0;
+                let hasStructuralMatch = false;
+
                 const tamilContent = `${k.Line1} ${k.Line2} ${k.mv || ''} ${k.sp || ''} ${k.mk || ''} ${k.explanation || ''}`.toLowerCase();
                 const englishContent = `${k.Translation || ''} ${k.explanation || ''} ${k.couplet || ''}`.toLowerCase();
                 const tanglishContent = `${k.transliteration1 || ''} ${k.transliteration2 || ''}`.toLowerCase();
@@ -53,41 +63,69 @@ export class KuralAI {
                     const t1 = (k.transliteration1 || '').toLowerCase();
                     const t2 = (k.transliteration2 || '').toLowerCase();
 
-                    const cleanL1 = l1.replace(/[.,!?;:]/g, '').trim();
-                    const cleanL2 = l2.replace(/[.,!?;:]/g, '').trim();
-                    const cleanT1 = t1.replace(/[.,!?;:]/g, '').trim();
-                    const cleanT2 = t2.replace(/[.,!?;:]/g, '').trim();
+                    // Clean punctuation
+                    const cleanL1 = l1.replace(/[.,!?;:]/g, '');
+                    const cleanL2 = l2.replace(/[.,!?;:]/g, '');
+                    const cleanT1 = t1.replace(/[.,!?;:]/g, '');
+                    const cleanT2 = t2.replace(/[.,!?;:]/g, '');
+
+                    // Precise word-boundary check
+                    const wordsL1 = cleanL1.trim().split(/\s+/);
+                    const wordsL2 = cleanL2.trim().split(/\s+/);
+                    const wordsT1 = cleanT1.trim().split(/\s+/);
+                    const wordsT2 = cleanT2.trim().split(/\s+/);
 
                     if (isEndsWith) {
-                        if (cleanL2.endsWith(targetWord) || cleanT2.endsWith(targetWord)) score += 50;
-                        else if (cleanL2.includes(targetWord) || cleanT2.includes(targetWord)) score += 5;
+                        const lastWordL2 = wordsL2[wordsL2.length - 1];
+                        const lastWordT2 = wordsT2[wordsT2.length - 1];
+                        
+                        if (lastWordL2 === targetWord || lastWordT2 === targetWord) {
+                            score += 500;
+                            hasStructuralMatch = true;
+                        } else if (cleanL2.endsWith(targetWord) || cleanT2.endsWith(targetWord)) {
+                            score += 200;
+                            hasStructuralMatch = true;
+                        }
                     }
+                    
                     if (isStartsWith) {
-                        if (cleanL1.startsWith(targetWord) || cleanT1.startsWith(targetWord)) score += 50;
-                        else if (cleanL1.includes(targetWord) || cleanT1.includes(targetWord)) score += 5;
+                        const firstWordL1 = wordsL1[0];
+                        const firstWordT1 = wordsT1[0];
+                        
+                        if (firstWordL1 === targetWord || firstWordT1 === targetWord) {
+                            score += 500;
+                            hasStructuralMatch = true;
+                        } else if (cleanL1.startsWith(targetWord) || cleanT1.startsWith(targetWord)) {
+                            score += 200;
+                            hasStructuralMatch = true;
+                        }
                     }
                 }
 
-                // Keyword matches
-                terms.forEach(t => {
-                    if (fullContent.includes(t)) {
-                        score += 1;
-                        // Whole word bonus
-                        const regex = new RegExp(`\\b${t}\\b`, 'u');
-                        if (regex.test(fullContent)) score += 2;
-                        
-                        // Poetic line match
-                        if (k.Line1.toLowerCase().includes(t) || k.Line2.toLowerCase().includes(t)) score += 5;
-                        if (tanglishContent.includes(t)) score += 3;
-                    }
-                });
+                // If a structural match was requested but not found for this kural, 
+                // we treat it as very low relevance unless it's a number match
+                if (isStructural && !hasStructuralMatch) {
+                    score = 0; 
+                }
 
-                // Structural match (number)
-                if (cleanQuery.includes(k.Number.toString())) score += 100;
+                // Keyword matches (only if not already rejected by structural filter)
+                if (!isStructural || hasStructuralMatch) {
+                    terms.forEach(t => {
+                        if (fullContent.includes(t)) {
+                            score += 2;
+                            const tamilWordRegex = new RegExp(`(^|\\s)${t}(\\s|$)`, 'u');
+                            if (tamilWordRegex.test(fullContent)) score += 10;
+                            if (k.Line1.toLowerCase().includes(t) || k.Line2.toLowerCase().includes(t)) score += 15;
+                        }
+                    });
+                }
+
+                // Number match (bypass structural filter for exact ID searches)
+                if (cleanQuery.includes(k.Number.toString())) score += 1000;
 
                 return { ...k, score };
             })
-            .filter(k => k.score > 0)
+            .filter(k => k.score > 1) 
             .sort((a, b) => b.score - a.score)
             .slice(0, 10);
     }
