@@ -144,7 +144,19 @@ export class KuralAI {
                     });
                 }
 
-                if (cleanQuery.includes(k.Number.toString())) score += 1000;
+                // Strict Number Match (Isolation Mode)
+                const numberMatch = cleanQuery.match(/\b(\d+)\b/);
+                if (numberMatch) {
+                    const searchNum = parseInt(numberMatch[1]);
+                    if (k.Number === searchNum) {
+                        score += 5000; // Massive boost to isolate the kural
+                    } else if (isStructural || searchTerms.length > 0) {
+                        // If they searched "Kural 43 love", we still want love kurals
+                        // but if they just searched "43", we isolate.
+                    } else {
+                        score = 0; // Reject others if only a number was provided
+                    }
+                }
 
                 return { ...k, score };
             })

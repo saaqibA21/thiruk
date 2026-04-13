@@ -130,11 +130,27 @@ const App = () => {
          else if (selectedPaal === 'காமத்துப்பால்') list = list.filter(k => k.Number > 1080);
       }
       if (selectedChapter) list = list.filter(k => Math.ceil(k.Number / 10) === selectedChapter);
-      return list.filter(k => k.Number.toString().includes(searchQuery) || (k.Line1 && k.Line1.includes(searchQuery)));
+      
+      const search = searchQuery.trim();
+      const numMatch = search.match(/^\d+$/);
+      if (numMatch) {
+         return list.filter(k => k.Number === parseInt(numMatch[0]));
+      }
+      
+      return list.filter(k => (k.Line1 && k.Line1.includes(search)) || (k.Number.toString().includes(search)));
    }, [kuralData, searchQuery, selectedPaal, selectedChapter]);
 
    useEffect(() => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage && lastMessage.role === 'ai') {
+         // Scroll to the start of the bubble
+         const bubbles = document.querySelectorAll('.chat-bubble-container.ai');
+         if (bubbles.length > 0) {
+            bubbles[bubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+         }
+      } else {
+         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
    }, [messages]);
 
    return (
