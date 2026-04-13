@@ -26,8 +26,8 @@ export class KuralAI {
         const terms = cleanQuery.split(/\s+/).filter(t => t.length > 1);
         
         // Detection for structural constraints (Tamil + Tanglish + English)
-        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்'];
-        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam'];
+        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end'];
+        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam'];
         
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
