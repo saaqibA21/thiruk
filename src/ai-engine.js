@@ -223,17 +223,13 @@ ${context}`;
     fallback(question, matches) {
         if (matches.length === 0) return "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை. / Sorry, no matching Kurals were found.";
         
-        // For number searches, we provide a very minimal preview and rely on the source tag link
-        const isNumberSearch = /^\d+$/.test(question.trim()) || question.toLowerCase().includes('kural');
-        
-        const result = matches.map(p => {
-            if (isNumberSearch) {
-                return `**குறள் #${p.Number}:**\n"${p.Line1}\n${p.Line2}"\n\n**பொருள்:** ${p.mv || p.explanation}`;
-            } else {
-                return `குறள் #${p.Number}:\n"${p.Line1}\n${p.Line2}"\n\nவிளக்கம்: ${p.mv || p.explanation}`;
-            }
-        }).join('\n\n---\n\n');
+        const isNumberSearch = /^\d+$/.test(question.trim());
+        const count = matches.length;
 
-        return `நிபுணர் ஆய்வு / Scholarly Analysis:\n\n${result}`;
+        if (isNumberSearch) {
+           return `குறள் எண் ${matches[0].Number} கண்டறியப்பட்டது. முழு விவரங்களுக்குக் கீழே உள்ள கார்டைச் சொடுக்கவும்:`;
+        }
+
+        return `உங்கள் தேடலுக்குத் தொடர்புடைய ${count} சிறந்த குறள்கள் கண்டறியப்பட்டுள்ளன. விரிவான ஆய்வுக்குக் கீழே உள்ள குறள் கார்டுகளைப் பயன்படுத்தவும்:`;
     }
 }
