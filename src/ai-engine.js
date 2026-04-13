@@ -172,11 +172,12 @@ export class KuralAI {
     async ask(question) {
         const query = question.trim().toLowerCase();
         const topMatches = await this.search(query);
+        const isNumberOnly = /^\d+$/.test(query) || (topMatches.length === 1 && query.includes(topMatches[0].Number.toString()));
 
         // Security: Only call OpenAI if key is valid sk- format
         const isValidKey = this.openai && this.openai.apiKey && this.openai.apiKey.startsWith('sk-');
 
-        if (isValidKey) {
+        if (isValidKey && !isNumberOnly) {
             try {
                 const context = topMatches.map(k => 
                     `Verse #${k.Number}: ${k.Line1} ${k.Line2} 
@@ -190,13 +191,9 @@ English Meaning: ${k.explanation}`
 
                 const systemPrompt = `You are "Thirukkural Expert", a scholarly AI assistant.
 1. Strictly analyze the user's intent. If they ask for Kurals ending/starting with a word, prioritize those in your response.
-2. Respond in the language of the user. We support Tamil, English, and "Tanglish" (Tamil in English script). If the user uses Tanglish, reply in clear Tamil or Tanglish as appropriate.
-3. For translation requests, use the high-quality translations provided in the context (Translation/explanation fields). Ensure semantic accuracy between English and Tamil.
-4. Format your output elegantly: 
-   - Kural Number & Verse
-   - Scholarly Interpretation
-   - Practical Life Application
-5. If multiple Kurals match, explain the differences.
+2. Respond in the language of the user. Default to Tamil for scholarly analysis.
+3. For translation requests, use the high-quality translations provided.
+4. Format your output elegantly with verse and meaning.
 
 Context Data:
 ${context}`;
@@ -224,13 +221,15 @@ ${context}`;
 
     fallback(question, matches) {
         if (matches.length === 0) return "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை. / Sorry, no matching Kurals were found.";
-        const isTamil = /[\u0B80-\u0BFF]/.test(question);
+        
+        // For number searches, we provide a very minimal preview and rely on the source tag link
+        const isNumberSearch = /^\d+$/.test(question.trim()) || question.toLowerCase().includes('kural');
         
         const result = matches.map(p => {
-            if (isTamil) {
-                return `குறள் #${p.Number}:\n"${p.Line1}\n${p.Line2}"\n\nவிளக்கம்: ${p.mv || p.explanation}`;
+            if (isNumberSearch) {
+                return `**குறள் #${p.Number}:**\n"${p.Line1}\n${p.Line2}"\n\n**பொருள்:** ${p.mv || p.explanation}`;
             } else {
-                return `Kural #${p.Number}:\n"${p.Line1}\n${p.Line2}"\n\nMeaning: ${p.explanation}\nTransliteration: ${p.transliteration1} ${p.transliteration2}`;
+                return `குறள் #${p.Number}:\n"${p.Line1}\n${p.Line2}"\n\nவிளக்கம்: ${p.mv || p.explanation}`;
             }
         }).join('\n\n---\n\n');
 
