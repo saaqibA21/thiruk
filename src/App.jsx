@@ -472,7 +472,10 @@ const App = () => {
                <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
                   <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
                      <header className="m-header"> <span className="m-badge">குறள் {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
-                     <div className="m-verse-box"> <h3>{selectedKural.Line1}</h3> <h3>{selectedKural.Line2}</h3> </div>
+                     <div className="m-verse-box"> 
+                        <h3>{(`${selectedKural.Line1} ${selectedKural.Line2}`).split(/\s+/).slice(0, 4).join(' ')}</h3> 
+                        <h3>{(`${selectedKural.Line1} ${selectedKural.Line2}`).split(/\s+/).slice(4).join(' ')}</h3> 
+                     </div>
                      <div className="m-explanations-stack">
                         <div className="e-block"> <h5>மு. வரதராசனார் விளக்கம்</h5> <p>{selectedKural.mv || selectedKural.explanation}</p> </div>
                         <div className="e-block"> <h5>மு. கருணாநிதி விளக்கம்</h5> <p>{selectedKural.mk || "தகவல் இல்லை"}</p> </div>
@@ -599,8 +602,10 @@ const App = () => {
            box-shadow: inset 0 0 80px rgba(154,52,18,0.03), 0 20px 40px rgba(0,0,0,0.02); 
         }
         .m-verse-box h3 { 
-           font-size: 2.4rem; margin: 0; line-height: 1.4; font-weight: 950; 
+           font-size: clamp(1.2rem, 4vw, 2.4rem); 
+           margin: 0; line-height: 1.4; font-weight: 950; 
            color: #431407; letter-spacing: -0.01em; 
+           white-space: nowrap;
         }
         .m-verse-box h3:first-child { margin-bottom: 2rem; }
         .m-explanations-stack { display: flex; flex-direction: column; gap: 2rem; }
