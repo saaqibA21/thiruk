@@ -110,7 +110,8 @@ export class KuralAI {
                     rain: { range: [11, 20], keywords: ['rain', 'nature', 'vaan', 'வான்', 'மழை'] },
                     anger: { range: [301, 310], keywords: ['anger', 'vegula', 'கோபம்', 'வெகுளாமை'] },
                     virtue: { range: [1, 380], keywords: ['virtue', 'aram', 'dharma', 'அறம்'] },
-                    wealth: { range: [381, 1080], keywords: ['wealth', 'money', 'politics', 'porul', 'பொருள்', 'செல்வம்'] }
+                    wealth: { range: [381, 1080], keywords: ['wealth', 'money', 'politics', 'porul', 'பொருள்', 'செல்வம்'] },
+                    pride: { range: [971, 980], keywords: ['pride', 'greatness', 'conceit', 'humility', 'perumai', 'sirumai', 'பெருமை', 'சிறுமை'] }
                 };
 
                 // Apply Thematic Boost if query matches a concept
