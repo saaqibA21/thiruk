@@ -241,6 +241,33 @@ const App = () => {
                            <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
                            <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
                         </div>
+
+                        <div className="library-resource-section">
+                           <h3 className="res-title">கல்வி மற்றும் ஆய்வு ஆதாரங்கள் (Resources)</h3>
+                           <div className="res-grid-premium">
+                              <a href="https://www.tamildigitallibrary.in/book-detail?id=jZY9lKy2kZpc7979ITXlLyeYkZyc" target="_blank" rel="noreferrer" className="res-card-v2">
+                                 <Database className="res-ico" size={24} />
+                                 <div className="res-card-text">
+                                    <strong>தமிழ் டிஜிட்டல் நூலகம்</strong>
+                                    <span>அரிய ஓலைச்சுவடி பதிப்புகள் (PDF)</span>
+                                 </div>
+                              </a>
+                              <a href="https://archive.org/details/thesacredkurals00popeuoft" target="_blank" rel="noreferrer" className="res-card-v2">
+                                 <Feather className="res-ico" size={24} />
+                                 <div className="res-card-text">
+                                    <strong>G.U. Pope Translation</strong>
+                                    <span>Classic English verse (Internet Archive)</span>
+                                 </div>
+                              </a>
+                              <a href="http://www.projectmadurai.org/pm_etexts/utf8/pmutf80001.html" target="_blank" rel="noreferrer" className="res-card-v2">
+                                 <Globe className="res-ico" size={24} />
+                                 <div className="res-card-text">
+                                    <strong>புராஜெக்ட் மதுரை</strong>
+                                    <span>மின்னணு தமிழ் இலக்கியத் தொகுப்பு</span>
+                                 </div>
+                              </a>
+                           </div>
+                        </div>
                      ) : !selectedChapter ? (
                         <div className="chapter-view">
                            <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> பால் தெரிவு </button>
@@ -577,6 +604,20 @@ const App = () => {
         .paal-card h3 { font-size: 1.4rem; margin: 0 0 0.5rem; }
         .paal-card p { margin: 0; font-weight: 700; color: var(--muted); font-size: 0.9rem; }
 
+        .library-resource-section { margin-top: 4rem; padding-top: 3rem; border-top: 2px dashed var(--border); }
+        .res-title { font-size: 1.25rem; font-weight: 950; margin-bottom: 2rem; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+        .res-grid-premium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .res-card-v2 { 
+           display: flex; align-items: center; gap: 1.25rem; background: white; 
+           padding: 1.5rem; border-radius: 1.5rem; text-decoration: none; 
+           border: 1px solid var(--border); transition: 0.3s;
+        }
+        .res-card-v2:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .res-ico { color: var(--primary); }
+        .res-card-text { display: flex; flex-direction: column; }
+        .res-card-text strong { font-size: 1rem; color: #1e293b; font-weight: 950; }
+        .res-card-text span { font-size: 0.8rem; color: #64748b; font-weight: 700; }
+
         .chapter-view { display: flex; flex-direction: column; }
         .tamil-back { background: none; border: none; color: var(--primary); font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 1.5rem; text-transform: uppercase; font-size: 0.75rem; }
         .chapter-header-text { font-size: 1.8rem; font-weight: 950; margin-bottom: 1.5rem; }
@@ -817,6 +858,10 @@ const App = () => {
           .h-info-grid { grid-template-columns: 1fr; gap: 1rem; }
           .h-pillars-section { padding: 3rem 0; }
           .h-section-header-center h3 { font-size: 1.7rem; }
+          
+          .res-grid-premium { grid-template-columns: 1fr; }
+          .library-resource-section { padding-top: 2rem; margin-top: 2.5rem; }
+          
           .h-pillar-card { padding: 2rem 1.5rem; }
           .h-v-timeline { padding-left: 1.5rem; }
           .h-tl-year { position: static; text-align: left; margin-bottom: 0.5rem; }
