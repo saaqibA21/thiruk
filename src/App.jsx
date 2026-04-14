@@ -848,56 +848,85 @@ const App = () => {
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
-          .main-header { padding: 1rem; }
-          .header-top-row { gap: 1rem; margin-bottom: 1rem; }
-          .srm-logo-top { width: 50px; height: 50px; }
-          .main-title { font-size: 1.2rem; }
-          .sub-title { font-size: 0.7rem; }
+          .scholarly-app { padding-bottom: 70px; } /* Space for bottom nav */
           
-          .nav-scroll-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -1rem; padding: 0 1rem; }
-          .header-nav-tabs { width: max-content; gap: 0.5rem; }
-          .header-nav-tabs button { padding: 0.6rem 1rem; font-size: 0.8rem; }
+          .main-header { 
+            padding: 1rem; 
+            background: rgba(255,255,255,0.8); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+          }
+          .header-top-row { gap: 1rem; margin-bottom: 0.5rem; justify-content: center; }
+          .srm-logo-top { height: 35px; }
+          .main-title { font-size: 1.1rem; }
+          .sub-title { font-size: 0.6rem; }
           
-          .content-container { padding: 1rem; }
-          .chat-view { height: calc(100vh - 180px); }
-          .chat-window { gap: 1rem; }
-          .chat-bubble { max-width: 90%; padding: 1rem; }
+          .nav-scroll-wrapper { 
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 0.75rem 1rem;
+            z-index: 2000;
+            border-top: 1px solid var(--border);
+            margin: 0;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+          }
+          .header-nav-tabs { 
+            width: 100%; 
+            display: flex; 
+            justify-content: space-around; 
+            gap: 0; 
+          }
+          .header-nav-tabs button { 
+             flex-direction: column; 
+             gap: 4px; 
+             padding: 0.5rem; 
+             font-size: 0.65rem; 
+             background: none !important;
+             color: var(--muted);
+          }
+          .header-nav-tabs button.active { color: var(--primary); }
+          .header-nav-tabs button span { font-weight: 900; }
+          .header-nav-tabs button svg { width: 22px; height: 22px; }
+          
+          .content-container { padding: 1.5rem 1rem; }
+          .chat-view { height: calc(100vh - 200px); }
+          .chat-bubble { max-width: 95%; padding: 1rem; border-radius: 1.25rem; }
           
           .paal-cards { grid-template-columns: 1fr; gap: 1rem; }
-          .paal-card { padding: 1.5rem; }
+          .paal-card { padding: 2rem 1.5rem; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+          .paal-card h3 { margin: 0; font-size: 1.3rem; }
+          .paal-card p { margin: 0; font-size: 0.8rem; }
           
-          .tamil-modal { padding: 1.5rem; border-radius: 1.5rem; width: 95%; max-height: 85vh; }
-          .m-verse-box { padding: 1.5rem 1rem; margin-bottom: 1.5rem; }
-          .m-verse-box h3 { font-size: 1.3rem; }
-          .e-block p { font-size: 1.1rem; }
-          .e-block.en p { font-size: 1rem; }
+          .res-grid-premium { grid-template-columns: 1fr; gap: 1rem; }
+          .res-card-v2 { padding: 1.25rem; border-radius: 1.25rem; }
           
           .h-title { font-size: 1.8rem; }
-          .h-stat-num { font-size: 1.8rem; }
-          .h-hero-stat-card { min-width: 120px; padding: 1rem; }
-          .h-content-box { padding: 2rem 1.5rem; }
-          .h-content-box h3 { font-size: 1.6rem; }
-          .h-info-grid { grid-template-columns: 1fr; gap: 1rem; }
-          .h-pillars-section { padding: 3rem 0; }
-          .h-section-header-center h3 { font-size: 1.7rem; }
+          .h-hero-stats { gap: 1rem; }
+          .h-hero-stat-card { min-width: 30%; padding: 1rem 0.5rem; }
+          .h-stat-num { font-size: 1.6rem; }
           
-          .res-grid-premium { grid-template-columns: 1fr; }
-          .library-resource-header-box { padding: 1.5rem; margin-bottom: 2rem; }
-          .library-section-title { font-size: 0.9rem; }
+          .h-card-premium { border-radius: 2rem; }
+          .h-content-box { padding: 2.5rem 1.5rem; }
+          .h-pillars-grid { grid-template-columns: 1fr; }
+          .h-timeline-vertical-section { padding: 2rem 1.5rem; }
+          .h-tl-year { position: static; text-align: left; margin: 0 0 0.5rem 0; }
           
-          .h-pillar-card { padding: 2rem 1.5rem; }
-          .h-v-timeline { padding-left: 1.5rem; }
-          .h-tl-year { position: static; text-align: left; margin-bottom: 0.5rem; }
-          .h-tl-marker { left: -25px; }
-          .h-manuscript-feature { padding: 2rem; border-radius: 2rem; }
-          .h-img-glow img { height: 250px; }
-          .h-feature-text h3 { font-size: 1.6rem; }
-          .h-feature-text p { font-size: 1rem; }
-          .h-mega-quote { padding: 2rem; border-radius: 2rem; }
-          .h-mega-quote blockquote { font-size: 1.3rem; }
-          .h-footer-premium { padding: 4rem 2rem; border-radius: 2rem; }
-          .h-footer-premium h3 { font-size: 1.6rem; }
-          .h-footer-premium p { font-size: 1rem; }
+          .h-manuscript-feature { padding: 2rem 1.5rem; border-radius: 2.5rem; }
+          .h-feature-content { gap: 2rem; }
+          .h-img-glow img { height: 200px; }
+          
+          .h-mega-quote { padding: 3rem 1.5rem; border-radius: 2.5rem; }
+          .h-mega-quote blockquote { font-size: 1.4rem; }
+          
+          .h-footer-premium { padding: 5rem 1.5rem; border-radius: 3rem; }
+          .h-footer-premium h3 { font-size: 1.8rem; }
+          
+          .tamil-modal { width: 98%; padding: 2rem 1.5rem; border-radius: 2rem; }
+          .m-verse-box { padding: 3rem 1rem; border-radius: 2.5rem; }
         }
       `}} />
       </div>
