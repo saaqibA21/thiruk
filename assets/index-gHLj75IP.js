@@ -465,23 +465,47 @@ English Meaning: ${d.explanation}`).join(`
           .scholarly-app { padding-bottom: 70px; } /* Space for bottom nav */
           
           .main-header { 
-            padding: 1rem; 
-            background: rgba(255,255,255,0.8); 
-            backdrop-filter: blur(12px); 
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1.25rem 1rem; 
+            background: white; 
+            border-bottom: 1px solid #f1f5f9;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
           }
           .header-top-row { 
+            display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 0.75rem; 
-            margin-bottom: 1rem; 
-            justify-content: center;
+            margin-bottom: 1.25rem; 
             text-align: center;
-            padding: 0.5rem 0;
           }
-          .srm-logo-top { height: 48px; min-height: 48px; margin: 0 auto; display: block; }
-          .app-title-group { display: flex; flex-direction: column; align-items: center; }
-          .main-title { font-size: 1.3rem; font-weight: 950; color: var(--primary); }
-          .sub-title { font-size: 0.75rem; color: var(--muted); font-weight: 800; }
+          .srm-logo-top { 
+            height: 42px; 
+            width: auto;
+            max-width: 280px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+          }
+          .app-title-group { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+          }
+          .main-title { 
+            font-size: 1.25rem; 
+            font-weight: 950; 
+            color: var(--primary); 
+            margin: 0;
+            line-height: 1.2;
+          }
+          .sub-title { 
+            font-size: 0.7rem; 
+            color: var(--muted); 
+            font-weight: 800; 
+            margin: 0.25rem 0 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+          }
           
           .kural-item-card { padding: 1.25rem; }
           .kural-item-card p { font-size: 1.05rem; line-height: 1.4; }
