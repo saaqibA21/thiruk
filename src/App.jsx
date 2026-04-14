@@ -261,6 +261,20 @@ const App = () => {
                                        <span>மின்னணு தமிழ் இலக்கியத் தொகுப்பு</span>
                                     </div>
                                  </a>
+                                 <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
+                                    <Zap className="res-ico" size={24} />
+                                    <div className="res-card-text">
+                                       <strong>பாஜக மின்னூலகம்</strong>
+                                       <span>ஆராய்ச்சி பதிப்பு (PDF)</span>
+                                    </div>
+                                 </a>
+                                 <a href="https://en.wikipedia.org/wiki/Tirukkuṟaḷ" target="_blank" rel="noreferrer" className="res-card-v2">
+                                    <Globe className="res-ico" size={24} />
+                                    <div className="res-card-text">
+                                       <strong>விக்கிப்பீடியா</strong>
+                                       <span>கட்டுரைகள் & குறிப்புகள்</span>
+                                    </div>
+                                 </a>
                               </div>
                            </div>
 
@@ -481,6 +495,9 @@ const App = () => {
                               <a href="https://archive.org/details/thesacredkurals00popeuoft" target="_blank" rel="noreferrer" className="h-link">
                                  <BookOpen size={18} /> <span>ஆவணக் காப்பகம்</span>
                               </a>
+                              <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noreferrer" className="h-link">
+                                 <Zap size={18} /> <span>பாஜக மின்னூலகம் (PDF)</span>
+                              </a>
                            </div>
                         </div>
                      </div>
@@ -611,7 +628,7 @@ const App = () => {
         .res-title-main { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 950; margin-bottom: 2rem; color: var(--primary); }
         .library-section-title { font-size: 1.1rem; font-weight: 950; color: #64748b; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
 
-        .res-grid-premium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .res-grid-premium { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
         .res-card-v2 { 
            display: flex; align-items: center; gap: 1.25rem; background: white; 
            padding: 1.5rem; border-radius: 1.5rem; text-decoration: none; 
