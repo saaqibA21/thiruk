@@ -465,46 +465,49 @@ English Meaning: ${d.explanation}`).join(`
           .scholarly-app { padding-bottom: 70px; } /* Space for bottom nav */
           
           .main-header { 
-            padding: 1.25rem 1rem; 
-            background: white; 
-            border-bottom: 1px solid #f1f5f9;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 1.5rem 1rem; 
+            background: #ffffff !important; 
+            border-bottom: 2px solid #f8fafc;
+            display: grid !important;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
           }
           .header-top-row { 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem; 
-            margin-bottom: 1.25rem; 
-            text-align: center;
+            display: grid !important;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 0 auto;
+            width: 100%;
           }
           .srm-logo-top { 
-            height: 42px; 
-            width: auto;
-            max-width: 280px;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
+            height: 50px !important; 
+            width: auto !important;
+            max-width: 90%;
+            margin: 0 auto !important;
+            display: block !important;
           }
           .app-title-group { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 0.25rem;
           }
           .main-title { 
-            font-size: 1.25rem; 
-            font-weight: 950; 
-            color: var(--primary); 
-            margin: 0;
+            font-size: 1.4rem !important; 
+            font-weight: 950 !important; 
+            color: #9a3412 !important; 
+            margin: 0 !important;
             line-height: 1.2;
           }
           .sub-title { 
-            font-size: 0.7rem; 
-            color: var(--muted); 
-            font-weight: 800; 
-            margin: 0.25rem 0 0;
+            font-size: 0.75rem !important; 
+            color: #64748b !important; 
+            font-weight: 900 !important; 
+            margin: 0 !important;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            letter-spacing: 1px;
           }
           
           .kural-item-card { padding: 1.25rem; }
