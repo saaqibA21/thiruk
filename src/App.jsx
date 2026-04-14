@@ -54,7 +54,7 @@ const App = () => {
 
    useEffect(() => {
       if (!query.trim()) return;
-      
+
       // CRITICAL: If input contains ANY Tamil characters, skip translation immediately
       const hasTamil = /[\u0B80-\u0BFF]/.test(query);
       if (hasTamil) {
@@ -138,13 +138,13 @@ const App = () => {
          else if (selectedPaal === 'காமத்துப்பால்') list = list.filter(k => k.Number > 1080);
       }
       if (selectedChapter) list = list.filter(k => Math.ceil(k.Number / 10) === selectedChapter);
-      
+
       const search = searchQuery.trim();
       const numMatch = search.match(/^\d+$/);
       if (numMatch) {
          return list.filter(k => k.Number === parseInt(numMatch[0]));
       }
-      
+
       return list.filter(k => (k.Line1 && k.Line1.includes(search)) || (k.Number.toString().includes(search)));
    }, [kuralData, searchQuery, selectedPaal, selectedChapter]);
 
@@ -164,21 +164,21 @@ const App = () => {
    return (
       <div className="scholarly-app">
          <header className="main-header">
-        <div className="header-top-row">
-           <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
-           <div className="app-title-group">
-              <h1 className="main-title">திருக்குறள் AI நிபுணர்</h1>
-              <p className="sub-title">SRM உயர்கல்வி நிறுவனம்</p>
-           </div>
-        </div>
-        <div className="nav-scroll-wrapper">
-          <nav className="header-nav-tabs">
-            <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>கேள்வி</span> </button>
-            <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
-            <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
-          </nav>
-        </div>
-      </header>
+            <div className="header-top-row">
+               <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
+               <div className="app-title-group">
+                  <h1 className="main-title">திருக்குறள் AI நிபுணர்</h1>
+                  <p className="sub-title">SRM உயர்கல்வி நிறுவனம்</p>
+               </div>
+            </div>
+            <div className="nav-scroll-wrapper">
+               <nav className="header-nav-tabs">
+                  <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>கேள்வி</span> </button>
+                  <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
+                  <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
+               </nav>
+            </div>
+         </header>
 
          <main className="content-container">
             <AnimatePresence mode="wait">
@@ -237,7 +237,14 @@ const App = () => {
                   <motion.div key="list" className="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                      {!selectedPaal ? (
                         <>
-                           <div className="library-resource-header-box">
+                           <div className="library-section-title">மூல நூல்கள் (Main Sections)</div>
+                           <div className="paal-cards">
+                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> <h3>அறத்துப்பால்</h3> <p>அறநெறிகள்</p> </div>
+                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
+                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
+                           </div>
+
+                           <div className="library-resource-header-box" style={{ marginTop: '4rem' }}>
                               <h3 className="res-title-main"><BookOpen size={20} /> டிஜிட்டல் ஆராய்ச்சி நூலகம் / Research Archives</h3>
                               <div className="res-grid-premium">
                                  <a href="https://www.tamildigitallibrary.in/book-detail?id=jZY9lKy2kZpc7979ITXlLyeYkZyc" target="_blank" rel="noreferrer" className="res-card-v2">
@@ -276,13 +283,6 @@ const App = () => {
                                     </div>
                                  </a>
                               </div>
-                           </div>
-
-                           <div className="library-section-title">மூல நூல்கள் (Main Sections)</div>
-                           <div className="paal-cards">
-                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> <h3>அறத்துப்பால்</h3> <p>அறநெறிகள்</p> </div>
-                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
-                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
                            </div>
                         </>
                      ) : !selectedChapter ? (
@@ -519,9 +519,9 @@ const App = () => {
                <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
                   <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
                      <header className="m-header"> <span className="m-badge">குறள் {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
-                     <div className="m-verse-box"> 
-                        <h3>{(`${selectedKural.Line1} ${selectedKural.Line2}`).split(/\s+/).slice(0, 4).join(' ')}</h3> 
-                        <h3>{(`${selectedKural.Line1} ${selectedKural.Line2}`).split(/\s+/).slice(4).join(' ')}</h3> 
+                     <div className="m-verse-box">
+                        <h3>{(`${selectedKural.Line1} ${selectedKural.Line2}`).split(/\s+/).slice(0, 4).join(' ')}</h3>
+                        <h3>{(`${selectedKural.Line1} ${selectedKural.Line2}`).split(/\s+/).slice(4).join(' ')}</h3>
                      </div>
                      <div className="m-explanations-stack">
                         <div className="e-block"> <h5>மு. வரதராசனார் விளக்கம்</h5> <p>{selectedKural.mv || selectedKural.explanation}</p> </div>
