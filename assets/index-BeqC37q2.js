@@ -179,12 +179,13 @@ English Meaning: ${d.explanation}`).join(`
         h1, h2, h3, h4, .app-title-group { font-family: 'Outfit', sans-serif; }
 
         .scholarly-app { min-height: 100vh; display: flex; flex-direction: column; width: 100%; overflow-x: hidden; }
-        .main-header { padding: 1rem 4rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); width: 100%; }
-        .nav-scroll-wrapper { width: 100%; }
-        .header-top-row { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
-        .srm-logo-top { height: 45px; object-fit: contain; }
-        .main-title { font-size: 1.4rem; margin: 0; color: var(--primary); font-weight: 950; letter-spacing: -0.02em; }
-        .sub-title { margin: 0; font-weight: 800; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .main-header { padding: 1.5rem 1rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); width: 100%; text-align: center; }
+        .nav-scroll-wrapper { width: 100%; margin-top: 1rem; }
+        .header-top-row { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .srm-logo-top { height: 50px; width: auto; max-width: 250px; object-fit: contain; margin-bottom: 0.5rem; }
+        .app-title-group { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+        .main-title { font-size: 1.5rem; margin: 0; color: var(--primary); font-weight: 950; letter-spacing: -0.02em; line-height: 1.2; }
+        .sub-title { margin: 0; font-weight: 800; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
         .header-nav-tabs { display: flex; gap: 1rem; align-items: center; }
         .header-nav-tabs button { 
