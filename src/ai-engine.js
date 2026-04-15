@@ -33,15 +33,20 @@ export class KuralAI {
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
         const isStructural = isEndsWith || isStartsWith;
         
-        // Words to ignore when picking the target search word
-        const stopWords = [...endKeywords, ...startKeywords, 'என்ற', 'சொல்லுடன்', 'சொல்லும்', 'சொல்', 'வார்த்தை', 'kural', 'குறள்', 'with', 'word', 'the', 'என்பது', 'என்றார்'];
+        // Words to ignore when picking the target search word or doing lexical matches
+        const stopWords = [
+            ...endKeywords, ...startKeywords, 
+            'என்ற', 'சொல்லுடன்', 'சொல்லும்', 'சொல்', 'வார்த்தை', 'kural', 'kurals', 'குறள்', 'குறள்கள்', 
+            'with', 'word', 'the', 'என்பது', 'என்றார்', 'எனக்கு', 'கொடு', 'வேண்டும்', 'கூறு', 'பற்றி', 
+            'about', 'give', 'me', 'tell', 'show', 'for', 'of', 'in', 'on', 'to', 'a', 'an', 'some'
+        ];
         
         // Target word if structural constraint exists
         let targetWord = '';
         if (isStructural) {
             // Find the most likely target word (longest word that isn't a stopword/command)
             targetWord = terms
-                .filter(t => !stopWords.some(sw => t === sw || sw.includes(t)))
+                .filter(t => !stopWords.some(sw => t === sw))
                 .sort((a, b) => b.length - a.length)[0] || '';
         }
 
@@ -115,7 +120,8 @@ export class KuralAI {
                     medicine: { range: [941, 950], keywords: ['sick', 'health', 'medicine', 'disease', 'illness', 'treatment', 'marundhu', 'nooi', 'நோய்', 'மருந்து', 'உடல்நலம்'] },
                     poverty: { range: [1041, 1050], keywords: ['poverty', 'poor', 'varumai', 'ezhmai', 'வறுமை', 'ஏழ்மை'] },
                     children: { range: [61, 70], keywords: ['son', 'sons', 'children', 'kids', 'father', 'makkal', 'pillai', 'புதல்வர்', 'மக்கள்', 'குழந்தை', 'பிள்ளை'] },
-                    duty: { range: [211, 220], keywords: ['duty', 'obligation', 'kadan', 'kadamai', 'கடன்', 'கடமை'] }
+                    duty: { range: [211, 220], keywords: ['duty', 'obligation', 'kadan', 'kadamai', 'கடன்', 'கடமை'] },
+                    flowers: { range: [1111, 1120], keywords: ['flower', 'flowers', 'malar', 'poo', 'பூ', 'மலர்', 'அனிச்சம்'] }
                 };
 
                 // Apply Thematic Boost if query matches a concept
@@ -128,7 +134,7 @@ export class KuralAI {
                 });
 
                 // Filter out common stop-words from the search terms for keyword matching
-                const searchTerms = terms.filter(t => !stopWords.some(sw => t === sw || sw.includes(t)));
+                const searchTerms = terms.filter(t => !stopWords.some(sw => t === sw));
 
                 // If a structural match was requested but not found for this kural, 
                 // we treat it as very low relevance unless it's a number match
