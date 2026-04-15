@@ -1007,11 +1007,11 @@ const App = () => {
           .header-nav-tabs button span { font-weight: 900; }
           .header-nav-tabs button svg { width: 22px; height: 22px; }
           
-          .content-container { padding: 1.5rem 1rem; }
-          .chat-view-container { flex-direction: column; height: auto; gap: 1.5rem; }
-          .tamil-keyboard-sidebar { width: 100%; padding: 1rem; }
-          .chat-view { height: 500px; }
-          .chat-bubble { max-width: 95%; padding: 1rem; border-radius: 1.25rem; }
+          .content-container { padding: 1rem 0.5rem; margin-bottom: 70px; }
+          .chat-view-container { height: calc(100vh - 200px); gap: 0; flex-direction: column; }
+          .chat-view { height: 100%; }
+          .tamil-keyboard-popup { border-radius: 1rem; margin-bottom: 0.5rem; }
+          .chat-bubble { max-width: 98%; padding: 1rem; border-radius: 1.25rem; }
           
           .paal-cards { grid-template-columns: 1fr; gap: 1rem; }
           .paal-card { padding: 2rem 1.5rem; display: flex; align-items: center; justify-content: space-between; text-align: left; }
