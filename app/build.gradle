@@ -22,8 +22,8 @@ plugins {
 
 def twaManifest = [
     applicationId: 'com.saaqiba21.thirukkural_ai',
-    hostName: 'saaqibA21.github.io', // The domain being opened in the TWA.
-    launchUrl: '/thirukkural-ai/', // The start path for the TWA. Must be relative to the domain.
+    hostName: 'saaqiba21.github.io', // The domain being opened in the TWA.
+    launchUrl: '/thiruk/', // The start path for the TWA. Must be relative to the domain.
     name: 'kural.ai', // The application name.
     launcherName: 'kural.ai', // The name shown on the Android Launcher.
     themeColor: '#010409', // The color used for the status bar.

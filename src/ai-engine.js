@@ -111,7 +111,11 @@ export class KuralAI {
                     anger: { range: [301, 310], keywords: ['anger', 'vegula', 'கோபம்', 'வெகுளாமை'] },
                     virtue: { range: [1, 380], keywords: ['virtue', 'aram', 'dharma', 'அறம்'] },
                     wealth: { range: [381, 1080], keywords: ['wealth', 'money', 'politics', 'porul', 'பொருள்', 'செல்வம்'] },
-                    pride: { range: [971, 980], keywords: ['pride', 'greatness', 'conceit', 'humility', 'perumai', 'sirumai', 'பெருமை', 'சிறுமை'] }
+                    pride: { range: [971, 980], keywords: ['pride', 'greatness', 'conceit', 'humility', 'perumai', 'sirumai', 'பெருமை', 'சிறுமை'] },
+                    medicine: { range: [941, 950], keywords: ['sick', 'health', 'medicine', 'disease', 'illness', 'treatment', 'marundhu', 'nooi', 'நோய்', 'மருந்து', 'உடல்நலம்'] },
+                    poverty: { range: [1041, 1050], keywords: ['poverty', 'poor', 'varumai', 'ezhmai', 'வறுமை', 'ஏழ்மை'] },
+                    children: { range: [61, 70], keywords: ['son', 'sons', 'children', 'kids', 'father', 'makkal', 'pillai', 'புதல்வர்', 'மக்கள்', 'குழந்தை', 'பிள்ளை'] },
+                    duty: { range: [211, 220], keywords: ['duty', 'obligation', 'kadan', 'kadamai', 'கடன்', 'கடமை'] }
                 };
 
                 // Apply Thematic Boost if query matches a concept
@@ -162,8 +166,7 @@ export class KuralAI {
                 return { ...k, score };
             })
             .filter(k => k.score > 2) 
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 10);
+            .sort((a, b) => b.score - a.score);
     }
 
     async semanticSearch(query) {

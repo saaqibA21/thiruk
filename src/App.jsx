@@ -3,6 +3,13 @@ import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainC
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 
+const TAMIL_KEYS = [
+   ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'],
+   ['க', 'ங', 'ச', 'ஞ', 'ட', 'ண', 'த', 'ந', 'ப', 'ம', 'ய', 'ர'],
+   ['ல', 'வ', 'ழ', 'ள', 'ற', 'ன', 'ஜ', 'ஷ', 'ஸ', 'ஹ', 'க்ஷ', 'ஸ்ரீ'],
+   ['ா', 'ி', 'ீ', 'ு', 'ூ', 'ெ', 'ே', 'ை', 'ொ', 'ோ', 'ௌ', '்', 'ஃ']
+];
+
 const App = () => {
    const [activeTab, setActiveTab] = useState('ask');
    const [selectedPaal, setSelectedPaal] = useState(null);
@@ -114,6 +121,10 @@ const App = () => {
       } finally { setLoading(false); }
    };
 
+   const handleKeyClick = (char) => {
+      setQuery(prev => prev + char);
+   };
+
    const parseFormattedContent = (content) => {
       const lines = content.split('\n');
       return lines.map((line, idx) => {
@@ -121,7 +132,17 @@ const App = () => {
             return <h4 key={idx} className="tamil-k-header">{line.replace(/\*\*Kural\s+#/g, 'குறள் எண்: ').replace(/\*\*/g, '')}</h4>;
          }
          if (line.includes('**Tamil:**')) {
-            return <p key={idx} className="tamil-verse"><strong>குறள்:</strong> {line.replace('**Tamil:**', '')}</p>;
+            const tamilText = line.replace('**Tamil:**', '').trim();
+            const words = tamilText.split(/\s+/);
+            if (words.length >= 7) {
+               return (
+                  <div key={idx} className="tamil-verse">
+                     <p className="verse-line-1">{words.slice(0, 4).join(' ')}</p>
+                     <p className="verse-line-2">{words.slice(4).join(' ')}</p>
+                  </div>
+               );
+            }
+            return <p key={idx} className="tamil-verse"><strong>குறள்:</strong> {tamilText}</p>;
          }
          if (line.includes('**Philosophical Meaning:**')) {
             return <div key={idx} className="tamil-exp"><strong>பொருள்:</strong> {line.replace('**Philosophical Meaning:**', '')}</div>;
@@ -183,54 +204,73 @@ const App = () => {
          <main className="content-container">
             <AnimatePresence mode="wait">
                {activeTab === 'ask' ? (
-                  <motion.div key="ask" className="chat-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                     <div className="chat-window">
-                        {initProgress > 0 && initProgress < 100 && (
-                           <div className="init-progress-bar">
-                              <div className="p-label">ஆய்வுத் தரவுகள் தயார் செய்யப்படுகின்றன... {initProgress}%</div>
-                              <div className="p-track"> <div className="p-fill" style={{ width: `${initProgress}%` }}></div> </div>
-                           </div>
-                        )}
-                        {messages.map((m, i) => (
-                           <div key={i} className={`chat-bubble-container ${m.role}`}>
-                              <div className="chat-bubble">
-                                 <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
-                                 <div className="bubble-text">{parseFormattedContent(m.content)}</div>
-                                 {m.sources && m.sources.length > 0 && (
-                                    <div className="kural-source-cards">
-                                       {m.sources.map((s, idx) => (
-                                          <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
-                                             <div className="k-mini-info">
-                                                <span className="k-mini-num">குறள் {s.Number}:</span>
-                                                <div className="k-mini-lines">
-                                                   <p>{s.Line1}</p>
-                                                   <p>{s.Line2}</p>
-                                                </div>
-                                             </div>
-                                             <ChevronRight size={20} className="k-mini-arrow" />
-                                          </div>
-                                       ))}
-                                    </div>
-                                 )}
+                  <motion.div key="ask" className="chat-view-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                     <div className="tamil-keyboard-sidebar">
+                        <div className="tk-header"><Languages size={18} /> <span>தமிழ் விசைப்பலகை</span></div>
+                        <div className="tk-grid-wrapper">
+                           {TAMIL_KEYS.map((row, i) => (
+                              <div key={i} className="tk-row">
+                                 {row.map(char => (
+                                    <button key={char} className="tk-key" onClick={() => handleKeyClick(char)}>{char}</button>
+                                 ))}
                               </div>
+                           ))}
+                           <div className="tk-row tk-controls">
+                              <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>இடைவெளி (Space)</button>
+                              <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}><X size={16}/> அழி</button>
                            </div>
-                        ))}
-                        {loading && <div className="tamil-loading">நிபுணர் விளக்கம் அளிக்கிறார்...</div>}
-                        <div ref={chatEndRef} />
-                     </div>
-                     <div className="chat-input-row">
-                        <div className="tamil-input-box">
-                           <input
-                              placeholder="Type in English (it will auto-translate)..."
-                              value={query}
-                              onChange={(e) => setQuery(e.target.value)}
-                              onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
-                           />
-                           <button onClick={() => handleAsk(query)} disabled={loading}>
-                              {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
-                           </button>
                         </div>
-                        {isTranslating && <div className="auto-trans-status">Translating...</div>}
+                     </div>
+
+                     <div className="chat-view">
+                        <div className="chat-window">
+                           {initProgress > 0 && initProgress < 100 && (
+                              <div className="init-progress-bar">
+                                 <div className="p-label">ஆய்வுத் தரவுகள் தயார் செய்யப்படுகின்றன... {initProgress}%</div>
+                                 <div className="p-track"> <div className="p-fill" style={{ width: `${initProgress}%` }}></div> </div>
+                              </div>
+                           )}
+                           {messages.map((m, i) => (
+                              <div key={i} className={`chat-bubble-container ${m.role}`}>
+                                 <div className="chat-bubble">
+                                    <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
+                                    <div className="bubble-text">{parseFormattedContent(m.content)}</div>
+                                    {m.sources && m.sources.length > 0 && (
+                                       <div className="kural-source-cards">
+                                          {m.sources.map((s, idx) => (
+                                             <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
+                                                <div className="k-mini-info">
+                                                   <span className="k-mini-num">குறள் {s.Number}:</span>
+                                                   <div className="k-mini-lines">
+                                                      <p>{s.Line1}</p>
+                                                      <p>{s.Line2}</p>
+                                                   </div>
+                                                </div>
+                                                <ChevronRight size={20} className="k-mini-arrow" />
+                                             </div>
+                                          ))}
+                                       </div>
+                                    )}
+                                 </div>
+                              </div>
+                           ))}
+                           {loading && <div className="tamil-loading">நிபுணர் விளக்கம் அளிக்கிறார்...</div>}
+                           <div ref={chatEndRef} />
+                        </div>
+                        <div className="chat-input-row">
+                           <div className="tamil-input-box">
+                              <input
+                                 placeholder="Type in English (it will auto-translate) or use the Tamil keyboard..."
+                                 value={query}
+                                 onChange={(e) => setQuery(e.target.value)}
+                                 onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
+                              />
+                              <button onClick={() => handleAsk(query)} disabled={loading}>
+                                 {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
+                              </button>
+                           </div>
+                           {isTranslating && <div className="auto-trans-status">Translating...</div>}
+                        </div>
                      </div>
                   </motion.div>
                ) : activeTab === 'list' ? (
@@ -520,8 +560,8 @@ const App = () => {
                   <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
                      <header className="m-header"> <span className="m-badge">குறள் {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
                      <div className="m-verse-box">
-                        <h3>{(`${selectedKural.Line1} ${selectedKural.Line2}`).split(/\s+/).slice(0, 4).join(' ')}</h3>
-                        <h3>{(`${selectedKural.Line1} ${selectedKural.Line2}`).split(/\s+/).slice(4).join(' ')}</h3>
+                        <h3 className="kural-line-1">{selectedKural.Line1}</h3>
+                        <h3 className="kural-line-2">{selectedKural.Line2}</h3>
                      </div>
                      <div className="m-explanations-stack">
                         <div className="e-block"> <h5>மு. வரதராசனார் விளக்கம்</h5> <p>{selectedKural.mv || selectedKural.explanation}</p> </div>
@@ -565,12 +605,13 @@ const App = () => {
         h1, h2, h3, h4, .app-title-group { font-family: 'Outfit', sans-serif; }
 
         .scholarly-app { min-height: 100vh; display: flex; flex-direction: column; width: 100%; overflow-x: hidden; }
-        .main-header { padding: 1rem 4rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); width: 100%; }
-        .nav-scroll-wrapper { width: 100%; }
-        .header-top-row { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
-        .srm-logo-top { height: 45px; object-fit: contain; }
-        .main-title { font-size: 1.4rem; margin: 0; color: var(--primary); font-weight: 950; letter-spacing: -0.02em; }
-        .sub-title { margin: 0; font-weight: 800; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .main-header { padding: 1.5rem 1rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); width: 100%; text-align: center; }
+        .nav-scroll-wrapper { width: 100%; margin-top: 1rem; }
+        .header-top-row { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .srm-logo-top { height: 50px; width: auto; max-width: 250px; object-fit: contain; margin-bottom: 0.5rem; }
+        .app-title-group { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+        .main-title { font-size: 1.5rem; margin: 0; color: var(--primary); font-weight: 950; letter-spacing: -0.02em; line-height: 1.2; }
+        .sub-title { margin: 0; font-weight: 800; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
         .header-nav-tabs { display: flex; gap: 1rem; align-items: center; }
         .header-nav-tabs button { 
@@ -584,8 +625,22 @@ const App = () => {
         .content-container { flex: 1; padding: 2rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
         /* Chat View */
-        .chat-view { display: flex; flex-direction: column; height: calc(100vh - 220px); }
-        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 1.5rem; }
+        .chat-view-container { display: flex; gap: 2rem; height: calc(100vh - 220px); }
+        .tamil-keyboard-sidebar { width: 320px; background: white; border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .tk-header { display: flex; align-items: center; gap: 8px; font-weight: 950; color: var(--primary); margin-bottom: 1.5rem; font-size: 1.1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; }
+        .tk-grid-wrapper { display: flex; flex-direction: column; gap: 8px; }
+        .tk-row { display: flex; gap: 6px; justify-content: center; }
+        .tk-key { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 0; font-size: 1.2rem; font-weight: 800; cursor: pointer; transition: 0.2s; color: #1e293b; display: flex; align-items: center; justify-content: center; min-width: 0; }
+        .tk-key:hover { background: #e0f2fe; border-color: #bae6fd; transform: translateY(-2px); color: #0284c7; }
+        .tk-key:active { transform: translateY(0); }
+        .tk-controls { margin-top: 8px; }
+        .tk-key.ctrl { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; padding: 12px; gap: 6px; }
+        .tk-key.space { flex: 2; background: #f1f5f9; }
+        .tk-key.bs { flex: 1; background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+        .tk-key.bs:hover { background: #fee2e2; color: #b91c1c; }
+
+        .chat-view { flex: 1; display: flex; flex-direction: column; height: 100%; min-width: 0; }
+        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 1.5rem; padding-right: 0.5rem; }
         .chat-bubble-container { display: flex; width: 100%; }
         .chat-bubble-container.user { justify-content: flex-end; }
         .chat-bubble { max-width: 80%; padding: 1.25rem; background: var(--white); border-radius: 1.25rem; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
@@ -666,10 +721,10 @@ const App = () => {
            width: 100%;
         }
         .m-verse-box h3 { 
-           font-size: clamp(0.9rem, 2.5vw, 1.8rem); 
+           font-size: clamp(1rem, 5vw, 2.2rem); 
            margin: 0; line-height: 1.4; font-weight: 950; 
            color: #431407; letter-spacing: -0.01em; 
-           text-rendering: optimizeLegibility; overflow-wrap: break-word;
+           text-rendering: optimizeLegibility;
         }
         .m-verse-box h3:first-child { margin-bottom: 2rem; }
         .m-explanations-stack { display: flex; flex-direction: column; gap: 2rem; }
@@ -851,15 +906,61 @@ const App = () => {
           .scholarly-app { padding-bottom: 70px; } /* Space for bottom nav */
           
           .main-header { 
-            padding: 1rem; 
-            background: rgba(255,255,255,0.8); 
-            backdrop-filter: blur(12px); 
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1.5rem 1rem; 
+            background: #ffffff !important; 
+            border-bottom: 2px solid #f8fafc;
+            display: grid !important;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
           }
-          .header-top-row { gap: 1rem; margin-bottom: 0.5rem; justify-content: center; }
-          .srm-logo-top { height: 35px; }
-          .main-title { font-size: 1.1rem; }
-          .sub-title { font-size: 0.6rem; }
+          .header-top-row { 
+            display: grid !important;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 0 auto;
+            width: 100%;
+          }
+          .srm-logo-top { 
+            height: 50px !important; 
+            width: auto !important;
+            max-width: 90%;
+            margin: 0 auto !important;
+            display: block !important;
+          }
+          .app-title-group { 
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 0.25rem;
+          }
+          .main-title { 
+            font-size: 1.4rem !important; 
+            font-weight: 950 !important; 
+            color: #9a3412 !important; 
+            margin: 0 !important;
+            line-height: 1.2;
+          }
+          .sub-title { 
+            font-size: 0.75rem !important; 
+            color: #64748b !important; 
+            font-weight: 900 !important; 
+            margin: 0 !important;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+          }
+          
+          .kural-item-card { padding: 1.25rem; }
+          .kural-item-card p { font-size: 1.05rem; line-height: 1.4; }
+          .kural-line-1 { margin-bottom: 0.5rem !important; }
+          
+          .m-verse-box { padding: 2.5rem 1rem; border-radius: 2rem; margin-bottom: 2rem; }
+          .m-verse-box h3 { font-size: 1.25rem; line-height: 1.4; }
+          
+          .tamil-verse { font-size: 1rem; padding: 1rem; }
+          .verse-line-1 { margin-bottom: 0.5rem; font-weight: 950; color: #1e293b; }
+          .verse-line-2 { font-weight: 950; color: #1e293b; }
           
           .nav-scroll-wrapper { 
             position: fixed;
@@ -893,7 +994,9 @@ const App = () => {
           .header-nav-tabs button svg { width: 22px; height: 22px; }
           
           .content-container { padding: 1.5rem 1rem; }
-          .chat-view { height: calc(100vh - 200px); }
+          .chat-view-container { flex-direction: column; height: auto; gap: 1.5rem; }
+          .tamil-keyboard-sidebar { width: 100%; padding: 1rem; }
+          .chat-view { height: 500px; }
           .chat-bubble { max-width: 95%; padding: 1rem; border-radius: 1.25rem; }
           
           .paal-cards { grid-template-columns: 1fr; gap: 1rem; }
