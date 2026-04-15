@@ -25,6 +25,7 @@ const App = () => {
    const [isTranslating, setIsTranslating] = useState(false);
    const [kuralData, setKuralData] = useState([]);
    const [aiEngine, setAiEngine] = useState(null);
+   const [showKeyboard, setShowKeyboard] = useState(false);
 
    const getInitialKey = () => {
       const envKey = import.meta.env.VITE_OPENAI_API_KEY;
@@ -205,23 +206,6 @@ const App = () => {
             <AnimatePresence mode="wait">
                {activeTab === 'ask' ? (
                   <motion.div key="ask" className="chat-view-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                     <div className="tamil-keyboard-sidebar">
-                        <div className="tk-header"><Languages size={18} /> <span>தமிழ் விசைப்பலகை</span></div>
-                        <div className="tk-grid-wrapper">
-                           {TAMIL_KEYS.map((row, i) => (
-                              <div key={i} className="tk-row">
-                                 {row.map(char => (
-                                    <button key={char} className="tk-key" onClick={() => handleKeyClick(char)}>{char}</button>
-                                 ))}
-                              </div>
-                           ))}
-                           <div className="tk-row tk-controls">
-                              <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>இடைவெளி (Space)</button>
-                              <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}><X size={16}/> அழி</button>
-                           </div>
-                        </div>
-                     </div>
-
                      <div className="chat-view">
                         <div className="chat-window">
                            {initProgress > 0 && initProgress < 100 && (
@@ -257,19 +241,44 @@ const App = () => {
                            {loading && <div className="tamil-loading">நிபுணர் விளக்கம் அளிக்கிறார்...</div>}
                            <div ref={chatEndRef} />
                         </div>
-                        <div className="chat-input-row">
-                           <div className="tamil-input-box">
-                              <input
-                                 placeholder="Type in English (it will auto-translate) or use the Tamil keyboard..."
-                                 value={query}
-                                 onChange={(e) => setQuery(e.target.value)}
-                                 onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
-                              />
-                              <button onClick={() => handleAsk(query)} disabled={loading}>
-                                 {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
-                              </button>
+                        
+                        <div className="chat-input-wrapper">
+                           <AnimatePresence>
+                              {showKeyboard && (
+                                 <motion.div initial={{ height: 0, opacity: 0, y: 10 }} animate={{ height: 'auto', opacity: 1, y: 0 }} exit={{ height: 0, opacity: 0, y: 10 }} className="tamil-keyboard-popup">
+                                    <div className="tk-grid-wrapper">
+                                       {TAMIL_KEYS.map((row, i) => (
+                                          <div key={i} className="tk-row">
+                                             {row.map(char => (
+                                                <button key={char} className="tk-key" onClick={() => handleKeyClick(char)}>{char}</button>
+                                             ))}
+                                          </div>
+                                       ))}
+                                       <div className="tk-row tk-controls">
+                                          <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>இடைவெளி (Space)</button>
+                                          <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}><X size={16}/> அழி (Clear)</button>
+                                       </div>
+                                    </div>
+                                 </motion.div>
+                              )}
+                           </AnimatePresence>
+                           <div className="chat-input-row">
+                              <div className="tamil-input-box">
+                                 <button className={`kb-toggle ${showKeyboard ? 'active' : ''}`} onClick={() => setShowKeyboard(!showKeyboard)} title="Toggle Tamil Keyboard">
+                                    <Languages size={20} />
+                                 </button>
+                                 <input
+                                    placeholder="Type in English (it will auto-translate) or use the Tamil keyboard..."
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
+                                 />
+                                 <button onClick={() => handleAsk(query)} disabled={loading} className="send-btn">
+                                    {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
+                                 </button>
+                              </div>
+                              {isTranslating && <div className="auto-trans-status">Translating...</div>}
                            </div>
-                           {isTranslating && <div className="auto-trans-status">Translating...</div>}
                         </div>
                      </div>
                   </motion.div>
@@ -625,12 +634,15 @@ const App = () => {
         .content-container { flex: 1; padding: 2rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
         /* Chat View */
-        .chat-view-container { display: flex; gap: 2rem; height: calc(100vh - 220px); }
-        .tamil-keyboard-sidebar { width: 320px; background: white; border: 1px solid var(--border); border-radius: 1.5rem; padding: 1.5rem; display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        .tk-header { display: flex; align-items: center; gap: 8px; font-weight: 950; color: var(--primary); margin-bottom: 1.5rem; font-size: 1.1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; }
-        .tk-grid-wrapper { display: flex; flex-direction: column; gap: 8px; }
-        .tk-row { display: flex; gap: 6px; justify-content: center; }
-        .tk-key { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 0; font-size: 1.2rem; font-weight: 800; cursor: pointer; transition: 0.2s; color: #1e293b; display: flex; align-items: center; justify-content: center; min-width: 0; }
+        .chat-view-container { display: flex; height: calc(100vh - 220px); width: 100%; }
+        .chat-view { flex: 1; display: flex; flex-direction: column; height: 100%; min-width: 0; }
+        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 1.5rem; padding-right: 0.5rem; }
+
+        .chat-input-wrapper { display: flex; flex-direction: column; width: 100%; position: relative; }
+        .tamil-keyboard-popup { background: white; border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: 0 -10px 40px rgba(0,0,0,0.08); margin-bottom: 1rem; overflow: hidden; }
+        .tk-grid-wrapper { display: flex; flex-direction: column; gap: 8px; padding: 1.5rem; }
+        .tk-row { display: flex; gap: 6px; justify-content: center; overflow-x: auto; }
+        .tk-key { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 0; font-size: 1.2rem; font-weight: 800; cursor: pointer; transition: 0.2s; color: #1e293b; display: flex; align-items: center; justify-content: center; min-width: 35px; }
         .tk-key:hover { background: #e0f2fe; border-color: #bae6fd; transform: translateY(-2px); color: #0284c7; }
         .tk-key:active { transform: translateY(0); }
         .tk-controls { margin-top: 8px; }
@@ -639,8 +651,10 @@ const App = () => {
         .tk-key.bs { flex: 1; background: #fef2f2; color: #dc2626; border-color: #fecaca; }
         .tk-key.bs:hover { background: #fee2e2; color: #b91c1c; }
 
-        .chat-view { flex: 1; display: flex; flex-direction: column; height: 100%; min-width: 0; }
-        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 1.5rem; padding-right: 0.5rem; }
+        .kb-toggle { background: #f1f5f9; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); transition: 0.3s; flex-shrink: 0; }
+        .kb-toggle:hover { background: #e2e8f0; color: var(--text); }
+        .kb-toggle.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(154,52,18,0.3); }
+        .send-btn { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .chat-bubble-container { display: flex; width: 100%; }
         .chat-bubble-container.user { justify-content: flex-end; }
         .chat-bubble { max-width: 80%; padding: 1.25rem; background: var(--white); border-radius: 1.25rem; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
@@ -665,9 +679,9 @@ const App = () => {
         .k-mini-arrow { color: #0369a1; opacity: 0.5; margin-left: 1rem; }
 
         .chat-input-row { padding-top: 1rem; }
-        .tamil-input-box { display: flex; background: var(--white); padding: 0.4rem; border: 2px solid var(--border); border-radius: 3rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .tamil-input-box input { flex: 1; border: none; outline: none; padding: 0.4rem 1.25rem; font-size: 1rem; }
-        .tamil-input-box button { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .tamil-input-box { display: flex; background: var(--white); padding: 0.5rem; border: 2px solid var(--border); border-radius: 3rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); gap: 0.5rem; }
+        .tamil-input-box input { flex: 1; border: none; outline: none; padding: 0.4rem 1rem; font-size: 1rem; background: transparent; }
+        .tamil-input-box button { /* removed old button style */ }
 
         /* Library Cards */
         .paal-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
