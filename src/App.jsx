@@ -275,10 +275,32 @@ const App = () => {
                                     <Languages size={20} />
                                  </button>
                                  <input
-                                    placeholder="Type in English (it will auto-translate) or use the Tamil keyboard..."
+                                    placeholder="Type in English (Hit Enter to Translate) or use Tamil keyboard..."
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
+                                    onKeyPress={async (e) => {
+                                       if (e.key === 'Enter') {
+                                          const hasEnglish = /[a-zA-Z]/.test(query);
+                                          if (hasEnglish) {
+                                             setIsTranslating(true);
+                                             try {
+                                                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
+                                                const res = await fetch(url);
+                                                const data = await res.json();
+                                                if (data && data[0]) {
+                                                   const translated = data[0].map(x => x[0]).join('');
+                                                   if (translated && translated !== query) {
+                                                      setQuery(translated);
+                                                      setIsTranslating(false);
+                                                      return; // Allow user to see/edit translation before second Enter
+                                                   }
+                                                }
+                                             } catch (err) {}
+                                             setIsTranslating(false);
+                                          }
+                                          handleAsk(query);
+                                       }
+                                    }}
                                  />
                                  <button onClick={() => handleAsk(query)} disabled={loading} className="send-btn">
                                     {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
@@ -331,11 +353,11 @@ const App = () => {
                                        <span>கல்வி மற்றும் பயிற்சித் தொகுப்பு</span>
                                     </div>
                                  </a>
-                                 <a href="https://en.wikipedia.org/wiki/Tirukkuṟaḷ" target="_blank" rel="noreferrer" className="res-card-v2">
+                                 <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Globe className="res-ico" size={24} />
                                     <div className="res-card-text">
-                                       <strong>விக்கிப்பீடியா</strong>
-                                       <span>கட்டுரைகள் & குறிப்புகள்</span>
+                                       <strong>விக்கிப்பீடியா (Tamil)</strong>
+                                       <span>கட்டுரைகள் & வரலாற்றுத் தரவுகள்</span>
                                     </div>
                                  </a>
                               </div>
@@ -583,6 +605,9 @@ const App = () => {
                               </a>
                               <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/#google_vignette" target="_blank" rel="noreferrer" className="h-link">
                                  <Globe size={18} /> <span>TNPSC வினாத்தாள்கள்</span>
+                              </a>
+                              <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="h-link">
+                                 <BookOpen size={18} /> <span>விக்கிப்பீடியா (Tamil)</span>
                               </a>
                            </div>
                         </div>
