@@ -63,18 +63,12 @@ const App = () => {
    useEffect(() => {
       if (!query.trim()) return;
 
-      // CRITICAL: If input contains ANY Tamil characters, skip translation immediately
-      const hasTamil = /[\u0B80-\u0BFF]/.test(query);
-      if (hasTamil) {
-         setIsTranslating(false);
-         return;
-      }
-
       const hasEnglish = /[a-z]{2,}/i.test(query);
       if (!hasEnglish) {
          setIsTranslating(false);
          return;
       }
+
 
       const currentQuery = query;
       const timer = setTimeout(async () => {
@@ -101,7 +95,8 @@ const App = () => {
          } finally {
             setIsTranslating(false);
          }
-      }, 1000); // 1s debounce for better typing experience
+      }, 700); // 700ms debounce for snappier experience
+
 
       return () => clearTimeout(timer);
    }, [query]);
