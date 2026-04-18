@@ -26,8 +26,8 @@ export class KuralAI {
         const terms = cleanQuery.split(/\s+/).filter(t => t.length > 1);
         
         // Detection for structural constraints (Tamil + Tanglish + English)
-        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end', 'முடிகின்ற', 'முடிகிறது'];
-        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam', 'தொடங்குகிறது', 'தொடங்குகின்ற'];
+        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end', 'முடிகின்ற', 'முடிகிறது'].map(s => s.normalize('NFC'));
+        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam', 'தொடங்குகிறது', 'தொடங்குகின்ற'].map(s => s.normalize('NFC'));
         
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
@@ -40,14 +40,16 @@ export class KuralAI {
             'with', 'word', 'the', 'என்பது', 'என்றார்', 'எனக்கு', 'கொடு', 'வேண்டும்', 'கூறு', 'பற்றி', 
             'என', 'என்று', 'ஆன', 'ஆக', 'எனும்',
             'about', 'give', 'me', 'tell', 'show', 'for', 'of', 'in', 'on', 'to', 'a', 'an', 'some'
-        ];
+        ].map(s => s.normalize('NFC'));
         
         // Target word if structural constraint exists
         let targetWord = '';
         if (isStructural) {
             // Find the most likely target word (longest word that isn't a stopword/command)
+            // We also strip punctuation from terms before comparison
             targetWord = terms
-                .filter(t => !stopWords.some(sw => t === sw))
+                .map(t => t.replace(/[.,!?;:]/g, ''))
+                .filter(t => t.length > 1 && !stopWords.some(sw => t === sw))
                 .sort((a, b) => b.length - a.length)[0] || '';
         }
 
