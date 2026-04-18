@@ -4,10 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 
 const TAMIL_KEYS = [
-   ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'],
-   ['க', 'ங', 'ச', 'ஞ', 'ட', 'ண', 'த', 'ந', 'ப', 'ம', 'ய', 'ர'],
-   ['ல', 'வ', 'ழ', 'ள', 'ற', 'ன', 'ஜ', 'ஷ', 'ஸ', 'ஹ', 'க்ஷ', 'ஸ்ரீ'],
-   ['ா', 'ி', 'ீ', 'ு', 'ூ', 'ெ', 'ே', 'ை', 'ொ', 'ோ', 'ௌ', '்', 'ஃ']
+   ['à®', 'à®', 'à®', 'à®', 'à®', 'à®', 'à®', 'à®', 'à®', 'à®', 'à®', 'à®'],
+   ['à®', 'à®', 'à®', 'à®', 'à®', 'à®£', 'à®¤', 'à®¨', 'à®ª', 'à®®', 'à®¯', 'à®°'],
+   ['à®²', 'à®µ', 'à®´', 'à®³', 'à®±', 'à®©', 'à®', 'à®·', 'à®¸', 'à®¹', 'à®à¯à®·', 'à®¸à¯à®°à¯'],
+   ['à®¾', 'à®¿', 'à¯', 'à¯', 'à¯', 'à¯', 'à¯', 'à¯', 'à¯', 'à¯', 'à¯', 'à¯', 'à®']
 ];
 
 const App = () => {
@@ -17,7 +17,7 @@ const App = () => {
    const [selectedKural, setSelectedKural] = useState(null);
    const [query, setQuery] = useState('');
    const [messages, setMessages] = useState([
-      { role: 'ai', content: 'வணக்கம்! நான் உங்கள் திருக்குறள் நிபுணர். திருக்குறளின் ஆழமான வாழ்வியல் நெறிகளைப் பற்றி நீங்கள் என்னிடம் உரையாடலாம்.', sources: [] }
+      { role: 'ai', content: 'à®µà®£à®à¯à®à®®à¯! à®¨à®¾à®©à¯ à®à®à¯à®à®³à¯ à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯ à®¨à®¿à®ªà¯à®£à®°à¯. à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à®¿à®©à¯ à®à®´à®®à®¾à®© à®µà®¾à®´à¯à®µà®¿à®¯à®²à¯ à®¨à¯à®±à®¿à®à®³à¯à®ªà¯ à®ªà®±à¯à®±à®¿ à®¨à¯à®à¯à®à®³à¯ à®à®©à¯à®©à®¿à®à®®à¯ à®à®°à¯à®¯à®¾à®à®²à®¾à®®à¯.', sources: [] }
    ]);
    const [loading, setLoading] = useState(false);
    const [initProgress, setInitProgress] = useState(0);
@@ -63,45 +63,84 @@ const App = () => {
    useEffect(() => {
       if (!query.trim()) return;
 
-      const hasEnglish = /[a-z]{2,}/i.test(query);
-      if (!hasEnglish) {
+      const hasEnglish = /[a-z]/i.test(query);
+      const endsWithBoundary = /[\s.,!?;]$/.test(query);
+      
+      // Word-by-word: Only trigger when a word is completed via boundary character
+      if (!hasEnglish || !endsWithBoundary) {
          setIsTranslating(false);
          return;
       }
 
+      // Regex to find the last English word segment before the boundary
+      const match = query.match(/(\b[a-zA-Z]+\b)([\s.,!?;]+)$/);
+      if (!match) return;
 
+      const wordToTranslate = match[1];
+      const boundary = match[2];
+      const startIndex = match.index;
       const currentQuery = query;
+
       const timer = setTimeout(async () => {
-         // Don't translate if the user has already moved on significantly
          if (currentQuery !== query) return;
 
          setIsTranslating(true);
          try {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
+            // Using gtx for transliteration-style translation
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(wordToTranslate)}`;
             const res = await fetch(url);
             const data = await res.json();
 
             if (data && data[0]) {
-               // Merge multiple translation segments if Google splits the sentence
                const translated = data[0].map(x => x[0]).join('');
-
-               if (translated && translated !== query && query === currentQuery) {
-                  lastTranslatedRef.current = translated;
-                  setQuery(translated);
+               if (translated && translated.toLowerCase() !== wordToTranslate.toLowerCase() && query === currentQuery) {
+                  // Replace only the specific word segment to preserve surrounding Tamil
+                  const newQuery = query.substring(0, startIndex) + translated + boundary;
+                  setQuery(newQuery);
                }
             }
          } catch (err) {
-            console.error("Translation error:", err);
+            console.error("Transliteration error:", err);
          } finally {
             setIsTranslating(false);
          }
-      }, 700); // 700ms debounce for snappier experience
-
+      }, 150); // Faster debounce for more responsive word-by-word feel
 
       return () => clearTimeout(timer);
    }, [query]);
 
-   const ATHIGARAMS = ["கடவுள் வாழ்த்து", "வான் சிறப்பு", "நீத்தார் பெருமை", "அறன் வலியுறுத்தல்", "இல்வாழ்க்கை", "வாழ்க்கைத் துணைநலம்", "மக்கட்பேறு", "அன்புடைமை", "விருந்தோம்பல்", "இனியவை கூறல்", "செய்ந்நன்றியறிதல்", "நடுவுநிலைமை", "அடக்கமுடைமை", "ஒழுக்கமுடைமை", "பிறனில் விழையாமை", "பொறையுடைமை", "அழுக்காறாமை", "வெஃகாமை", "புறங்கூறாமை", "பயனில சொல்லாமை", "தீவினையச்சம்", "ஒப்புரவறிதல்", "ஈகை", "புகழ்", "அருளுடைமை", "புலால் மறுத்தல்", "தவம்", "கூடாஒழுக்கம்", "கள்ளாமை", "வாய்மை", "வெகுளாமை", "இன்னா செய்யாமை", "கொல்லாமை", "நிலையாமை", "துறவு", "மெய்யணர்தல்", "அவாவறுத்தல்", "ஊழ்", "இறைமாட்சி", "கல்வி", "கல்லாமை", "கேள்வி", "அறிவுடைமை", "குற்றங்கடிதல்", "பெரியாரைத் துணைக்கோடல்", "சிற்றினம் சேராமை", "தெரிந்துசெயல்வகை", "வலியறிதல்", "காலமறிதல்", "இடனறிதல்", "தெரிந்துதெளிதல்", "தெரிந்துவினையாடல்", "சுற்றந்தழால்", "பொச்சாவாமை", "செங்கோன்மை", "கொடுங்கோன்மை", "வெருவந்த செய்யாமை", "கண்ணோட்டம்", "ஒற்றாடல்", "ஊக்கமுடைமை", "மடியின்மை", "ஆள்வினையுடைமை", "இடுக்கண் அழியாமை", "அமைச்சு", "சொல்வன்மை", "வினைத்தூய்மை", "வினைத்திட்பம்", "வினைசெயல்வகை", "தூது", "மன்னரைச் சேர்ந்தொழுதல்", "குறிப்பறிதல்", "அவையறிதல்", "அவையஞ்சாமை", "நாடு", "அரண்", "பொருள்செயல்வகை", "படைமாட்சி", "படைச்செருக்கு", "நட்பு", "நட்பாராய்தல்", "பழைமை", "தீய நட்பு", "கூடா நட்பு", "பேதைமை", "புல்லறிவாண்மை", "இகல்", "பகைமாட்சி", "பகைத்திறந்தெரிதல்", "உட்பகை", "பெரியாரைப் பிழையாமை", "பெண்வழிச் சேறல்", "வரைவின் மகளிர்", "கள்ளுண்ணாமை", "சூது", "மருந்து", "குடிமை", "மானம்பருமை", "சான்றாண்மை", "பண்புடைமை", "நன்றியில் செல்வம்", "நாணுடைமை", "குடிசெயல்வகை", "உழவு", "நல்குரவு", "இரவு", "இரவச்சம்", "கயமை", "தகையணங்குறுத்தல்", "குறிப்பறிதல்", "புணர்ச்சி மகிழ்தல்", "நலம்புனைந்துரைத்தல்", "காதல் சிறப்புரைத்தல்", "நாணுத்துறவுரைத்தல்", "அலரறிவுறுத்தல்", "பிரிவாற்றாமை", "படர்மெலிந்திரங்கல்", "கண்விதுப்பழிதல்", "பசப்புறு பருவரல்", "தனிப்படர் மிகுதி", "நினைந்தவர் புலம்பல்", "கனவுநிலை உரைத்தல்", "பொழுதுகண்டு இரங்கல்", "உறுப்புநலன் அழிதல்", "நெஞ்சொடு கிளத்தல்", "நிறையழிதல்", "அவர்வயின் விதும்பல்", "குறிப்பறிவுறுத்தல்", "புணர்ச்சி விதும்பல்", "நெஞ்சொடு புலத்தல்", "புலவி", "புலவி நுணுக்கம்", "ஊடலுவகை"];
+   // Apply same word-by-word transliteration to the library search query
+   useEffect(() => {
+      if (!searchQuery.trim()) return;
+      const lastChar = searchQuery[searchQuery.length - 1];
+      if (!/[\s.,!?;]/.test(lastChar)) return;
+      
+      const match = searchQuery.match(/(\b[a-zA-Z]+\b)([\s.,!?;]+)$/);
+      if (!match) return;
+
+      const word = match[1];
+      const boundary = match[2];
+      const index = match.index;
+      const currentSearch = searchQuery;
+
+      const timer = setTimeout(async () => {
+         if (currentSearch !== searchQuery) return;
+         try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(word)}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data && data[0]) {
+               const translated = data[0].map(x => x[0]).join('');
+               if (translated && translated.toLowerCase() !== word.toLowerCase()) {
+                  setSearchQuery(searchQuery.substring(0, index) + translated + boundary);
+               }
+            }
+         } catch (err) {}
+      }, 150);
+      return () => clearTimeout(timer);
+   }, [searchQuery]);
+
+   const ATHIGARAMS = ["கடவுள் வாழ்த்து", "வான் சிறப்பு", "நீத்தார் பெருமை", "அறன் வலியுறுத்தல்", "இல்வாழ்க்கை", "வாழ்க்கைத் துணைநலம்", "மக்கட்பேறு", "அன்புடைமை", "விருந்தோம்பல்", "இனியவை கூறல்", "செய்ந்நன்றியறிதல்", "நடுவுநிலைமை", "அடக்கமுடைமை", "ஒழுக்கமுடைமை", "பிறனில் விழையாமை", "பொறையுடைமை", "அழுக்காறாமை", "வெஃகாமை", "புறங்கூறாமை", "பயனில சொல்லாமை", "தீவினையச்சம்", "ஒப்புரவறிதல்", "ஈகை", "புகழ்", "அருளுடைமை", "புலால் மறுத்தல்", "தவம்", "கூடாஒழுக்கம்", "கள்ளாமை", "வாய்மை", "வெகுளாமை", "இன்னா செய்யாமை", "கொல்லாமை", "நிலையாமை", "துறவு", "மெய்யணர்தல்", "அவாவறுத்தல்", "ஊழ்", "இறைமாட்சி", "கல்வி", "கல்லாமை", "கேள்வி", "அறிவுடைமை", "குற்றங்கடிதல்", "பெரியாரைத் துணைக்கோடல்", "சிற்றினம் சேராமை", "தெரிந்துசெயல்வகை", "வலியறிதல்", "காலமறிதல்", "இடனறிதல்", "தெரிந்துதெளிதல்", "தெரிந்துவினையாடல்", "சுற்றந்தழால்", "பொச்சாவாமை", "செங்கோன்மை", "கொடுங்கோன்மை", "வெருவந்த செய்யாமை", "கண்ணோட்டம்", "ஒற்றாடல்", "ஊக்கமுடைமை", "மடியின்மை", "ஆள்வினையுடைமை", "இடுக்கண் அழியாமை", "அமைச்சு", "சொல்வன்மை", "வினைத்திட்பம்", "வினைசெயல்வகை", "தூது", "மன்னரைச் சேர்ந்தொழுதல்", "குறிப்பறிதல்", "அவையறிதல்", "அவையஞ்சாமை", "நாடு", "அரண்", "பொருள்செயல்வகை", "படைமாட்சி", "படைச்செருக்கு", "நட்பு", "நட்பாராய்தல்", "பழைமை", "தீய நட்பு", "கூடா நட்பு", "பேதைமை", "புல்லறிவாண்மை", "இகல்", "பகைமாட்சி", "பகைத்திறந்தெரிதல்", "உட்பகை", "பெரியாரைப் பிழையாமை", "பெண்வழிச் சேறல்", "வரைவின் மகளிர்", "கள்ளுண்ணாமை", "சூது", "மருந்து", "குடிமை", "மானம்பருமை", "சான்றாண்மை", "பண்புடைமை", "நன்றியில் செல்வம்", "நாணுடைமை", "குடிசெயல்வகை", "உழவு", "நல்குரவு", "இரவு", "இரவச்சம்", "கயமை", "தகையணங்குறுத்தல்", "குறிப்பறிதல்", "புணர்ச்சி மகிழ்தல்", "நலம்புனைந்துரைத்தல்", "காதல் சிறப்புரைத்தல்", "நாணுத்துறவுரைத்தல்", "அலரறிவுறுத்தல்", "பிரிவாற்றாமை", "படர்மெலிந்திரங்கல்", "கண்விதுப்பழிதல்", "பசப்புறு பருவரல்", "தனிப்படர் மிகுதி", "நினைந்தவர் புலம்பல்", "கனவுநிலை உரைத்தல்", "பொழுதுகண்டு இரங்கல்", "உறுப்புநலன் அழிதல்", "நெஞ்சொடு கிளத்தல்", "நிறையழிதல்", "அவர்வயின் விதும்பல்", "குறிப்பறிவுறுத்தல்", "புணர்ச்சி விதும்பல்", "நெஞ்சொடு புலத்தல்", "புலவி", "புலவி நுணுக்கம்", "ஊடலுவகை"];
 
    const handleAsk = async (text) => {
       if (!text.trim() || !aiEngine) return;
@@ -113,7 +152,7 @@ const App = () => {
          const result = await aiEngine.ask(text);
          setMessages(prev => [...prev, { role: 'ai', content: result.answer, sources: result.sources }]);
       } catch (error) {
-         setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பிழை ஏற்பட்டுள்ளது.", sources: [] }]);
+         setMessages(prev => [...prev, { role: 'ai', content: "à®®à®©à¯à®©à®¿à®à¯à®à®µà¯à®®à¯, à®ªà®¿à®´à¯ à®à®±à¯à®ªà®à¯à®à¯à®³à¯à®³à®¤à¯.", sources: [] }]);
       } finally { setLoading(false); }
    };
 
@@ -125,7 +164,7 @@ const App = () => {
       const lines = content.split('\n');
       return lines.map((line, idx) => {
          if (line.match(/^\d+\.\s+\*\*Kural\s+#\d+\*\*/)) {
-            return <h4 key={idx} className="tamil-k-header">{line.replace(/\*\*Kural\s+#/g, 'குறள் எண்: ').replace(/\*\*/g, '')}</h4>;
+            return <h4 key={idx} className="tamil-k-header">{line.replace(/\*\*Kural\s+#/g, 'à®à¯à®±à®³à¯ à®à®£à¯: ').replace(/\*\*/g, '')}</h4>;
          }
          if (line.includes('**Tamil:**')) {
             const tamilText = line.replace('**Tamil:**', '').trim();
@@ -138,10 +177,10 @@ const App = () => {
                   </div>
                );
             }
-            return <p key={idx} className="tamil-verse"><strong>குறள்:</strong> {tamilText}</p>;
+            return <p key={idx} className="tamil-verse"><strong>à®à¯à®±à®³à¯:</strong> {tamilText}</p>;
          }
          if (line.includes('**Philosophical Meaning:**')) {
-            return <div key={idx} className="tamil-exp"><strong>பொருள்:</strong> {line.replace('**Philosophical Meaning:**', '')}</div>;
+            return <div key={idx} className="tamil-exp"><strong>à®ªà¯à®°à¯à®³à¯:</strong> {line.replace('**Philosophical Meaning:**', '')}</div>;
          }
          return <p key={idx}>{line.replace(/\*\*/g, '')}</p>;
       });
@@ -150,9 +189,9 @@ const App = () => {
    const filteredKurals = useMemo(() => {
       let list = kuralData;
       if (selectedPaal) {
-         if (selectedPaal === 'அறத்துப்பால்') list = list.filter(k => k.Number <= 380);
-         else if (selectedPaal === 'பொருட்பால்') list = list.filter(k => k.Number > 380 && k.Number <= 1080);
-         else if (selectedPaal === 'காமத்துப்பால்') list = list.filter(k => k.Number > 1080);
+         if (selectedPaal === 'à®à®±à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯') list = list.filter(k => k.Number <= 380);
+         else if (selectedPaal === 'à®ªà¯à®°à¯à®à¯à®ªà®¾à®²à¯') list = list.filter(k => k.Number > 380 && k.Number <= 1080);
+         else if (selectedPaal === 'à®à®¾à®®à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯') list = list.filter(k => k.Number > 1080);
       }
       if (selectedChapter) list = list.filter(k => Math.ceil(k.Number / 10) === selectedChapter);
 
@@ -184,15 +223,15 @@ const App = () => {
             <div className="header-top-row">
                <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
                <div className="app-title-group">
-                  <h1 className="main-title">திருக்குறள் AI நிபுணர்</h1>
-                  <p className="sub-title">SRM உயர்கல்வி நிறுவனம்</p>
+                  <h1 className="main-title">à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯ AI à®¨à®¿à®ªà¯à®£à®°à¯</h1>
+                  <p className="sub-title">SRM à®à®¯à®°à¯à®à®²à¯à®µà®¿ à®¨à®¿à®±à¯à®µà®©à®®à¯</p>
                </div>
             </div>
             <div className="nav-scroll-wrapper">
                <nav className="header-nav-tabs">
-                  <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>கேள்வி</span> </button>
-                  <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
-                  <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
+                  <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>à®à¯à®³à¯à®µà®¿</span> </button>
+                  <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>à®¨à¯à®²à®à®®à¯</span> </button>
+                  <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>à®µà®°à®²à®¾à®±à¯</span> </button>
                </nav>
             </div>
          </header>
@@ -205,21 +244,21 @@ const App = () => {
                         <div className="chat-window">
                            {initProgress > 0 && initProgress < 100 && (
                               <div className="init-progress-bar">
-                                 <div className="p-label">ஆய்வுத் தரவுகள் தயார் செய்யப்படுகின்றன... {initProgress}%</div>
+                                 <div className="p-label">à®à®¯à¯à®µà¯à®¤à¯ à®¤à®°à®µà¯à®à®³à¯ à®¤à®¯à®¾à®°à¯ à®à¯à®¯à¯à®¯à®ªà¯à®ªà®à¯à®à®¿à®©à¯à®±à®©... {initProgress}%</div>
                                  <div className="p-track"> <div className="p-fill" style={{ width: `${initProgress}%` }}></div> </div>
                               </div>
                            )}
                            {messages.map((m, i) => (
                               <div key={i} className={`chat-bubble-container ${m.role}`}>
                                  <div className="chat-bubble">
-                                    <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
+                                    <div className="bubble-meta">{m.role === 'user' ? 'à®¨à¯à®à¯à®à®³à¯' : 'à®¨à®¿à®ªà¯à®£à®°à¯'}</div>
                                     <div className="bubble-text">{parseFormattedContent(m.content)}</div>
                                     {m.sources && m.sources.length > 0 && (
                                        <div className="kural-source-cards">
                                           {m.sources.slice(0, m.showAllSources ? m.sources.length : 10).map((s, idx) => (
                                              <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
                                                 <div className="k-mini-info">
-                                                   <span className="k-mini-num">குறள் {s.Number}:</span>
+                                                   <span className="k-mini-num">à®à¯à®±à®³à¯ {s.Number}:</span>
                                                    <div className="k-mini-lines">
                                                       <p>{s.Line1}</p>
                                                       <p>{s.Line2}</p>
@@ -237,7 +276,7 @@ const App = () => {
                                                    setMessages(newMessages);
                                                 }}
                                              >
-                                                அனைத்து {m.sources.length} குறள்களையும் காண்க / View all {m.sources.length} sources
+                                                à®à®©à¯à®¤à¯à®¤à¯ {m.sources.length} à®à¯à®±à®³à¯à®à®³à¯à®¯à¯à®®à¯ à®à®¾à®£à¯à® / View all {m.sources.length} sources
                                              </button>
                                           )}
                                        </div>
@@ -245,7 +284,7 @@ const App = () => {
                                  </div>
                               </div>
                            ))}
-                           {loading && <div className="tamil-loading">நிபுணர் விளக்கம் அளிக்கிறார்...</div>}
+                           {loading && <div className="tamil-loading">à®¨à®¿à®ªà¯à®£à®°à¯ à®µà®¿à®³à®à¯à®à®®à¯ à®à®³à®¿à®à¯à®à®¿à®±à®¾à®°à¯...</div>}
                            <div ref={chatEndRef} />
                         </div>
                         
@@ -262,8 +301,8 @@ const App = () => {
                                           </div>
                                        ))}
                                        <div className="tk-row tk-controls">
-                                          <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>இடைவெளி (Space)</button>
-                                          <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}><X size={16}/> அழி (Clear)</button>
+                                          <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>à®à®à¯à®µà¯à®³à®¿ (Space)</button>
+                                          <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}><X size={16}/> à®à®´à®¿ (Clear)</button>
                                        </div>
                                     </div>
                                  </motion.div>
@@ -284,15 +323,16 @@ const App = () => {
                                           if (hasEnglish) {
                                              setIsTranslating(true);
                                              try {
+                                                // Handle terminal translation for the entire query if English remains
                                                 const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
                                                 const res = await fetch(url);
                                                 const data = await res.json();
                                                 if (data && data[0]) {
                                                    const translated = data[0].map(x => x[0]).join('');
-                                                   if (translated && translated !== query) {
+                                                   if (translated && translated.toLowerCase() !== query.toLowerCase()) {
                                                       setQuery(translated);
                                                       setIsTranslating(false);
-                                                      return; // Allow user to see/edit translation before second Enter
+                                                      return; // Review translation
                                                    }
                                                 }
                                              } catch (err) {}
@@ -315,49 +355,49 @@ const App = () => {
                   <motion.div key="list" className="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                      {!selectedPaal ? (
                         <>
-                           <div className="library-section-title">மூல நூல்கள் (Main Sections)</div>
+                           <div className="library-section-title">à®®à¯à®² à®¨à¯à®²à¯à®à®³à¯ (Main Sections)</div>
                            <div className="paal-cards">
-                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> <h3>அறத்துப்பால்</h3> <p>அறநெறிகள்</p> </div>
-                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
-                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
+                              <div className="paal-card aram" onClick={() => setSelectedPaal('à®à®±à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯')}> <h3>à®à®±à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯</h3> <p>à®à®±à®¨à¯à®±à®¿à®à®³à¯</p> </div>
+                              <div className="paal-card porul" onClick={() => setSelectedPaal('à®ªà¯à®°à¯à®à¯à®ªà®¾à®²à¯')}> <h3>à®ªà¯à®°à¯à®à¯à®ªà®¾à®²à¯</h3> <p>à®à®°à®à®¿à®¯à®²à¯ & à®à¯à®²à¯à®µà®®à¯</p> </div>
+                              <div className="paal-card inbam" onClick={() => setSelectedPaal('à®à®¾à®®à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯')}> <h3>à®à®©à¯à®ªà®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯</h3> <p>à®à®¾à®¤à®²à¯ & à®à®²à¯à®²à®±à®®à¯</p> </div>
                            </div>
 
                            <div className="library-resource-header-box" style={{ marginTop: '4rem' }}>
-                              <h3 className="res-title-main"><BookOpen size={20} /> டிஜிட்டல் ஆராய்ச்சி நூலகம் / Research Archives</h3>
+                              <h3 className="res-title-main"><BookOpen size={20} /> à®à®¿à®à®¿à®à¯à®à®²à¯ à®à®°à®¾à®¯à¯à®à¯à®à®¿ à®¨à¯à®²à®à®®à¯ / Research Archives</h3>
                               <div className="res-grid-premium">
                                  <a href="https://www.tamilvu.org/library/nationalized/pdf/59-puliyurkesigan/013.thirukuralputhiyaurai.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Database className="res-ico" size={24} />
                                     <div className="res-card-text">
-                                       <strong>தமிழ் இணையக் கல்விக்கழகம்</strong>
-                                       <span>புலியூர்க் கேசிகன் உரை (PDF)</span>
+                                       <strong>à®¤à®®à®¿à®´à¯ à®à®£à¯à®¯à®à¯ à®à®²à¯à®µà®¿à®à¯à®à®´à®à®®à¯</strong>
+                                       <span>à®ªà¯à®²à®¿à®¯à¯à®°à¯à®à¯ à®à¯à®à®¿à®à®©à¯ à®à®°à¯ (PDF)</span>
                                     </div>
                                  </a>
                                  <a href="https://www.projectmadurai.org/pm_etexts/pdf/pm0001.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Feather className="res-ico" size={24} />
                                     <div className="res-card-text">
-                                       <strong>புராஜெக்ட் மதுரை</strong>
-                                       <span>மின்னணுத் தமிழ் இலக்கியத் தொகுப்பு (PDF)</span>
+                                       <strong>à®ªà¯à®°à®¾à®à¯à®à¯à®à¯ à®®à®¤à¯à®°à¯</strong>
+                                       <span>à®®à®¿à®©à¯à®©à®£à¯à®¤à¯ à®¤à®®à®¿à®´à¯ à®à®²à®à¯à®à®¿à®¯à®¤à¯ à®¤à¯à®à¯à®ªà¯à®ªà¯ (PDF)</span>
                                     </div>
                                  </a>
                                  <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Zap className="res-ico" size={24} />
                                     <div className="res-card-text">
-                                       <strong>பாஜக மின்னூலகம்</strong>
-                                       <span>ஆராய்ச்சி பதிப்பு (PDF)</span>
+                                       <strong>à®ªà®¾à®à® à®®à®¿à®©à¯à®©à¯à®²à®à®®à¯</strong>
+                                       <span>à®à®°à®¾à®¯à¯à®à¯à®à®¿ à®ªà®¤à®¿à®ªà¯à®ªà¯ (PDF)</span>
                                     </div>
                                  </a>
                                  <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/#google_vignette" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Globe className="res-ico" size={24} />
                                     <div className="res-card-text">
-                                       <strong>TNPSC வினாத்தாள்கள்</strong>
-                                       <span>கல்வி மற்றும் பயிற்சித் தொகுப்பு</span>
+                                       <strong>TNPSC à®µà®¿à®©à®¾à®¤à¯à®¤à®¾à®³à¯à®à®³à¯</strong>
+                                       <span>à®à®²à¯à®µà®¿ à®®à®±à¯à®±à¯à®®à¯ à®ªà®¯à®¿à®±à¯à®à®¿à®¤à¯ à®¤à¯à®à¯à®ªà¯à®ªà¯</span>
                                     </div>
                                  </a>
                                  <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Globe className="res-ico" size={24} />
                                     <div className="res-card-text">
-                                       <strong>விக்கிப்பீடியா (Tamil)</strong>
-                                       <span>கட்டுரைகள் & வரலாற்றுத் தரவுகள்</span>
+                                       <strong>à®µà®¿à®à¯à®à®¿à®ªà¯à®ªà¯à®à®¿à®¯à®¾ (Tamil)</strong>
+                                       <span>à®à®à¯à®à¯à®°à¯à®à®³à¯ & à®µà®°à®²à®¾à®±à¯à®±à¯à®¤à¯ à®¤à®°à®µà¯à®à®³à¯</span>
                                     </div>
                                  </a>
                               </div>
@@ -365,23 +405,23 @@ const App = () => {
                         </>
                      ) : !selectedChapter ? (
                         <div className="chapter-view">
-                           <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> பால் தெரிவு </button>
+                           <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> à®ªà®¾à®²à¯ à®¤à¯à®°à®¿à®µà¯ </button>
                            <div className="chapter-header-text">{selectedPaal}</div>
                            <div className="chapter-grid">
                               {ATHIGARAMS.map((name, i) => {
                                  const num = i + 1;
-                                 const inPaal = (selectedPaal === 'அறத்துப்பால்' && num <= 38) || (selectedPaal === 'பொருட்பால்' && num > 38 && num <= 108) || (selectedPaal === 'காமத்துப்பால்' && num > 108);
+                                 const inPaal = (selectedPaal === 'à®à®±à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯' && num <= 38) || (selectedPaal === 'à®ªà¯à®°à¯à®à¯à®ªà®¾à®²à¯' && num > 38 && num <= 108) || (selectedPaal === 'à®à®¾à®®à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯' && num > 108);
                                  return inPaal && <button key={num} className="chapter-tile" onClick={() => setSelectedChapter(num)}> <span>{num}</span> {name} </button>
                               })}
                            </div>
                         </div>
                      ) : (
                         <div className="kural-view">
-                           <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> அதிகாரங்கள் </button>
+                           <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> à®à®¤à®¿à®à®¾à®°à®à¯à®à®³à¯ </button>
                            <div className="kural-grid-stack">
                               {filteredKurals.map(k => (
                                  <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
-                                    <div className="k-header-row">குறள் எண்: {k.Number}</div>
+                                    <div className="k-header-row">à®à¯à®±à®³à¯ à®à®£à¯: {k.Number}</div>
                                     <p className="kural-line-1">{k.Line1}</p>
                                     <p className="kural-line-2">{k.Line2}</p>
                                  </div>
@@ -400,21 +440,21 @@ const App = () => {
                            animate={{ opacity: 1, scale: 1 }}
                            transition={{ duration: 0.8 }}
                         >
-                           <h2 className="h-title">திருக்குறள்: காலத்தைக் கடந்த ஒரு மாபெரும் வரலாறு</h2>
-                           <p className="h-subtitle">2000 ஆண்டுகால ஞானம் • உலகப் பொதுமறை • விவேகத்தின் சிகரம்</p>
+                           <h2 className="h-title">à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯: à®à®¾à®²à®¤à¯à®¤à¯à®à¯ à®à®à®¨à¯à®¤ à®à®°à¯ à®®à®¾à®ªà¯à®°à¯à®®à¯ à®µà®°à®²à®¾à®±à¯</h2>
+                           <p className="h-subtitle">2000 à®à®£à¯à®à¯à®à®¾à®² à®à®¾à®©à®®à¯ â¢ à®à®²à®à®ªà¯ à®ªà¯à®¤à¯à®®à®±à¯ â¢ à®µà®¿à®µà¯à®à®¤à¯à®¤à®¿à®©à¯ à®à®¿à®à®°à®®à¯</p>
                         </motion.div>
                         <div className="h-hero-stats">
                            <div className="h-hero-stat-card">
                               <span className="h-stat-num">133</span>
-                              <span className="h-stat-lbl">அதிகாரங்கள்</span>
+                              <span className="h-stat-lbl">à®à®¤à®¿à®à®¾à®°à®à¯à®à®³à¯</span>
                            </div>
                            <div className="h-hero-stat-card">
                               <span className="h-stat-num">1330</span>
-                              <span className="h-stat-lbl">குறட்பாக்கள்</span>
+                              <span className="h-stat-lbl">à®à¯à®±à®à¯à®ªà®¾à®à¯à®à®³à¯</span>
                            </div>
                            <div className="h-hero-stat-card">
                               <span className="h-stat-num">100+</span>
-                              <span className="h-stat-lbl">மொழிகள்</span>
+                              <span className="h-stat-lbl">à®®à¯à®´à®¿à®à®³à¯</span>
                            </div>
                         </div>
                      </div>
@@ -423,26 +463,26 @@ const App = () => {
                         <section className="h-section-split">
                            <div className="h-card-premium creator-card">
                               <div className="h-img-container">
-                                 <img src="statue.png" alt="திருவள்ளுவர்" className="h-main-img" />
-                                 <div className="h-img-badge">தெய்வப்புலவர்</div>
+                                 <img src="statue.png" alt="à®¤à®¿à®°à¯à®µà®³à¯à®³à¯à®µà®°à¯" className="h-main-img" />
+                                 <div className="h-img-badge">à®¤à¯à®¯à¯à®µà®ªà¯à®ªà¯à®²à®µà®°à¯</div>
                               </div>
                               <div className="h-content-box">
-                                 <span className="h-label-top">வாழ்வியல் வழிகாட்டி</span>
-                                 <h3>திருவள்ளுவர்: காலக் கண்ணாடி</h3>
-                                 <p>சுமார் 2,000 ஆண்டுகளுக்கு முன்பே சாதி, மதம், இனம் எனப் பாராமல் மனித குலம் முழுமைக்கும் பொதுவான நீதியை வழங்கியவர் திருவள்ளுவர்.</p>
+                                 <span className="h-label-top">à®µà®¾à®´à¯à®µà®¿à®¯à®²à¯ à®µà®´à®¿à®à®¾à®à¯à®à®¿</span>
+                                 <h3>à®¤à®¿à®°à¯à®µà®³à¯à®³à¯à®µà®°à¯: à®à®¾à®²à®à¯ à®à®£à¯à®£à®¾à®à®¿</h3>
+                                 <p>à®à¯à®®à®¾à®°à¯ 2,000 à®à®£à¯à®à¯à®à®³à¯à®à¯à®à¯ à®®à¯à®©à¯à®ªà¯ à®à®¾à®¤à®¿, à®®à®¤à®®à¯, à®à®©à®®à¯ à®à®©à®ªà¯ à®ªà®¾à®°à®¾à®®à®²à¯ à®®à®©à®¿à®¤ à®à¯à®²à®®à¯ à®®à¯à®´à¯à®®à¯à®à¯à®à¯à®®à¯ à®ªà¯à®¤à¯à®µà®¾à®© à®¨à¯à®¤à®¿à®¯à¯ à®µà®´à®à¯à®à®¿à®¯à®µà®°à¯ à®¤à®¿à®°à¯à®µà®³à¯à®³à¯à®µà®°à¯.</p>
                                  <div className="h-info-grid">
                                     <div className="h-info-item">
                                        <Award className="h-icon" size={20} />
                                        <div>
-                                          <strong>காலம்</strong>
-                                          <span>கி.மு. 31 (திருவள்ளுவர் ஆண்டு)</span>
+                                          <strong>à®à®¾à®²à®®à¯</strong>
+                                          <span>à®à®¿.à®®à¯. 31 (à®¤à®¿à®°à¯à®µà®³à¯à®³à¯à®µà®°à¯ à®à®£à¯à®à¯)</span>
                                        </div>
                                     </div>
                                     <div className="h-info-item">
                                        <BrainCircuit className="h-icon" size={20} />
                                        <div>
-                                          <strong>தத்துவம்</strong>
-                                          <span>உலகளாவிய மனிதநேயம்</span>
+                                          <strong>à®¤à®¤à¯à®¤à¯à®µà®®à¯</strong>
+                                          <span>à®à®²à®à®³à®¾à®µà®¿à®¯ à®®à®©à®¿à®¤à®¨à¯à®¯à®®à¯</span>
                                        </div>
                                     </div>
                                  </div>
@@ -452,68 +492,68 @@ const App = () => {
 
                         <div className="h-pillars-section">
                            <div className="h-section-header-center">
-                              <span className="h-label">கட்டமைப்பு</span>
-                              <h3>முப்பால்: வாழ்வின் மூன்று பரிமாணங்கள்</h3>
+                              <span className="h-label">à®à®à¯à®à®®à¯à®ªà¯à®ªà¯</span>
+                              <h3>à®®à¯à®ªà¯à®ªà®¾à®²à¯: à®µà®¾à®´à¯à®µà®¿à®©à¯ à®®à¯à®©à¯à®±à¯ à®ªà®°à®¿à®®à®¾à®£à®à¯à®à®³à¯</h3>
                            </div>
                            <div className="h-pillars-grid">
                               <motion.div whileHover={{ y: -10 }} className="h-pillar-card aram">
                                  <div className="p-icon"><BookOpen size={24} /></div>
-                                 <h4>அறத்துப்பால்</h4>
-                                 <p>38 அதிகாரங்கள்</p>
-                                 <span className="p-desc">தனிமனித ஒழுக்கம், இல்லறம் மற்றும் துறவறம் குறித்த நெறிகள்.</span>
+                                 <h4>à®à®±à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯</h4>
+                                 <p>38 à®à®¤à®¿à®à®¾à®°à®à¯à®à®³à¯</p>
+                                 <span className="p-desc">à®¤à®©à®¿à®®à®©à®¿à®¤ à®à®´à¯à®à¯à®à®®à¯, à®à®²à¯à®²à®±à®®à¯ à®®à®±à¯à®±à¯à®®à¯ à®¤à¯à®±à®µà®±à®®à¯ à®à¯à®±à®¿à®¤à¯à®¤ à®¨à¯à®±à®¿à®à®³à¯.</span>
                               </motion.div>
                               <motion.div whileHover={{ y: -10 }} className="h-pillar-card porul">
                                  <div className="p-icon"><Database size={24} /></div>
-                                 <h4>பொருட்பால்</h4>
-                                 <p>70 அதிகாரங்கள்</p>
-                                 <span className="p-desc">அரசியல், அமைச்சியல், படை, அரண் மற்றும் சமூக நிர்வகிப்பு.</span>
+                                 <h4>à®ªà¯à®°à¯à®à¯à®ªà®¾à®²à¯</h4>
+                                 <p>70 à®à®¤à®¿à®à®¾à®°à®à¯à®à®³à¯</p>
+                                 <span className="p-desc">à®à®°à®à®¿à®¯à®²à¯, à®à®®à¯à®à¯à®à®¿à®¯à®²à¯, à®ªà®à¯, à®à®°à®£à¯ à®®à®±à¯à®±à¯à®®à¯ à®à®®à¯à® à®¨à®¿à®°à¯à®µà®à®¿à®ªà¯à®ªà¯.</span>
                               </motion.div>
                               <motion.div whileHover={{ y: -10 }} className="h-pillar-card inbam">
                                  <div className="p-icon"><Sparkles size={24} /></div>
-                                 <h4>இன்பத்துப்பால்</h4>
-                                 <p>25 அதிகாரங்கள்</p>
-                                 <span className="p-desc">காதல், அன்பு மற்றும் அகவாழ்வின் ஆழமான உணர்வுகள்.</span>
+                                 <h4>à®à®©à¯à®ªà®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯</h4>
+                                 <p>25 à®à®¤à®¿à®à®¾à®°à®à¯à®à®³à¯</p>
+                                 <span className="p-desc">à®à®¾à®¤à®²à¯, à®à®©à¯à®ªà¯ à®®à®±à¯à®±à¯à®®à¯ à®à®à®µà®¾à®´à¯à®µà®¿à®©à¯ à®à®´à®®à®¾à®© à®à®£à®°à¯à®µà¯à®à®³à¯.</span>
                               </motion.div>
                            </div>
                         </div>
 
                         <div className="h-timeline-vertical-section">
                            <div className="h-section-header">
-                              <span className="h-label">காலப்பயணம்</span>
-                              <h3>வரலாற்று மைல்கற்கள்</h3>
+                              <span className="h-label">à®à®¾à®²à®ªà¯à®ªà®¯à®£à®®à¯</span>
+                              <h3>à®µà®°à®²à®¾à®±à¯à®±à¯ à®®à¯à®²à¯à®à®±à¯à®à®³à¯</h3>
                            </div>
                            <div className="h-v-timeline">
                               <div className="h-tl-line"></div>
                               <div className="h-tl-node-item">
-                                 <div className="h-tl-year">கி.மு / கி.பி</div>
+                                 <div className="h-tl-year">à®à®¿.à®®à¯ / à®à®¿.à®ªà®¿</div>
                                  <div className="h-tl-marker"></div>
                                  <div className="h-tl-info">
-                                    <h4>சங்க காலம் (அரங்கேற்றம்)</h4>
-                                    <p>மதுரை தமிழ்ச் சங்கத்தில் 'திருவள்ளுவ மாலை' சான்றோர் முன்னிலையில் அரங்கேற்றப்பட்டது.</p>
+                                    <h4>à®à®à¯à® à®à®¾à®²à®®à¯ (à®à®°à®à¯à®à¯à®±à¯à®±à®®à¯)</h4>
+                                    <p>à®®à®¤à¯à®°à¯ à®¤à®®à®¿à®´à¯à®à¯ à®à®à¯à®à®¤à¯à®¤à®¿à®²à¯ 'à®¤à®¿à®°à¯à®µà®³à¯à®³à¯à®µ à®®à®¾à®²à¯' à®à®¾à®©à¯à®±à¯à®°à¯ à®®à¯à®©à¯à®©à®¿à®²à¯à®¯à®¿à®²à¯ à®à®°à®à¯à®à¯à®±à¯à®±à®ªà¯à®ªà®à¯à®à®¤à¯.</p>
                                  </div>
                               </div>
                               <div className="h-tl-node-item">
                                  <div className="h-tl-year">1812</div>
                                  <div className="h-tl-marker"></div>
                                  <div className="h-tl-info">
-                                    <h4>அச்சு வடிவம்</h4>
-                                    <p>தஞ்சை ஞானப்பிரகாசம் அவர்களால் முதன்முதலில் நூல் வடிவில் அச்சிடப்பட்டது.</p>
+                                    <h4>à®à®à¯à®à¯ à®µà®à®¿à®µà®®à¯</h4>
+                                    <p>à®¤à®à¯à®à¯ à®à®¾à®©à®ªà¯à®ªà®¿à®°à®à®¾à®à®®à¯ à®à®µà®°à¯à®à®³à®¾à®²à¯ à®®à¯à®¤à®©à¯à®®à¯à®¤à®²à®¿à®²à¯ à®¨à¯à®²à¯ à®µà®à®¿à®µà®¿à®²à¯ à®à®à¯à®à®¿à®à®ªà¯à®ªà®à¯à®à®¤à¯.</p>
                                  </div>
                               </div>
                               <div className="h-tl-node-item">
                                  <div className="h-tl-year">1886</div>
                                  <div className="h-tl-marker"></div>
                                  <div className="h-tl-info">
-                                    <h4>உலகளாவிய அங்கீகாரம்</h4>
-                                    <p>ஜி.யு. போப் (G.U. Pope) அவர்களால் ஆங்கிலத்தில் மொழிபெயர்க்கப்பட்டு உலகிற்கு அறிமுகமானது.</p>
+                                    <h4>à®à®²à®à®³à®¾à®µà®¿à®¯ à®à®à¯à®à¯à®à®¾à®°à®®à¯</h4>
+                                    <p>à®à®¿.à®¯à¯. à®ªà¯à®ªà¯ (G.U. Pope) à®à®µà®°à¯à®à®³à®¾à®²à¯ à®à®à¯à®à®¿à®²à®¤à¯à®¤à®¿à®²à¯ à®®à¯à®´à®¿à®ªà¯à®¯à®°à¯à®à¯à®à®ªà¯à®ªà®à¯à®à¯ à®à®²à®à®¿à®±à¯à®à¯ à®à®±à®¿à®®à¯à®à®®à®¾à®©à®¤à¯.</p>
                                  </div>
                               </div>
                               <div className="h-tl-node-item active">
-                                 <div className="h-tl-year">இன்று</div>
+                                 <div className="h-tl-year">à®à®©à¯à®±à¯</div>
                                  <div className="h-tl-marker"></div>
                                  <div className="h-tl-info">
-                                    <h4>டிஜிட்டல் யுகம் (SRM AI)</h4>
-                                    <p>நவீன தொழில்நுட்பத்தின் மூலம் திருக்குறள் அடுத்த தலைமுறைக்குக் கொண்டு செல்லப்படுகிறது.</p>
+                                    <h4>à®à®¿à®à®¿à®à¯à®à®²à¯ à®¯à¯à®à®®à¯ (SRM AI)</h4>
+                                    <p>à®¨à®µà¯à®© à®¤à¯à®´à®¿à®²à¯à®¨à¯à®à¯à®ªà®¤à¯à®¤à®¿à®©à¯ à®®à¯à®²à®®à¯ à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯ à®à®à¯à®¤à¯à®¤ à®¤à®²à¯à®®à¯à®±à¯à®à¯à®à¯à®à¯ à®à¯à®£à¯à®à¯ à®à¯à®²à¯à®²à®ªà¯à®ªà®à¯à®à®¿à®±à®¤à¯.</p>
                                  </div>
                               </div>
                            </div>
@@ -522,13 +562,13 @@ const App = () => {
                         <section className="h-manuscript-feature">
                            <div className="h-feature-content">
                               <div className="h-img-glow">
-                                 <img src="manuscript.png" alt="ஓலைச்சுவடி" />
+                                 <img src="manuscript.png" alt="à®à®²à¯à®à¯à®à¯à®µà®à®¿" />
                               </div>
                               <div className="h-feature-text">
-                                 <span className="h-label">மீட்டெடுப்பு</span>
-                                 <h3>ஓலைச்சுவடியிலிருந்து டிஜிட்டல் வரை</h3>
-                                 <p>திருக்குறள் பல நூற்றாண்டுகளாக ஓலைச்சுவடிகளில் மட்டுமே பாதுகாக்கப்பட்டது. 'எழுத்தாணி' கொண்டு பனை ஓலைகளில் செதுக்கப்பட்ட இந்த வரிகள், இயற்கை சீற்றங்களைக் கடந்து நம்மிடம் வந்து சேர்ந்தது ஒரு அதிசயம்.</p>
-                                 <p>தமிழ் தாத்தா உ.வே. சாமிநாதையர் அவர்களின் அயராத உழைப்பால் இவை மீட்டெடுக்கப்பட்டு இன்று உங்கள் விரல் நுனியில் உள்ளது.</p>
+                                 <span className="h-label">à®®à¯à®à¯à®à¯à®à¯à®ªà¯à®ªà¯</span>
+                                 <h3>à®à®²à¯à®à¯à®à¯à®µà®à®¿à®¯à®¿à®²à®¿à®°à¯à®¨à¯à®¤à¯ à®à®¿à®à®¿à®à¯à®à®²à¯ à®µà®°à¯</h3>
+                                 <p>à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯ à®ªà®² à®¨à¯à®±à¯à®±à®¾à®£à¯à®à¯à®à®³à®¾à® à®à®²à¯à®à¯à®à¯à®µà®à®¿à®à®³à®¿à®²à¯ à®®à®à¯à®à¯à®®à¯ à®ªà®¾à®¤à¯à®à®¾à®à¯à®à®ªà¯à®ªà®à¯à®à®¤à¯. 'à®à®´à¯à®¤à¯à®¤à®¾à®£à®¿' à®à¯à®£à¯à®à¯ à®ªà®©à¯ à®à®²à¯à®à®³à®¿à®²à¯ à®à¯à®¤à¯à®à¯à®à®ªà¯à®ªà®à¯à® à®à®¨à¯à®¤ à®µà®°à®¿à®à®³à¯, à®à®¯à®±à¯à®à¯ à®à¯à®±à¯à®±à®à¯à®à®³à¯à®à¯ à®à®à®¨à¯à®¤à¯ à®¨à®®à¯à®®à®¿à®à®®à¯ à®µà®¨à¯à®¤à¯ à®à¯à®°à¯à®¨à¯à®¤à®¤à¯ à®à®°à¯ à®à®¤à®¿à®à®¯à®®à¯.</p>
+                                 <p>à®¤à®®à®¿à®´à¯ à®¤à®¾à®¤à¯à®¤à®¾ à®.à®µà¯. à®à®¾à®®à®¿à®¨à®¾à®¤à¯à®¯à®°à¯ à®à®µà®°à¯à®à®³à®¿à®©à¯ à®à®¯à®°à®¾à®¤ à®à®´à¯à®ªà¯à®ªà®¾à®²à¯ à®à®µà¯ à®®à¯à®à¯à®à¯à®à¯à®à¯à®à®ªà¯à®ªà®à¯à®à¯ à®à®©à¯à®±à¯ à®à®à¯à®à®³à¯ à®µà®¿à®°à®²à¯ à®¨à¯à®©à®¿à®¯à®¿à®²à¯ à®à®³à¯à®³à®¤à¯.</p>
                               </div>
                            </div>
                         </section>
@@ -536,78 +576,78 @@ const App = () => {
                         <section className="h-statue-section">
                            <div className="h-statue-container">
                               <div className="h-statue-text">
-                                 <span className="h-label">நினைவுச் சின்னம் / Monument</span>
-                                 <h3>கன்னியாகுமரி திருவள்ளுவர் சிலை</h3>
-                                 <p>தமிழின் பெருமையை உலகிற்குப் பறைசாற்றும் வகையில், இந்தியாவின் தென்கோடி முனையான கன்னியாகுமரியில் இந்த பிரம்மாண்ட சிலை அமைக்கப்பட்டுள்ளது.</p>
+                                 <span className="h-label">à®¨à®¿à®©à¯à®µà¯à®à¯ à®à®¿à®©à¯à®©à®®à¯ / Monument</span>
+                                 <h3>à®à®©à¯à®©à®¿à®¯à®¾à®à¯à®®à®°à®¿ à®¤à®¿à®°à¯à®µà®³à¯à®³à¯à®µà®°à¯ à®à®¿à®²à¯</h3>
+                                 <p>à®¤à®®à®¿à®´à®¿à®©à¯ à®ªà¯à®°à¯à®®à¯à®¯à¯ à®à®²à®à®¿à®±à¯à®à¯à®ªà¯ à®ªà®±à¯à®à®¾à®±à¯à®±à¯à®®à¯ à®µà®à¯à®¯à®¿à®²à¯, à®à®¨à¯à®¤à®¿à®¯à®¾à®µà®¿à®©à¯ à®¤à¯à®©à¯à®à¯à®à®¿ à®®à¯à®©à¯à®¯à®¾à®© à®à®©à¯à®©à®¿à®¯à®¾à®à¯à®®à®°à®¿à®¯à®¿à®²à¯ à®à®¨à¯à®¤ à®ªà®¿à®°à®®à¯à®®à®¾à®£à¯à® à®à®¿à®²à¯ à®à®®à¯à®à¯à®à®ªà¯à®ªà®à¯à®à¯à®³à¯à®³à®¤à¯.</p>
                                  
                                  <div className="h-statue-metrics">
                                     <div className="h-metric">
-                                       <strong>133 அடி</strong>
-                                       <span>மொத்த உயரம் (133 அதிகாரங்கள்)</span>
+                                       <strong>133 à®à®à®¿</strong>
+                                       <span>à®®à¯à®¤à¯à®¤ à®à®¯à®°à®®à¯ (133 à®à®¤à®¿à®à®¾à®°à®à¯à®à®³à¯)</span>
                                     </div>
                                     <div className="h-metric">
-                                       <strong>38 அடி</strong>
-                                       <span>பீடத்தின் உயரம் (அறத்துப்பால்)</span>
+                                       <strong>38 à®à®à®¿</strong>
+                                       <span>à®ªà¯à®à®¤à¯à®¤à®¿à®©à¯ à®à®¯à®°à®®à¯ (à®à®±à®¤à¯à®¤à¯à®ªà¯à®ªà®¾à®²à¯)</span>
                                     </div>
                                     <div className="h-metric">
-                                       <strong>95 அடி</strong>
-                                       <span>சிலையின் உயரம் (பொருள் & இன்பம்)</span>
+                                       <strong>95 à®à®à®¿</strong>
+                                       <span>à®à®¿à®²à¯à®¯à®¿à®©à¯ à®à®¯à®°à®®à¯ (à®ªà¯à®°à¯à®³à¯ & à®à®©à¯à®ªà®®à¯)</span>
                                     </div>
                                  </div>
                                  
-                                 <p className="h-statue-detail">டாக்டர் வி. கணபதி ஸ்தபதி அவர்களால் வடிவமைக்கப்பட்ட இந்த சிலை, அரபிக்கடல், வங்காள விரிகுடா மற்றும் இந்தியப் பெருங்கடல் கூடும் இடத்தில் கம்பீரமாக நிற்கிறது.</p>
+                                 <p className="h-statue-detail">à®à®¾à®à¯à®à®°à¯ à®µà®¿. à®à®£à®ªà®¤à®¿ à®¸à¯à®¤à®ªà®¤à®¿ à®à®µà®°à¯à®à®³à®¾à®²à¯ à®µà®à®¿à®µà®®à¯à®à¯à®à®ªà¯à®ªà®à¯à® à®à®¨à¯à®¤ à®à®¿à®²à¯, à®à®°à®ªà®¿à®à¯à®à®à®²à¯, à®µà®à¯à®à®¾à®³ à®µà®¿à®°à®¿à®à¯à®à®¾ à®®à®±à¯à®±à¯à®®à¯ à®à®¨à¯à®¤à®¿à®¯à®ªà¯ à®ªà¯à®°à¯à®à¯à®à®à®²à¯ à®à¯à®à¯à®®à¯ à®à®à®¤à¯à®¤à®¿à®²à¯ à®à®®à¯à®ªà¯à®°à®®à®¾à® à®¨à®¿à®±à¯à®à®¿à®±à®¤à¯.</p>
                               </div>
                               <div className="h-statue-image">
-                                 <img src="statue.png" alt="திருவள்ளுவர் சிலை" />
+                                 <img src="statue.png" alt="à®¤à®¿à®°à¯à®µà®³à¯à®³à¯à®µà®°à¯ à®à®¿à®²à¯" />
                               </div>
                            </div>
                         </section>
 
                         <section className="h-global-influence">
                            <div className="h-section-header-center">
-                              <span className="h-label">உலகளாவிய தாக்கம்</span>
-                              <h3>உலகத் தலைவர்களின் உந்துதல்</h3>
+                              <span className="h-label">à®à®²à®à®³à®¾à®µà®¿à®¯ à®¤à®¾à®à¯à®à®®à¯</span>
+                              <h3>à®à®²à®à®¤à¯ à®¤à®²à¯à®µà®°à¯à®à®³à®¿à®©à¯ à®à®¨à¯à®¤à¯à®¤à®²à¯</h3>
                            </div>
                            <div className="h-influence-grid">
                               <div className="h-influence-card">
                                  <div className="h-card-inner">
-                                    <p><strong>மகாத்மா காந்தி:</strong> "திருக்குறளில் உள்ள 'இன்னா செய்தாரையும்' என்ற கருத்தே அகிம்சை கொள்கைக்கு அடித்தளம்."</p>
+                                    <p><strong>à®®à®à®¾à®¤à¯à®®à®¾ à®à®¾à®¨à¯à®¤à®¿:</strong> "à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à®¿à®²à¯ à®à®³à¯à®³ 'à®à®©à¯à®©à®¾ à®à¯à®¯à¯à®¤à®¾à®°à¯à®¯à¯à®®à¯' à®à®©à¯à®± à®à®°à¯à®¤à¯à®¤à¯ à®à®à®¿à®®à¯à®à¯ à®à¯à®³à¯à®à¯à®à¯à®à¯ à®à®à®¿à®¤à¯à®¤à®³à®®à¯."</p>
                                  </div>
                               </div>
                               <div className="h-influence-card">
                                  <div className="h-card-inner">
-                                    <p><strong>ஆல்பர்ட் சுவைட்சர்:</strong> "திருக்குறளைப் போல வாழ்வின் அனைத்துப் பகுதிகளுக்கும் வழிகாட்டும் மற்றொரு நூல் உலகில் இல்லை."</p>
+                                    <p><strong>à®à®²à¯à®ªà®°à¯à®à¯ à®à¯à®µà¯à®à¯à®à®°à¯:</strong> "à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯à®ªà¯ à®ªà¯à®² à®µà®¾à®´à¯à®µà®¿à®©à¯ à®à®©à¯à®¤à¯à®¤à¯à®ªà¯ à®ªà®à¯à®¤à®¿à®à®³à¯à®à¯à®à¯à®®à¯ à®µà®´à®¿à®à®¾à®à¯à®à¯à®®à¯ à®®à®±à¯à®±à¯à®°à¯ à®¨à¯à®²à¯ à®à®²à®à®¿à®²à¯ à®à®²à¯à®²à¯."</p>
                                  </div>
                               </div>
                               <div className="h-influence-card">
                                  <div className="h-card-inner">
-                                    <p><strong>லியோ டால்ஸ்டாய்:</strong> ரஷ்யாவிலிருந்து திருக்குறளை மொழிபெயர்த்துப் படித்து வியந்தவர்.</p>
+                                    <p><strong>à®²à®¿à®¯à¯ à®à®¾à®²à¯à®¸à¯à®à®¾à®¯à¯:</strong> à®°à®·à¯à®¯à®¾à®µà®¿à®²à®¿à®°à¯à®¨à¯à®¤à¯ à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯ à®®à¯à®´à®¿à®ªà¯à®¯à®°à¯à®¤à¯à®¤à¯à®ªà¯ à®ªà®à®¿à®¤à¯à®¤à¯ à®µà®¿à®¯à®¨à¯à®¤à®µà®°à¯.</p>
                                  </div>
                               </div>
                            </div>
                            <div className="h-mega-quote">
                               <Quote className="h-q-icon" size={60} />
-                              <blockquote>"திருக்குறள் என்பது மனிதன் மனிதனாக வாழ, மனிதன் மனிதனுக்குச் சொன்ன உன்னத நெறி."</blockquote>
+                              <blockquote>"à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯ à®à®©à¯à®ªà®¤à¯ à®®à®©à®¿à®¤à®©à¯ à®®à®©à®¿à®¤à®©à®¾à® à®µà®¾à®´, à®®à®©à®¿à®¤à®©à¯ à®®à®©à®¿à®¤à®©à¯à®à¯à®à¯à®à¯ à®à¯à®©à¯à®© à®à®©à¯à®©à®¤ à®¨à¯à®±à®¿."</blockquote>
                            </div>
                         </section>
 
                         <div className="h-resources-v2">
-                           <h3>கல்வி மற்றும் ஆய்வு ஆதாரங்கள்</h3>
+                           <h3>à®à®²à¯à®µà®¿ à®®à®±à¯à®±à¯à®®à¯ à®à®¯à¯à®µà¯ à®à®¤à®¾à®°à®à¯à®à®³à¯</h3>
                            <div className="h-links-flex">
                               <a href="https://www.projectmadurai.org/pm_etexts/pdf/pm0001.pdf" target="_blank" rel="noreferrer" className="h-link">
-                                 <Database size={18} /> <span>புராஜெக்ட் மதுரை (PDF)</span>
+                                 <Database size={18} /> <span>à®ªà¯à®°à®¾à®à¯à®à¯à®à¯ à®®à®¤à¯à®°à¯ (PDF)</span>
                               </a>
                               <a href="https://www.tamilvu.org/library/nationalized/pdf/59-puliyurkesigan/013.thirukuralputhiyaurai.pdf" target="_blank" rel="noreferrer" className="h-link">
-                                 <BookOpen size={18} /> <span>தமிழ் இணையக் கல்விக்கழகம் (PDF)</span>
+                                 <BookOpen size={18} /> <span>à®¤à®®à®¿à®´à¯ à®à®£à¯à®¯à®à¯ à®à®²à¯à®µà®¿à®à¯à®à®´à®à®®à¯ (PDF)</span>
                               </a>
                               <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noreferrer" className="h-link">
-                                 <Zap size={18} /> <span>பாஜக மின்னூலகம் (PDF)</span>
+                                 <Zap size={18} /> <span>à®ªà®¾à®à® à®®à®¿à®©à¯à®©à¯à®²à®à®®à¯ (PDF)</span>
                               </a>
                               <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/#google_vignette" target="_blank" rel="noreferrer" className="h-link">
-                                 <Globe size={18} /> <span>TNPSC வினாத்தாள்கள்</span>
+                                 <Globe size={18} /> <span>TNPSC à®µà®¿à®©à®¾à®¤à¯à®¤à®¾à®³à¯à®à®³à¯</span>
                               </a>
                               <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="h-link">
-                                 <BookOpen size={18} /> <span>விக்கிப்பீடியா (Tamil)</span>
+                                 <BookOpen size={18} /> <span>à®µà®¿à®à¯à®à®¿à®ªà¯à®ªà¯à®à®¿à®¯à®¾ (Tamil)</span>
                               </a>
                            </div>
                         </div>
@@ -615,9 +655,9 @@ const App = () => {
 
                      <div className="h-footer-premium">
                         <div className="h-footer-content">
-                           <h3>காலம் கடந்த வழிகாட்டி</h3>
-                           <p>இன்று நவீன செயற்கை நுண்ணறிவு யுகத்திலும், திருக்குறள் நமக்கு வாழ்வியல் தீர்வுகளை வழங்குகிறது.</p>
-                           <div className="h-srm-badge">SRM Institute of Science and Technology • Tamil Research Centre</div>
+                           <h3>à®à®¾à®²à®®à¯ à®à®à®¨à¯à®¤ à®µà®´à®¿à®à®¾à®à¯à®à®¿</h3>
+                           <p>à®à®©à¯à®±à¯ à®¨à®µà¯à®© à®à¯à®¯à®±à¯à®à¯ à®¨à¯à®£à¯à®£à®±à®¿à®µà¯ à®¯à¯à®à®¤à¯à®¤à®¿à®²à¯à®®à¯, à®¤à®¿à®°à¯à®à¯à®à¯à®±à®³à¯ à®¨à®®à®à¯à®à¯ à®µà®¾à®´à¯à®µà®¿à®¯à®²à¯ à®¤à¯à®°à¯à®µà¯à®à®³à¯ à®µà®´à®à¯à®à¯à®à®¿à®±à®¤à¯.</p>
+                           <div className="h-srm-badge">SRM Institute of Science and Technology â¢ Tamil Research Centre</div>
                         </div>
                      </div>
                   </motion.div>
@@ -629,16 +669,16 @@ const App = () => {
             {selectedKural && (
                <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
                   <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
-                     <header className="m-header"> <span className="m-badge">குறள் {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
+                     <header className="m-header"> <span className="m-badge">à®à¯à®±à®³à¯ {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
                      <div className="m-verse-box">
                         <h3 className="kural-line-1">{selectedKural.Line1}</h3>
                         <h3 className="kural-line-2">{selectedKural.Line2}</h3>
                      </div>
                      <div className="m-explanations-stack">
-                        <div className="e-block"> <h5>மு. வரதராசனார் விளக்கம்</h5> <p>{selectedKural.mv || selectedKural.explanation}</p> </div>
-                        <div className="e-block"> <h5>மு. கருணாநிதி விளக்கம்</h5> <p>{selectedKural.mk || "தகவல் இல்லை"}</p> </div>
-                        <div className="e-block"> <h5>சாலமன் பாப்பையா விளக்கம்</h5> <p>{selectedKural.sp || "தகவல் இல்லை"}</p> </div>
-                        <div className="e-block en"> <h5>ஆங்கில மொழிபெயர்ப்பு</h5> <p>{selectedKural.Translation}</p> </div>
+                        <div className="e-block"> <h5>à®®à¯. à®µà®°à®¤à®°à®¾à®à®©à®¾à®°à¯ à®µà®¿à®³à®à¯à®à®®à¯</h5> <p>{selectedKural.mv || selectedKural.explanation}</p> </div>
+                        <div className="e-block"> <h5>à®®à¯. à®à®°à¯à®£à®¾à®¨à®¿à®¤à®¿ à®µà®¿à®³à®à¯à®à®®à¯</h5> <p>{selectedKural.mk || "à®¤à®à®µà®²à¯ à®à®²à¯à®²à¯"}</p> </div>
+                        <div className="e-block"> <h5>à®à®¾à®²à®®à®©à¯ à®ªà®¾à®ªà¯à®ªà¯à®¯à®¾ à®µà®¿à®³à®à¯à®à®®à¯</h5> <p>{selectedKural.sp || "à®¤à®à®µà®²à¯ à®à®²à¯à®²à¯"}</p> </div>
+                        <div className="e-block en"> <h5>à®à®à¯à®à®¿à®² à®®à¯à®´à®¿à®ªà¯à®¯à®°à¯à®ªà¯à®ªà¯</h5> <p>{selectedKural.Translation}</p> </div>
                      </div>
                   </motion.div>
                </div>
@@ -649,12 +689,12 @@ const App = () => {
             {showSettings && (
                <div className="settings-modal-overlay" onClick={() => setShowSettings(false)}>
                   <div className="settings-modal" onClick={e => e.stopPropagation()}>
-                     <h3>அமைப்புகள்</h3>
+                     <h3>à®à®®à¯à®ªà¯à®ªà¯à®à®³à¯</h3>
                      <div className="set-field">
-                        <label>OpenAI சாவி (API Key)</label>
+                        <label>OpenAI à®à®¾à®µà®¿ (API Key)</label>
                         <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} />
                      </div>
-                     <button className="save-btn" onClick={() => setShowSettings(false)}>சரி</button>
+                     <button className="save-btn" onClick={() => setShowSettings(false)}>à®à®°à®¿</button>
                   </div>
                </div>
             )}
