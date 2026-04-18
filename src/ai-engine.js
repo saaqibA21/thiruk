@@ -22,12 +22,12 @@ export class KuralAI {
 
     // High-speed Lexical Search (Keyword + Structural + Tanglish)
     async search(query) {
-        const cleanQuery = query.toLowerCase().trim();
+        const cleanQuery = query.toLowerCase().trim().normalize('NFC');
         const terms = cleanQuery.split(/\s+/).filter(t => t.length > 1);
         
         // Detection for structural constraints (Tamil + Tanglish + English)
-        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end'];
-        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam'];
+        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end', 'முடிகின்ற', 'முடிகிறது'];
+        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam', 'தொடங்குகிறது', 'தொடங்குகின்ற'];
         
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
@@ -38,6 +38,7 @@ export class KuralAI {
             ...endKeywords, ...startKeywords, 
             'என்ற', 'சொல்லுடன்', 'சொல்லும்', 'சொல்', 'வார்த்தை', 'kural', 'kurals', 'குறள்', 'குறள்கள்', 
             'with', 'word', 'the', 'என்பது', 'என்றார்', 'எனக்கு', 'கொடு', 'வேண்டும்', 'கூறு', 'பற்றி', 
+            'என', 'என்று', 'ஆன', 'ஆக', 'எனும்',
             'about', 'give', 'me', 'tell', 'show', 'for', 'of', 'in', 'on', 'to', 'a', 'an', 'some'
         ];
         
@@ -55,9 +56,9 @@ export class KuralAI {
                 let score = 0;
                 let hasStructuralMatch = false;
 
-                const tamilContent = `${k.Line1} ${k.Line2} ${k.mv || ''} ${k.sp || ''} ${k.mk || ''} ${k.explanation || ''}`.toLowerCase();
-                const englishContent = `${k.Translation || ''} ${k.explanation || ''} ${k.couplet || ''}`.toLowerCase();
-                const tanglishContent = `${k.transliteration1 || ''} ${k.transliteration2 || ''}`.toLowerCase();
+                const tamilContent = `${k.Line1} ${k.Line2} ${k.mv || ''} ${k.sp || ''} ${k.mk || ''} ${k.explanation || ''}`.toLowerCase().normalize('NFC');
+                const englishContent = `${k.Translation || ''} ${k.explanation || ''} ${k.couplet || ''}`.toLowerCase().normalize('NFC');
+                const tanglishContent = `${k.transliteration1 || ''} ${k.transliteration2 || ''}`.toLowerCase().normalize('NFC');
                 
                 const fullContent = `${tamilContent} ${englishContent} ${tanglishContent}`;
 
@@ -88,7 +89,10 @@ export class KuralAI {
                             score += 500;
                             hasStructuralMatch = true;
                         } else if (cleanL2.endsWith(targetWord) || cleanT2.endsWith(targetWord)) {
-                            score += 200;
+                            score += 300;
+                            hasStructuralMatch = true;
+                        } else if (targetWord.length > 3 && (lastWordL2.includes(targetWord) || lastWordT2.includes(targetWord))) {
+                            score += 150;
                             hasStructuralMatch = true;
                         }
                     }
@@ -101,7 +105,10 @@ export class KuralAI {
                             score += 500;
                             hasStructuralMatch = true;
                         } else if (cleanL1.startsWith(targetWord) || cleanT1.startsWith(targetWord)) {
-                            score += 200;
+                            score += 300;
+                            hasStructuralMatch = true;
+                        } else if (targetWord.length > 3 && (firstWordL1.includes(targetWord) || firstWordT1.includes(targetWord))) {
+                            score += 150;
                             hasStructuralMatch = true;
                         }
                     }
