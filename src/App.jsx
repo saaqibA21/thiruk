@@ -296,25 +296,18 @@ const App = () => {
                            <div className="library-resource-header-box" style={{ marginTop: '4rem' }}>
                               <h3 className="res-title-main"><BookOpen size={20} /> டிஜிட்டல் ஆராய்ச்சி நூலகம் / Research Archives</h3>
                               <div className="res-grid-premium">
-                                 <a href="https://www.tamildigitallibrary.in/book-detail?id=jZY9lKy2kZpc7979ITXlLyeYkZyc" target="_blank" rel="noreferrer" className="res-card-v2">
+                                 <a href="https://www.tamilvu.org/library/nationalized/pdf/59-puliyurkesigan/013.thirukuralputhiyaurai.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Database className="res-ico" size={24} />
                                     <div className="res-card-text">
-                                       <strong>தமிழ் டிஜிட்டல் நூலகம்</strong>
-                                       <span>அரிய ஓலைச்சுவடி பதிப்புகள் (PDF)</span>
+                                       <strong>தமிழ் இணையக் கல்விக்கழகம்</strong>
+                                       <span>புலியூர்க் கேசிகன் உரை (PDF)</span>
                                     </div>
                                  </a>
-                                 <a href="https://archive.org/details/thesacredkurals00popeuoft" target="_blank" rel="noreferrer" className="res-card-v2">
+                                 <a href="https://www.projectmadurai.org/pm_etexts/pdf/pm0001.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Feather className="res-ico" size={24} />
                                     <div className="res-card-text">
-                                       <strong>G.U. Pope Translation</strong>
-                                       <span>Classic English verse (Internet Archive)</span>
-                                    </div>
-                                 </a>
-                                 <a href="http://www.projectmadurai.org/pm_etexts/utf8/pmutf80001.html" target="_blank" rel="noreferrer" className="res-card-v2">
-                                    <Globe className="res-ico" size={24} />
-                                    <div className="res-card-text">
                                        <strong>புராஜெக்ட் மதுரை</strong>
-                                       <span>மின்னணு தமிழ் இலக்கியத் தொகுப்பு</span>
+                                       <span>மின்னணுத் தமிழ் இலக்கியத் தொகுப்பு (PDF)</span>
                                     </div>
                                  </a>
                                  <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
@@ -322,6 +315,13 @@ const App = () => {
                                     <div className="res-card-text">
                                        <strong>பாஜக மின்னூலகம்</strong>
                                        <span>ஆராய்ச்சி பதிப்பு (PDF)</span>
+                                    </div>
+                                 </a>
+                                 <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/#google_vignette" target="_blank" rel="noreferrer" className="res-card-v2">
+                                    <Globe className="res-ico" size={24} />
+                                    <div className="res-card-text">
+                                       <strong>TNPSC வினாத்தாள்கள்</strong>
+                                       <span>கல்வி மற்றும் பயிற்சித் தொகுப்பு</span>
                                     </div>
                                  </a>
                                  <a href="https://en.wikipedia.org/wiki/Tirukkuṟaḷ" target="_blank" rel="noreferrer" className="res-card-v2">
@@ -535,17 +535,17 @@ const App = () => {
                         <div className="h-resources-v2">
                            <h3>கல்வி மற்றும் ஆய்வு ஆதாரங்கள்</h3>
                            <div className="h-links-flex">
-                              <a href="https://en.wikipedia.org/wiki/Tirukkuṟaḷ" target="_blank" rel="noreferrer" className="h-link">
-                                 <Globe size={18} /> <span>விக்கிப்பீடியா</span>
+                              <a href="https://www.projectmadurai.org/pm_etexts/pdf/pm0001.pdf" target="_blank" rel="noreferrer" className="h-link">
+                                 <Database size={18} /> <span>புராஜெக்ட் மதுரை (PDF)</span>
                               </a>
-                              <a href="http://www.projectmadurai.org/pm_etexts/utf8/pmutf80001.html" target="_blank" rel="noreferrer" className="h-link">
-                                 <Database size={18} /> <span>புராஜெக்ட் மதுரை</span>
-                              </a>
-                              <a href="https://archive.org/details/thesacredkurals00popeuoft" target="_blank" rel="noreferrer" className="h-link">
-                                 <BookOpen size={18} /> <span>ஆவணக் காப்பகம்</span>
+                              <a href="https://www.tamilvu.org/library/nationalized/pdf/59-puliyurkesigan/013.thirukuralputhiyaurai.pdf" target="_blank" rel="noreferrer" className="h-link">
+                                 <BookOpen size={18} /> <span>தமிழ் இணையக் கல்விக்கழகம் (PDF)</span>
                               </a>
                               <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noreferrer" className="h-link">
                                  <Zap size={18} /> <span>பாஜக மின்னூலகம் (PDF)</span>
+                              </a>
+                              <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/#google_vignette" target="_blank" rel="noreferrer" className="h-link">
+                                 <Globe size={18} /> <span>TNPSC வினாத்தாள்கள்</span>
                               </a>
                            </div>
                         </div>

@@ -119,17 +119,24 @@ export class KuralAI {
                     pride: { range: [971, 980], keywords: ['pride', 'greatness', 'conceit', 'humility', 'perumai', 'sirumai', 'பெருமை', 'சிறுமை'] },
                     medicine: { range: [941, 950], keywords: ['sick', 'health', 'medicine', 'disease', 'illness', 'treatment', 'marundhu', 'nooi', 'நோய்', 'மருந்து', 'உடல்நலம்'] },
                     poverty: { range: [1041, 1050], keywords: ['poverty', 'poor', 'varumai', 'ezhmai', 'வறுமை', 'ஏழ்மை'] },
-                    children: { range: [61, 70], keywords: ['son', 'sons', 'children', 'kids', 'father', 'makkal', 'pillai', 'புதல்வர்', 'மக்கள்', 'குழந்தை', 'பிள்ளை'] },
+                    children: { range: [61, 70], keywords: ['son', 'sons', 'children', 'kids', 'father', 'makkal', 'pillai', 'புதல்வர்', 'மக்கள்', 'குழந்தை', 'பிள்ளை', 'புதல்வரை'] },
+                    loan: { range: [1, 1330], keywords: ['loan', 'debt', 'borrow', 'kadan', 'கடன்', 'வாங்குதல்'] },
+                    savings: { range: [751, 760], keywords: ['savings', 'save', 'accumulation', 'accumulation of wealth', 'semippu', 'சேமிப்பு', 'பொருள் செயல்வகை', 'ஈட்டல்'] },
                     duty: { range: [211, 220], keywords: ['duty', 'obligation', 'kadan', 'kadamai', 'கடன்', 'கடமை'] },
                     flowers: { range: [1111, 1120], keywords: ['flower', 'flowers', 'malar', 'poo', 'பூ', 'மலர்', 'அனிச்சம்'] }
                 };
 
                 // Apply Thematic Boost if query matches a concept
                 Object.values(themes).forEach(t => {
-                    if (t.keywords.some(kw => cleanQuery.includes(kw))) {
+                    const hasThemeKeyword = t.keywords.some(kw => cleanQuery.includes(kw));
+                    if (hasThemeKeyword) {
                         if (k.Number >= t.range[0] && k.Number <= t.range[1]) {
                             score += 150; // Strong semantic boost
                         }
+                        // Secondary keyword boost for specific thematic matches even outside range
+                        t.keywords.forEach(kw => {
+                            if (fullContent.includes(kw)) score += 30;
+                        });
                     }
                 });
 
@@ -189,24 +196,21 @@ export class KuralAI {
 
         if (isValidKey && !isNumberOnly) {
             try {
-                const context = topMatches.map(k => 
+                // Return top 15 in the prompt context but keeping full sources list in response
+                const llmContext = topMatches.slice(0, 15).map(k => 
                     `Verse #${k.Number}: ${k.Line1} ${k.Line2} 
-Transliteration: ${k.transliteration1} ${k.transliteration2}
-Mu. Varadarajan (Mu.Va): ${k.mv}
-Kalaignar (Mu. Karunanidhi): ${k.mk}
-Solomon Pappaiya: ${k.sp}
-English Translation: ${k.Translation}
-English Meaning: ${k.explanation}`
+Meaning: ${k.explanation}
+English: ${k.Translation}`
                 ).join('\n\n');
 
-                const systemPrompt = `You are "Thirukkural Expert", a scholarly AI assistant.
-1. Strictly analyze the user's intent. If they ask for Kurals ending/starting with a word, prioritize those in your response.
-2. Respond in the language of the user. Default to Tamil for scholarly analysis.
-3. For translation requests, use the high-quality translations provided.
-4. Format your output elegantly with verse and meaning.
+                const systemPrompt = `You are "Thirukkural Expert". 
+The user is asking for verses related to a topic. I have found ${topMatches.length} related kurals.
+Provide a summary of the most relevant ones. 
+If the user wants ALL related kurals, make sure to mention that they can see all ${topMatches.length} sources listed below.
+Respond in the language of the user (Tamil/English).
 
-Context Data:
-${context}`;
+Context Data (Top 15):
+${llmContext}`;
 
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
@@ -239,6 +243,6 @@ ${context}`;
            return `குறள் எண் ${matches[0].Number} கண்டறியப்பட்டது. முழு விவரங்களுக்குக் கீழே உள்ள கார்டைச் சொடுக்கவும்:`;
         }
 
-        return `உங்கள் தேடலுக்குத் தொடர்புடைய ${count} சிறந்த குறள்கள் கண்டறியப்பட்டுள்ளன. விரிவான ஆய்வுக்குக் கீழே உள்ள குறள் கார்டுகளைப் பயன்படுத்தவும்:`;
+        return `உங்கள் தேடலுக்குத் தொடர்புடைய ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. அவற்றை கீழே உள்ள கார்டுகளில் விரிவாகக் காணலாம்:`;
     }
 }
