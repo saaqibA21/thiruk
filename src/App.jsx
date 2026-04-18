@@ -216,7 +216,7 @@ const App = () => {
                                     <div className="bubble-text">{parseFormattedContent(m.content)}</div>
                                     {m.sources && m.sources.length > 0 && (
                                        <div className="kural-source-cards">
-                                          {m.sources.map((s, idx) => (
+                                          {m.sources.slice(0, m.showAllSources ? m.sources.length : 10).map((s, idx) => (
                                              <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
                                                 <div className="k-mini-info">
                                                    <span className="k-mini-num">குறள் {s.Number}:</span>
@@ -228,6 +228,18 @@ const App = () => {
                                                 <ChevronRight size={20} className="k-mini-arrow" />
                                              </div>
                                           ))}
+                                          {m.sources.length > 10 && !m.showAllSources && (
+                                             <button 
+                                                className="show-all-sources-btn"
+                                                onClick={() => {
+                                                   const newMessages = [...messages];
+                                                   newMessages[i].showAllSources = true;
+                                                   setMessages(newMessages);
+                                                }}
+                                             >
+                                                அனைத்து {m.sources.length} குறள்களையும் காண்க / View all {m.sources.length} sources
+                                             </button>
+                                          )}
                                        </div>
                                     )}
                                  </div>
@@ -672,6 +684,31 @@ const App = () => {
         .k-mini-num { display: block; font-size: 0.75rem; font-weight: 900; color: #0369a1; margin-bottom: 0.5rem; opacity: 0.8; }
         .k-mini-lines p { margin: 0; font-size: 1.15rem; font-weight: 950; color: #0c4a6e; line-height: 1.4; }
         .k-mini-arrow { color: #0369a1; opacity: 0.5; margin-left: 1rem; }
+
+        .show-all-sources-btn {
+           background: #eff6ff; 
+           border: 1px solid #dbeafe; 
+           color: #2563eb; 
+           padding: 1rem; 
+           border-radius: 1.25rem; 
+           font-weight: 900; 
+           font-size: 0.85rem; 
+           cursor: pointer; 
+           transition: 0.3s;
+           margin-top: 0.5rem;
+           width: 100%;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+        }
+        .show-all-sources-btn:hover {
+           background: #dbeafe;
+           color: #1d4ed8;
+           border-color: #bfdbfe;
+           transform: scale(0.98);
+        }
 
         .chat-input-row { padding-top: 1rem; }
         .tamil-input-box { display: flex; background: var(--white); padding: 0.5rem; border: 2px solid var(--border); border-radius: 3rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); gap: 0.5rem; }

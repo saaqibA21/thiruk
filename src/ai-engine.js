@@ -205,9 +205,10 @@ English: ${k.Translation}`
 
                 const systemPrompt = `You are "Thirukkural Expert". 
 The user is asking for verses related to a topic. I have found ${topMatches.length} related kurals.
-Provide a summary of the most relevant ones. 
-If the user wants ALL related kurals, make sure to mention that they can see all ${topMatches.length} sources listed below.
-Respond in the language of the user (Tamil/English).
+1. Provide a scholarly summary of the most important verses.
+2. DO NOT list every single verse in this text response if there are more than 10. Instead, summarize the key themes and tell the user they can see the full list of ${topMatches.length} verses in the cards below.
+3. If they ask for "all", mention they can scroll through all ${topMatches.length} results in the source section.
+4. Respond in the language of the user (Tamil/English).
 
 Context Data (Top 15):
 ${llmContext}`;
