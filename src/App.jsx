@@ -63,40 +63,48 @@ const App = () => {
    useEffect(() => {
       if (!query.trim()) return;
 
-      const hasEnglish = /[a-z]{2,}/i.test(query);
-      if (!hasEnglish) {
+      const hasEnglish = /[a-z]/i.test(query);
+      const endsWithBoundary = /[\s.,!?;]$/.test(query);
+      
+      // Word-by-word: Only trigger when a word is completed via boundary character
+      if (!hasEnglish || !endsWithBoundary) {
          setIsTranslating(false);
          return;
       }
 
+      // Regex to find the last English word segment before the boundary
+      const match = query.match(/(\b[a-zA-Z]+\b)([\s.,!?;]+)$/);
+      if (!match) return;
 
+      const wordToTranslate = match[1];
+      const boundary = match[2];
+      const startIndex = match.index;
       const currentQuery = query;
+
       const timer = setTimeout(async () => {
-         // Don't translate if the user has already moved on significantly
          if (currentQuery !== query) return;
 
          setIsTranslating(true);
          try {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
+            // Using gtx for transliteration-style translation
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(wordToTranslate)}`;
             const res = await fetch(url);
             const data = await res.json();
 
             if (data && data[0]) {
-               // Merge multiple translation segments if Google splits the sentence
-               const translated = data[0].map(x => x[0]).join('');
-
-               if (translated && translated !== query && query === currentQuery) {
-                  lastTranslatedRef.current = translated;
-                  setQuery(translated);
+               const translatedValue = data[0].map(x => x[0]).join('');
+               if (translatedValue && translatedValue.toLowerCase() !== wordToTranslate.toLowerCase() && query === currentQuery) {
+                  // Replace only the specific English word to preserve surrounding Tamil
+                  const newQuery = query.substring(0, startIndex) + translatedValue + boundary;
+                  setQuery(newQuery);
                }
             }
          } catch (err) {
-            console.error("Translation error:", err);
+            console.error("Transliteration error:", err);
          } finally {
             setIsTranslating(false);
          }
-      }, 700); // 700ms debounce for snappier experience
-
+      }, 150); // Fast debounce for snappy word-by-word feel
 
       return () => clearTimeout(timer);
    }, [query]);
@@ -289,10 +297,10 @@ const App = () => {
                                                 const data = await res.json();
                                                 if (data && data[0]) {
                                                    const translated = data[0].map(x => x[0]).join('');
-                                                   if (translated && translated !== query) {
+                                                   if (translated && translated.toLowerCase() !== query.toLowerCase()) {
                                                       setQuery(translated);
                                                       setIsTranslating(false);
-                                                      return; // Allow user to see/edit translation before second Enter
+                                                      return; // Review before sending
                                                    }
                                                 }
                                              } catch (err) {}
