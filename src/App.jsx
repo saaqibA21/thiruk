@@ -511,6 +511,36 @@ const App = () => {
                            </div>
                         </section>
 
+                        <section className="h-statue-section">
+                           <div className="h-statue-container">
+                              <div className="h-statue-text">
+                                 <span className="h-label">நினைவுச் சின்னம் / Monument</span>
+                                 <h3>கன்னியாகுமரி திருவள்ளுவர் சிலை</h3>
+                                 <p>தமிழின் பெருமையை உலகிற்குப் பறைசாற்றும் வகையில், இந்தியாவின் தென்கோடி முனையான கன்னியாகுமரியில் இந்த பிரம்மாண்ட சிலை அமைக்கப்பட்டுள்ளது.</p>
+                                 
+                                 <div className="h-statue-metrics">
+                                    <div className="h-metric">
+                                       <strong>133 அடி</strong>
+                                       <span>மொத்த உயரம் (133 அதிகாரங்கள்)</span>
+                                    </div>
+                                    <div className="h-metric">
+                                       <strong>38 அடி</strong>
+                                       <span>பீடத்தின் உயரம் (அறத்துப்பால்)</span>
+                                    </div>
+                                    <div className="h-metric">
+                                       <strong>95 அடி</strong>
+                                       <span>சிலையின் உயரம் (பொருள் & இன்பம்)</span>
+                                    </div>
+                                 </div>
+                                 
+                                 <p className="h-statue-detail">டாக்டர் வி. கணபதி ஸ்தபதி அவர்களால் வடிவமைக்கப்பட்ட இந்த சிலை, அரபிக்கடல், வங்காள விரிகுடா மற்றும் இந்தியப் பெருங்கடல் கூடும் இடத்தில் கம்பீரமாக நிற்கிறது.</p>
+                              </div>
+                              <div className="h-statue-image">
+                                 <img src="statue.png" alt="திருவள்ளுவர் சிலை" />
+                              </div>
+                           </div>
+                        </section>
+
                         <section className="h-global-influence">
                            <div className="h-section-header-center">
                               <span className="h-label">உலகளாவிய தாக்கம்</span>
@@ -752,7 +782,20 @@ const App = () => {
         .kural-grid-stack { display: flex; flex-direction: column; gap: 1rem; }
         .kural-item-card { background: white; border: 1.5px solid var(--border); padding: 1.5rem; border-radius: 1.5rem; cursor: pointer; transition: 0.3s; }
         .kural-item-card:hover { border-color: var(--primary); transform: translateX(5px); }
-        .kural-item-card p { margin: 0; font-weight: 900; font-size: 1.1rem; }
+        .h-statue-section { margin-top: 6rem; background: #f8fafc; padding: 6rem 4rem; border-radius: 4rem; border: 1px solid #f1f5f9; }
+         .h-statue-container { display: flex; align-items: center; gap: 4rem; }
+         .h-statue-text { flex: 1.2; }
+         .h-statue-image { flex: 1; position: relative; }
+         .h-statue-image img { width: 100%; border-radius: 2.5rem; box-shadow: 0 30px 60px rgba(15,23,42,0.15); border: 8px solid white; }
+         .h-statue-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2.5rem 0; }
+         .h-metric { background: white; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid #e2e8f0; text-align: center; }
+         .h-metric strong { display: block; font-size: 1.5rem; color: var(--primary); font-weight: 950; margin-bottom: 0.25rem; }
+         .h-metric span { font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase; }
+         .h-statue-detail { font-size: 0.95rem; color: #475569; font-style: italic; border-left: 3px solid #cbd5e1; padding-left: 1rem; }
+
+         .h-global-influence { margin-top: 6rem; padding-bottom: 2rem; }
+         .h-section-header-center { text-align: center; margin-bottom: 4rem; }
+         .h-influence-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 4rem; }
         .k-header-row { font-size: 0.7rem; font-weight: 950; color: var(--primary); margin-bottom: 0.5rem; opacity: 0.6; }
 
         /* Modals - Fixed and optimized */
@@ -920,6 +963,9 @@ const App = () => {
         @media (max-width: 992px) {
           .h-card-premium { flex-direction: column; }
           .h-pillars-grid, .h-influence-grid { grid-template-columns: 1fr; }
+          .h-statue-container { flex-direction: column; text-align: center; }
+          .h-statue-metrics { grid-template-columns: 1fr; }
+          .h-statue-detail { border-left: none; border-top: 3px solid #cbd5e1; padding-left: 0; padding-top: 1rem; }
           .h-title { font-size: 2.2rem; }
           .h-v-timeline { padding-left: 1.5rem; }
           .h-tl-year { position: static; text-align: left; margin-bottom: 0.5rem; display: block; }
