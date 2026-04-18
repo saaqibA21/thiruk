@@ -400,6 +400,7 @@ const App = () => {
                   </motion.div>
                ) : (
                   <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                     <div className="history-statue-bg"></div>
                      <div className="history-hero">
                         <div className="h-hero-bg"></div>
                         <div className="h-decorator"></div>
@@ -1155,6 +1156,23 @@ const App = () => {
           
           .tamil-modal { width: 98%; padding: 2rem 1.5rem; border-radius: 2rem; }
           .m-verse-box { padding: 3rem 1rem; border-radius: 2.5rem; }
+
+          .history-statue-bg {
+            position: fixed;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background-image: url('statue.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+            filter: grayscale(100%) brightness(1.1);
+          }
         }
       `}} />
       </div>
