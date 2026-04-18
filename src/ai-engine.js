@@ -42,16 +42,10 @@ export class KuralAI {
             'about', 'give', 'me', 'tell', 'show', 'for', 'of', 'in', 'on', 'to', 'a', 'an', 'some'
         ].map(s => s.normalize('NFC'));
         
-        // Target word if structural constraint exists
-        let targetWord = '';
-        if (isStructural) {
-            // Find the most likely target word (longest word that isn't a stopword/command)
-            // We also strip punctuation from terms before comparison
-            targetWord = terms
-                .map(t => t.replace(/[.,!?;:]/g, ''))
-                .filter(t => t.length > 1 && !stopWords.some(sw => t === sw))
-                .sort((a, b) => b.length - a.length)[0] || '';
-        }
+        // Identification of potential search targets (words that aren't commands/stopwords)
+        const searchTerms = terms
+            .map(t => t.replace(/[.,!?;:]/g, '').normalize('NFC'))
+            .filter(t => t.length > 1 && !stopWords.some(sw => t === sw));
 
         return this.dataset
             .map(k => {
@@ -64,130 +58,102 @@ export class KuralAI {
                 
                 const fullContent = `${tamilContent} ${englishContent} ${tanglishContent}`;
 
-                // Structural match priority
-                if (targetWord) {
-                    const l1 = k.Line1.toLowerCase();
-                    const l2 = k.Line2.toLowerCase();
-                    const t1 = (k.transliteration1 || '').toLowerCase();
-                    const t2 = (k.transliteration2 || '').toLowerCase();
-
-                    // Clean punctuation
+                // --- 1. Structural Match Logic ---
+                if (isStructural && searchTerms.length > 0) {
+                    const l1 = k.Line1.toLowerCase().normalize('NFC');
+                    const l2 = k.Line2.toLowerCase().normalize('NFC');
                     const cleanL1 = l1.replace(/[.,!?;:]/g, '');
                     const cleanL2 = l2.replace(/[.,!?;:]/g, '');
-                    const cleanT1 = t1.replace(/[.,!?;:]/g, '');
-                    const cleanT2 = t2.replace(/[.,!?;:]/g, '');
-
-                    // Precise word-boundary check
+                    
                     const wordsL1 = cleanL1.trim().split(/\s+/);
                     const wordsL2 = cleanL2.trim().split(/\s+/);
-                    const wordsT1 = cleanT1.trim().split(/\s+/);
-                    const wordsT2 = cleanT2.trim().split(/\s+/);
 
-                    if (isEndsWith) {
-                        const lastWordL2 = wordsL2[wordsL2.length - 1];
-                        const lastWordT2 = wordsT2[wordsT2.length - 1];
+                    searchTerms.forEach(targetWord => {
+                        if (isEndsWith) {
+                            if (wordsL2[wordsL2.length - 1] === targetWord) {
+                                score += 800; // Exact word match at end
+                                hasStructuralMatch = true;
+                            } else if (cleanL2.endsWith(targetWord)) {
+                                score += 400; // Substring match at end
+                                hasStructuralMatch = true;
+                            }
+                        }
                         
-                        if (lastWordL2 === targetWord || lastWordT2 === targetWord) {
-                            score += 500;
-                            hasStructuralMatch = true;
-                        } else if (cleanL2.endsWith(targetWord) || cleanT2.endsWith(targetWord)) {
-                            score += 300;
-                            hasStructuralMatch = true;
-                        } else if (targetWord.length > 3 && (lastWordL2.includes(targetWord) || lastWordT2.includes(targetWord))) {
-                            score += 150;
-                            hasStructuralMatch = true;
-                        }
-                    }
-                    
-                    if (isStartsWith) {
-                        const firstWordL1 = wordsL1[0];
-                        const firstWordT1 = wordsT1[0];
-                        
-                        if (firstWordL1 === targetWord || firstWordT1 === targetWord) {
-                            score += 500;
-                            hasStructuralMatch = true;
-                        } else if (cleanL1.startsWith(targetWord) || cleanT1.startsWith(targetWord)) {
-                            score += 300;
-                            hasStructuralMatch = true;
-                        } else if (targetWord.length > 3 && (firstWordL1.includes(targetWord) || firstWordT1.includes(targetWord))) {
-                            score += 150;
-                            hasStructuralMatch = true;
-                        }
-                    }
-                }
-
-                // Concept/Theme Mapping for Semantic Boosting
-                const themes = {
-                    love: { range: [1081, 1330], keywords: ['love', 'passion', 'desire', 'kaadhal', 'inbam', 'காதல்', 'இன்பம்'] },
-                    friendship: { range: [781, 830], keywords: ['friend', 'friendship', 'natpu', 'thozha', 'நட்பு', 'தோழமை'] },
-                    education: { range: [391, 430], keywords: ['education', 'learning', 'knowledge', 'kalvi', 'கல்வி', 'அறிவு'] },
-                    rain: { range: [11, 20], keywords: ['rain', 'nature', 'vaan', 'வான்', 'மழை'] },
-                    anger: { range: [301, 310], keywords: ['anger', 'vegula', 'கோபம்', 'வெகுளாமை'] },
-                    virtue: { range: [1, 380], keywords: ['virtue', 'aram', 'dharma', 'அறம்'] },
-                    wealth: { range: [381, 1080], keywords: ['wealth', 'money', 'politics', 'porul', 'பொருள்', 'செல்வம்'] },
-                    pride: { range: [971, 980], keywords: ['pride', 'greatness', 'conceit', 'humility', 'perumai', 'sirumai', 'பெருமை', 'சிறுமை'] },
-                    medicine: { range: [941, 950], keywords: ['sick', 'health', 'medicine', 'disease', 'illness', 'treatment', 'marundhu', 'nooi', 'நோய்', 'மருந்து', 'உடல்நலம்'] },
-                    poverty: { range: [1041, 1050], keywords: ['poverty', 'poor', 'varumai', 'ezhmai', 'வறுமை', 'ஏழ்மை'] },
-                    children: { range: [61, 70], keywords: ['son', 'sons', 'children', 'kids', 'father', 'makkal', 'pillai', 'புதல்வர்', 'மக்கள்', 'குழந்தை', 'பிள்ளை', 'புதல்வரை'] },
-                    loan: { range: [1, 1330], keywords: ['loan', 'debt', 'borrow', 'kadan', 'கடன்', 'வாங்குதல்'] },
-                    savings: { range: [751, 760], keywords: ['savings', 'save', 'accumulation', 'accumulation of wealth', 'semippu', 'சேமிப்பு', 'பொருள் செயல்வகை', 'ஈட்டல்'] },
-                    duty: { range: [211, 220], keywords: ['duty', 'obligation', 'kadan', 'kadamai', 'கடன்', 'கடமை'] },
-                    flowers: { range: [1111, 1120], keywords: ['flower', 'flowers', 'malar', 'poo', 'பூ', 'மலர்', 'அனிச்சம்'] }
-                };
-
-                // Apply Thematic Boost if query matches a concept
-                Object.values(themes).forEach(t => {
-                    const hasThemeKeyword = t.keywords.some(kw => cleanQuery.includes(kw));
-                    if (hasThemeKeyword) {
-                        if (k.Number >= t.range[0] && k.Number <= t.range[1]) {
-                            score += 150; // Strong semantic boost
-                        }
-                        // Secondary keyword boost for specific thematic matches even outside range
-                        t.keywords.forEach(kw => {
-                            if (fullContent.includes(kw)) score += 30;
-                        });
-                    }
-                });
-
-                // Filter out common stop-words from the search terms for keyword matching
-                const searchTerms = terms.filter(t => !stopWords.some(sw => t === sw));
-
-                // If a structural match was requested but not found for this kural, 
-                // we treat it as very low relevance unless it's a number match
-                if (isStructural && !hasStructuralMatch) {
-                    score = 0; 
-                }
-
-                // Keyword matches (only if not already rejected by structural filter)
-                if (!isStructural || hasStructuralMatch) {
-                    const targetTerms = searchTerms.length > 0 ? searchTerms : terms;
-                    targetTerms.forEach(t => {
-                        if (fullContent.includes(t)) {
-                            score += 2;
-                            const tamilWordRegex = new RegExp(`(^|\\s)${t}(\\s|$)`, 'u');
-                            if (tamilWordRegex.test(fullContent)) score += 15;
-                            if (k.Line1.toLowerCase().includes(t) || k.Line2.toLowerCase().includes(t)) score += 20;
+                        if (isStartsWith) {
+                            if (wordsL1[0] === targetWord) {
+                                score += 800; // Exact word match at start
+                                hasStructuralMatch = true;
+                            } else if (cleanL1.startsWith(targetWord)) {
+                                score += 400; // Substring match at start
+                                hasStructuralMatch = true;
+                            }
                         }
                     });
                 }
 
-                // Strict Number Match (Isolation Mode)
+                // --- 2. Phrase & Keyword Matching ---
+                // Higher score for exact phrase match
+                if (cleanQuery.length > 3 && fullContent.includes(cleanQuery)) {
+                    score += 100;
+                }
+
+                // Individual keyword matches
+                searchTerms.forEach(t => {
+                    if (fullContent.includes(t)) {
+                        score += 5; // Base inclusion
+                        
+                        // Word boundary boost
+                        const wordBoundaryRegex = new RegExp(`(^|\\s)${t}(\\s|$)`, 'u');
+                        if (wordBoundaryRegex.test(fullContent)) score += 30;
+                        
+                        // Core verse boost
+                        if (k.Line1.toLowerCase().includes(t) || k.Line2.toLowerCase().includes(t)) {
+                           score += 50;
+                           // Exact word in verse boost
+                           if (wordBoundaryRegex.test(k.Line1.toLowerCase() + " " + k.Line2.toLowerCase())) {
+                               score += 100;
+                           }
+                        }
+                    }
+                });
+
+                // --- 3. Thematic Concepts ---
+                const themes = {
+                    love: { range: [1081, 1330], keywords: ['love', 'passion', 'desire', 'kaadhal', 'inbam', 'காதல்', 'இன்பம்', 'காமத்துப்பால்'] },
+                    friendship: { range: [781, 830], keywords: ['friend', 'friendship', 'natpu', 'thozha', 'நட்பு', 'தோழமை'] },
+                    education: { range: [391, 430], keywords: ['education', 'learning', 'knowledge', 'kalvi', 'கல்வி', 'அறிவு', 'கல்விக்'] },
+                    rain: { range: [11, 20], keywords: ['rain', 'nature', 'vaan', 'வான்', 'மழை', 'பெய்யென'] },
+                    anger: { range: [301, 310], keywords: ['anger', 'vegula', 'கோபம்', 'வெகுளாமை'] },
+                    virtue: { range: [1, 380], keywords: ['virtue', 'aram', 'dharma', 'அறம்', 'அறத்துப்பால்'] },
+                    wealth: { range: [381, 1080], keywords: ['wealth', 'money', 'politics', 'porul', 'பொருள்', 'செல்வம்', 'பொருட்பால்'] },
+                    children: { range: [61, 70], keywords: ['son', 'sons', 'children', 'kids', 'father', 'makkal', 'pillai', 'புதல்வர்', 'மக்கள்', 'குழந்தை', 'பிள்ளை'] }
+                };
+
+                Object.values(themes).forEach(t => {
+                    const hasThemeKeyword = t.keywords.some(kw => cleanQuery.includes(kw));
+                    if (hasThemeKeyword) {
+                        if (k.Number >= t.range[0] && k.Number <= t.range[1]) score += 150;
+                        t.keywords.forEach(kw => { if (fullContent.includes(kw)) score += 10; });
+                    }
+                });
+
+                // --- 4. Logic Fix: No Strict Rejection ---
+                // If it was structural but didn't match the position, it still lives via keyword score above.
+                if (isStructural && !hasStructuralMatch) {
+                    score = score * 0.2; 
+                }
+
+                // --- 5. Strict Number Match ---
                 const numberMatch = cleanQuery.match(/\b(\d+)\b/);
                 if (numberMatch) {
                     const searchNum = parseInt(numberMatch[1]);
-                    if (k.Number === searchNum) {
-                        score += 5000; // Massive boost to isolate the kural
-                    } else if (isStructural || searchTerms.length > 0) {
-                        // If they searched "Kural 43 love", we still want love kurals
-                        // but if they just searched "43", we isolate.
-                    } else {
-                        score = 0; // Reject others if only a number was provided
-                    }
+                    if (k.Number === searchNum) score += 5000;
+                    else if (!isStructural && searchTerms.length === 0) score = 0; 
                 }
 
                 return { ...k, score };
             })
-            .filter(k => k.score > 2) 
+            .filter(k => k.score > 3) 
             .sort((a, b) => b.score - a.score);
     }
 
