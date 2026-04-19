@@ -142,6 +142,8 @@ export class KuralAI {
         })
         .filter(k => k.score > 10) 
         .sort((a, b) => b.score - a.score);
+
+        return results;
     }
 
     checkThemes(query, k, fullContent) {
@@ -173,7 +175,7 @@ export class KuralAI {
 
     async ask(question) {
         const query = question.trim().toLowerCase();
-        const topMatches = await this.search(query);
+        const topMatches = (await this.search(query)) || [];
         const isNumberOnly = /^\d+$/.test(query) || (topMatches.length === 1 && query.includes(topMatches[0].Number.toString()));
 
         // Security: Only call OpenAI if key is valid sk- format
