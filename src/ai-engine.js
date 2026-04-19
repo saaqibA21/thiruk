@@ -22,7 +22,9 @@ export class KuralAI {
 
     // High-speed Lexical Search (Keyword + Structural + Tanglish)
     async search(query) {
-        const cleanQuery = query.toLowerCase().trim().normalize('NFC');
+        // First, refine the query to ensure meaningful sentence formation (Tamil grammar)
+        const refinedQuery = await this.refineQuery(query);
+        const cleanQuery = refinedQuery.toLowerCase().trim().normalize('NFC');
         const terms = cleanQuery.split(/\s+/).filter(t => t.length > 1);
         
         // Detection for structural constraints (Tamil + Tanglish + English)
@@ -243,5 +245,29 @@ ${llmContext}`;
         }
 
         return `உங்கள் தேடலுக்குத் தொடர்புடைய ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. அவற்றை கீழே உள்ள கார்டுகளில் விரிவாகக் காணலாம்:`;
+    }
+
+    async refineQuery(query) {
+        if (!this.openai || !query || query.length < 3 || /^\d+$/.test(query.trim())) return query;
+        
+        try {
+            const response = await this.openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                    { 
+                        role: "system", 
+                        content: "You are a Tamil grammar expert. The user is providing a search query for a Thirukkural database. It might be in English, broken Tamil, or a mix. Transform it into one grammatically correct, natural, and meaningful Tamil sentence or phrase. Output only the corrected Tamil text." 
+                    },
+                    { role: "user", content: query }
+                ],
+                temperature: 0,
+                max_tokens: 100
+            });
+            const result = response.choices[0].message.content.trim();
+            console.log("Refined Query:", query, "=>", result);
+            return result;
+        } catch (e) {
+            return query;
+        }
     }
 }

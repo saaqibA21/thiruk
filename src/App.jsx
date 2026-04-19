@@ -64,21 +64,14 @@ const App = () => {
       if (!query.trim()) return;
 
       const hasEnglish = /[a-z]/i.test(query);
-      const endsWithBoundary = /[\s.,!?;]$/.test(query);
+      const endsWithSentenceBoundary = /[.!?;]$/.test(query);
+      const endsWithWordBoundary = /[\s,]$/.test(query);
       
-      // Word-by-word: Only trigger when a word is completed via boundary character
-      if (!hasEnglish || !endsWithBoundary) {
+      if (!hasEnglish || (!endsWithSentenceBoundary && !endsWithWordBoundary)) {
          setIsTranslating(false);
          return;
       }
 
-      // Regex to find the last English word segment before the boundary
-      const match = query.match(/(\b[a-zA-Z]+\b)([\s.,!?;]+)$/);
-      if (!match) return;
-
-      const wordToTranslate = match[1];
-      const boundary = match[2];
-      const startIndex = match.index;
       const currentQuery = query;
 
       const timer = setTimeout(async () => {
@@ -86,21 +79,44 @@ const App = () => {
 
          setIsTranslating(true);
          try {
-            // Using gtx for transliteration-style translation
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(wordToTranslate)}`;
-            const res = await fetch(url);
-            const data = await res.json();
+            let translatedValue = "";
+            
+            if (endsWithSentenceBoundary) {
+               // For sentence boundaries ( . ! ? ), translate the ENTIRE query to ensure meaningful formation/grammar
+               const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
+               const res = await fetch(url);
+               const data = await res.json();
+               if (data && data[0]) {
+                  translatedValue = data[0].map(x => x[0]).join('');
+                  if (translatedValue && query === currentQuery) {
+                     setQuery(translatedValue);
+                  }
+               }
+            } else {
+               // Word-by-word or Phrase-by-phrase for spaces/commas
+               // Find the last segment of English
+               const match = query.match(/(\b[a-zA-Z\s']+\b)([\s,]$)$/);
+               if (!match) { setIsTranslating(false); return; }
+               
+               const segmentToTranslate = match[1];
+               const boundary = match[2];
+               const startIndex = match.index;
+               
+               const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(segmentToTranslate)}`;
+               const res = await fetch(url);
+               const data = await res.json();
 
-            if (data && data[0]) {
-               const translatedValue = data[0].map(x => x[0]).join('');
-               if (translatedValue && translatedValue.toLowerCase() !== wordToTranslate.toLowerCase() && query === currentQuery) {
-                  // Replace only the specific English word to preserve surrounding Tamil
-                  const newQuery = query.substring(0, startIndex) + translatedValue + boundary;
-                  setQuery(newQuery);
+               if (data && data[0]) {
+                  const translated = data[0].map(x => x[0]).join('');
+                  if (translated && translated.toLowerCase() !== segmentToTranslate.toLowerCase() && query === currentQuery) {
+                     // Attempt a small 'formation' check if previous words are already Tamil
+                     const newQuery = query.substring(0, startIndex) + translated + boundary;
+                     setQuery(newQuery);
+                  }
                }
             }
          } catch (err) {
-            console.error("Transliteration error:", err);
+            console.error("Translation error:", err);
          } finally {
             setIsTranslating(false);
          }
@@ -287,28 +303,30 @@ const App = () => {
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyPress={async (e) => {
-                                       if (e.key === 'Enter') {
-                                          const hasEnglish = /[a-zA-Z]/.test(query);
-                                          if (hasEnglish) {
-                                             setIsTranslating(true);
-                                             try {
-                                                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
-                                                const res = await fetch(url);
-                                                const data = await res.json();
-                                                if (data && data[0]) {
-                                                   const translated = data[0].map(x => x[0]).join('');
-                                                   if (translated && translated.toLowerCase() !== query.toLowerCase()) {
-                                                      setQuery(translated);
-                                                      setIsTranslating(false);
-                                                      return; // Review before sending
-                                                   }
-                                                }
-                                             } catch (err) {}
-                                             setIsTranslating(false);
-                                          }
-                                          handleAsk(query);
-                                       }
-                                    }}
+                                        if (e.key === 'Enter') {
+                                           let currentQuery = query.trim();
+                                           const hasEnglish = /[a-zA-Z]/.test(currentQuery);
+                                           setIsTranslating(true);
+                                           if (hasEnglish) {
+                                              try {
+                                                 const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(currentQuery)}`;
+                                                 const res = await fetch(url);
+                                                 const data = await res.json();
+                                                 if (data && data[0]) {
+                                                    const translated = data[0].map(x => x[0]).join('');
+                                                    if (translated) currentQuery = translated;
+                                                 }
+                                              } catch (err) {}
+                                           }
+                                           if (aiEngine && currentQuery.length > 3) {
+                                               const formed = await aiEngine.refineQuery(currentQuery);
+                                               if (formed) currentQuery = formed;
+                                           }
+                                           setQuery(currentQuery);
+                                           setIsTranslating(false);
+                                           handleAsk(currentQuery);
+                                        }
+                                     }}
                                  />
                                  <button onClick={() => handleAsk(query)} disabled={loading} className="send-btn">
                                     {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
