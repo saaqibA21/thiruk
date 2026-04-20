@@ -25,11 +25,11 @@ export class KuralAI {
         // First, refine the query to ensure meaningful sentence formation (Tamil grammar)
         const refinedQuery = await this.refineQuery(query);
         const cleanQuery = refinedQuery.toLowerCase().trim().normalize('NFC');
-        const terms = cleanQuery.split(/\s+/).filter(t => t.length > 1);
+        const terms = cleanQuery.split(/\s+/).filter(t => t.length >= 1);
         
         // Detection for structural constraints (Tamil + Tanglish + English)
-        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end', 'முடிகின்ற', 'முடிகிறது', 'முடிவடைகிறது', 'முடிவது'].map(s => s.normalize('NFC'));
-        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam', 'தொடங்குகிறது', 'தொடங்குகின்ற', 'துவக்கம்'].map(s => s.normalize('NFC'));
+        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end', 'முடிகின்ற', 'முடிகிறது', 'முடிவடைகிறது', 'முடிவது', 'முடிவில்', 'முடிவுற்ற'].map(s => s.normalize('NFC'));
+        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam', 'தொடங்குகிறது', 'தொடங்குகின்ற', 'துவக்கம்', 'துவங்கும்', 'தொடங்கிய', 'ஆரம்பமாகும்'].map(s => s.normalize('NFC'));
         
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
@@ -47,7 +47,7 @@ export class KuralAI {
         // Identification of potential search targets (words that aren't commands/stopwords)
         const searchTerms = terms
             .map(t => t.replace(/[.,!?;:"]/g, '').normalize('NFC'))
-            .filter(t => t.length > 1 && !stopWords.some(sw => t === sw));
+            .filter(t => t.length >= 1 && !stopWords.some(sw => t === sw));
 
         const results = this.dataset.map(k => {
             let score = 0;
@@ -72,22 +72,30 @@ export class KuralAI {
                 searchTerms.forEach(targetWord => {
                     // Check Start
                     if (isStartsWith) {
-                        if (wordsL1[0] === targetWord) {
+                        const firstWord = wordsL1[0] || "";
+                        if (firstWord === targetWord) {
                             score += 2000; // Major boost for exact start word
                             hasStructuralMatch = true;
+                        } else if (firstWord.startsWith(targetWord)) {
+                            score += 1800; // Strong boost for first word prefix
+                            hasStructuralMatch = true;
                         } else if (cleanL1.startsWith(targetWord)) {
-                            score += 1000; // Boost for start prefix
+                            score += 1000; // Boost for line start prefix
                             hasStructuralMatch = true;
                         }
                     }
                     
                     // Check End
                     if (isEndsWith) {
-                        if (wordsL2[wordsL2.length - 1] === targetWord) {
+                        const lastWord = wordsL2[wordsL2.length - 1] || "";
+                        if (lastWord === targetWord) {
                             score += 2000; // Major boost for exact end word
                             hasStructuralMatch = true;
+                        } else if (lastWord.startsWith(targetWord)) {
+                            score += 1800; // Strong boost for last word prefix
+                            hasStructuralMatch = true;
                         } else if (cleanL2.endsWith(targetWord)) {
-                            score += 1000; // Boost for end suffix
+                            score += 1000; // Boost for line end suffix
                             hasStructuralMatch = true;
                         }
                     }
