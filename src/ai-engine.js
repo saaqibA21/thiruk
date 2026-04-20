@@ -28,8 +28,8 @@ export class KuralAI {
         const terms = cleanQuery.split(/\s+/).filter(t => t.length >= 1);
         
         // Detection for structural constraints (Tamil + Tanglish + English)
-        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end', 'முடிகின்ற', 'முடிகிறது', 'முடிவடைகிறது', 'முடிவது', 'முடிவில்', 'முடிவுற்ற'].map(s => s.normalize('NFC'));
-        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam', 'தொடங்குகிறது', 'தொடங்குகின்ற', 'துவக்கம்', 'துவங்கும்', 'தொடங்கிய', 'ஆரம்பமாகும்'].map(s => s.normalize('NFC'));
+        const endKeywords = ['முடியும்', 'mudiyum', 'ending', 'nding', 'முடிவு', 'ஈறு', 'கடைசி', 'ends with', 'குறள்ந்திங்', 'end', 'முடிகின்ற', 'முடிகிறது', 'முடிவடைகிறது', 'முடிவது', 'முடிவில்', 'முடிவுற்ற', 'முடிவடைய'].map(s => s.normalize('NFC'));
+        const startKeywords = ['தொடங்கும்', 'thodangum', 'starting', 'staring', 'starig', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'முதல்', 'starts with', 'thodakkam', 'தொடங்குகிறது', 'தொடங்குகின்ற', 'துவக்கம்', 'துவங்கும்', 'தொடங்கிய', 'ஆரம்பமாகும்', 'துடக்கம்', 'துடங்கும்', 'துடுங்கும்', 'துவங்க'].map(s => s.normalize('NFC'));
         
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
@@ -40,7 +40,7 @@ export class KuralAI {
             ...endKeywords, ...startKeywords, 
             'என்ற', 'சொல்லுடன்', 'சொல்லும்', 'சொல்', 'வார்த்தை', 'kural', 'kurals', 'குறள்', 'குறள்கள்', 
             'with', 'word', 'the', 'என்பது', 'என்றார்', 'எனக்கு', 'கொடு', 'வேண்டும்', 'கூறு', 'பற்றி', 
-            'என', 'என்று', 'ஆன', 'ஆக', 'எனும்', 'உடன்', 'ஆகிய', 'கொண்ட',
+            'என', 'என்று', 'எண்று', 'ஆன', 'ஆக', 'எனும்', 'உடன்', 'ஆகிய', 'கொண்ட',
             'about', 'give', 'me', 'tell', 'show', 'for', 'of', 'in', 'on', 'to', 'a', 'an', 'some'
         ].map(s => s.normalize('NFC'));
         
