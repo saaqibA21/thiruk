@@ -21,9 +21,9 @@ export class KuralAI {
     }
 
     // High-speed Lexical Search (Keyword + Structural + Tanglish)
-    async search(query) {
+    async search(query, skipRefine = false) {
         // First, refine the query to ensure meaningful sentence formation (Tamil grammar)
-        const refinedQuery = await this.refineQuery(query);
+        const refinedQuery = skipRefine ? query : await this.refineQuery(query);
         const cleanQuery = refinedQuery.toLowerCase().trim().normalize('NFC');
         const terms = cleanQuery.split(/\s+/).filter(t => t.length >= 1);
         
@@ -213,7 +213,7 @@ export class KuralAI {
                             ]
                         }
                     ],
-                    max_tokens: 50
+                    max_tokens: 300
                 });
                 const extractedKeywords = visionResponse.choices[0].message.content.trim();
                 console.log("Image Keywords Extracted:", extractedKeywords);
@@ -224,7 +224,8 @@ export class KuralAI {
             }
         }
 
-        const searchResult = await this.search(query);
+        // Step 2: Use search engine (skip refinement if we have vision-derived keywords to avoid losing precision)
+        const searchResult = await this.search(query, !!imageBase64);
         const topMatches = searchResult.results || [];
         const searchTerms = searchResult.searchTerms || [];
         const metadata = searchResult.metadata || {};
