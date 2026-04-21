@@ -1,5 +1,5 @@
 /**
- * THIRUKKURAL NEURAL CORE v4.4 (ULTRA-PRECISION)
+ * THIRUKKURAL NEURAL CORE v4.5 (TEXT-MATCH SUPREMACY)
  */
 
 import OpenAI from 'openai';
@@ -23,9 +23,10 @@ export class KuralAI {
 
         // Clean query: remove noise but KEEP Tamil characters
         const cleanQuery = query.toLowerCase().trim().normalize('NFC').replace(/[-._…·]{2,}/g, ' ');
-        const terms = cleanQuery.split(/\s+/).filter(t => t.length >= 2); // Only match words >= 2 chars for better precision
+        // Extract words, specifically prioritizing Tamil words
+        const terms = cleanQuery.split(/\s+/).filter(t => t.length >= 2);
         
-        const stopWords = ['விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'is', 'this'].map(s => s.normalize('NFC'));
+        const stopWords = ['விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'is', 'this', 'text', 'verse'].map(s => s.normalize('NFC'));
         const searchTerms = terms.filter(t => !stopWords.some(sw => t === sw));
 
         if (searchTerms.length === 0) return { results: [], searchTerms: [] };
@@ -34,29 +35,32 @@ export class KuralAI {
             let score = 0;
             const l1 = (k.Line1 || "").normalize('NFC');
             const l2 = (k.Line2 || "").normalize('NFC');
-            const fullVerse = `${l1} ${l2}`.toLowerCase();
+            const verseText = `${l1} ${l2}`.toLowerCase();
             
-            // Primary Scoring: Keyword density
-            let matches = 0;
+            // Primary Scoring: Keyword density in the poem itself
+            let wordMatches = 0;
             searchTerms.forEach(t => {
-                if (fullVerse.includes(t)) {
-                    matches++;
-                    score += 1000; // Found word in verse
+                if (verseText.includes(t)) {
+                    wordMatches++;
+                    score += 2000; // Deep reward for matching poetry words
                 } else if ((k.mv || k.explanation || "").toLowerCase().includes(t)) {
-                    score += 50; // Found in meaning
+                    score += 100; // Smaller reward for matching meanings
                 }
             });
 
-            // Bonus for matching multiple keywords (Density multiplier)
-            if (matches >= 2) score += (matches * 500);
-            if (matches >= 4) score += 5000; // Strong match indicator
+            // Exponential bonus for multiple word matches
+            if (wordMatches >= 2) score += 5000;
+            if (wordMatches >= 4) score += 20000;
 
-            // Exact phrase match bonus
-            if (fullVerse.includes(cleanQuery)) score += 10000;
+            // Exact phrase match (High weight)
+            if (verseText.includes(cleanQuery)) score += 50000;
 
-            // Manual Number match
+            // Number match (Low weight to avoid workbook confusion)
             const numMatch = query.match(/\b(\d+)\b/);
-            if (numMatch && k.Number === parseInt(numMatch[1])) score += 2000;
+            if (numMatch && k.Number === parseInt(numMatch[1])) {
+                // Only give number bonus if at least one word also matches
+                if (wordMatches > 0) score += 500;
+            }
 
             return { ...k, score };
         })
@@ -68,51 +72,34 @@ export class KuralAI {
 
     async ask(question, imageBase64 = null) {
         let finalQuery = question.trim().toLowerCase();
-        let identifiedKurals = [];
         const isValidKey = this.openai && this.openai.apiKey && this.openai.apiKey.startsWith('sk-');
 
         if (imageBase64 && isValidKey) {
             try {
-                // Step 1: Strict Verification - Identify Number AND Transcribe
-                const idResp = await this.openai.chat.completions.create({
+                // Step 1: Pure Transcription (Don't ask for the number to avoid bias)
+                const visionResp = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
-                        content: "Analyze the image. 1. Transcribe the Tamil verse exactly. 2. Based ONLY on that transcription, identify the Kural Number. Output format: 'Number: [X], Text: [Tamil]'. If unsure, output '0'."
+                        content: "You are a Tamil transcriber. Transcribe the core Thirukkural verse text from the image. Ignore dashes, dots, and any small numbers at the start (labels). Output ONLY the transcribed Tamil text."
                     }, {
                         role: "user",
                         content: [{ type: "image_url", image_url: { url: imageBase64 } }]
                     }],
-                    max_tokens: 150
+                    max_tokens: 100
                 });
                 
-                const responseText = idResp.choices[0].message.content;
-                const numMatch = responseText.match(/Number:\s*(\d+)/i);
-                if (numMatch && numMatch[1] !== '0') {
-                    const num = parseInt(numMatch[1]);
-                    identifiedKurals = this.dataset.filter(k => k.Number === num);
-                }
-
-                // Append transcribed text directly to the search query for lexical verification
-                const transcribed = responseText.split('Text:')[1] || responseText;
+                const transcribed = visionResp.choices[0].message.content.trim();
+                console.log("Transcription:", transcribed);
                 finalQuery = `${transcribed} ${finalQuery}`;
             } catch (err) {
-                console.error("Precision Vision Error:", err);
+                console.error("Transcription Error:", err);
             }
         }
 
-        // Step 2: Search (Lexical)
+        // Step 2: Search (Lexical Supremacy)
         const { results: lexicalResults, searchTerms } = await this.search(finalQuery, !!imageBase64);
-        
-        // Merge - Give massive priority to things that matched the OCR text
-        const uniqueMatches = [...identifiedKurals];
-        lexicalResults.forEach(tk => {
-            if (!uniqueMatches.some(k => k.Number === tk.Number)) {
-                uniqueMatches.push(tk);
-            }
-        });
-
-        const finalSources = uniqueMatches.slice(0, 10);
+        const finalSources = lexicalResults.slice(0, 5);
 
         // Step 3: AI Reasoning
         if (isValidKey && finalSources.length > 0) {
@@ -121,7 +108,7 @@ export class KuralAI {
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a Thirukkural Scholar. Look at the context provided and the user's image question. Identify the single correct Kural that matches the image text. Output only a direct, very concise answer: 'Kural [Number]: [Verse] - [Brief Meaning]'. Stop listing multiple irrelevent Kurals." },
+                        { role: "system", content: "You are a Thirukkural Scholar. Based ONLY on the provided context, identify the Kural that matches the user's request. Output: 'Kural [Number]: [Verse] - [Direct Meaning]'. Be incredibly concise. No extra text." },
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });
@@ -141,6 +128,6 @@ export class KuralAI {
     }
 
     async refineQuery(query) {
-        return query; // Standardize by skipping LLM-refinement for now to avoid hallucination
+        return query; 
     }
 }
