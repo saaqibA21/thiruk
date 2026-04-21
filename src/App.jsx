@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings } from 'lucide-react';
+import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 
@@ -26,6 +26,8 @@ const App = () => {
    const [kuralData, setKuralData] = useState([]);
    const [aiEngine, setAiEngine] = useState(null);
    const [showKeyboard, setShowKeyboard] = useState(false);
+   const [selectedImage, setSelectedImage] = useState(null);
+   const fileInputRef = useRef(null);
 
    const getInitialKey = () => {
       const envKey = import.meta.env.VITE_OPENAI_API_KEY;
@@ -82,7 +84,6 @@ const App = () => {
             let translatedValue = "";
             
             if (endsWithSentenceBoundary) {
-               // For sentence boundaries ( . ! ? ), translate the ENTIRE query to ensure meaningful formation/grammar
                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
                const res = await fetch(url);
                const data = await res.json();
@@ -93,8 +94,6 @@ const App = () => {
                   }
                }
             } else {
-               // Word-by-word or Phrase-by-phrase for spaces/commas
-               // Find the last segment of English
                const match = query.match(/(\b[a-zA-Z\s']+\b)([\s,]$)$/);
                if (!match) { setIsTranslating(false); return; }
                
@@ -109,7 +108,6 @@ const App = () => {
                if (data && data[0]) {
                   const translated = data[0].map(x => x[0]).join('');
                   if (translated && translated.toLowerCase() !== segmentToTranslate.toLowerCase() && query === currentQuery) {
-                     // Attempt a small 'formation' check if previous words are already Tamil
                      const newQuery = query.substring(0, startIndex) + translated + boundary;
                      setQuery(newQuery);
                   }
@@ -120,23 +118,47 @@ const App = () => {
          } finally {
             setIsTranslating(false);
          }
-      }, 150); // Fast debounce for snappy word-by-word feel
+      }, 150);
 
       return () => clearTimeout(timer);
    }, [query]);
 
    const ATHIGARAMS = ["கடவுள் வாழ்த்து", "வான் சிறப்பு", "நீத்தார் பெருமை", "அறன் வலியுறுத்தல்", "இல்வாழ்க்கை", "வாழ்க்கைத் துணைநலம்", "மக்கட்பேறு", "அன்புடைமை", "விருந்தோம்பல்", "இனியவை கூறல்", "செய்ந்நன்றியறிதல்", "நடுவுநிலைமை", "அடக்கமுடைமை", "ஒழுக்கமுடைமை", "பிறனில் விழையாமை", "பொறையுடைமை", "அழுக்காறாமை", "வெஃகாமை", "புறங்கூறாமை", "பயனில சொல்லாமை", "தீவினையச்சம்", "ஒப்புரவறிதல்", "ஈகை", "புகழ்", "அருளுடைமை", "புலால் மறுத்தல்", "தவம்", "கூடாஒழுக்கம்", "கள்ளாமை", "வாய்மை", "வெகுளாமை", "இன்னா செய்யாமை", "கொல்லாமை", "நிலையாமை", "துறவு", "மெய்யணர்தல்", "அவாவறுத்தல்", "ஊழ்", "இறைமாட்சி", "கல்வி", "கல்லாமை", "கேள்வி", "அறிவுடைமை", "குற்றங்கடிதல்", "பெரியாரைத் துணைக்கோடல்", "சிற்றினம் சேராமை", "தெரிந்துசெயல்வகை", "வலியறிதல்", "காலமறிதல்", "இடனறிதல்", "தெரிந்துதெளிதல்", "தெரிந்துவினையாடல்", "சுற்றந்தழால்", "பொச்சாவாமை", "செங்கோன்மை", "கொடுங்கோன்மை", "வெருவந்த செய்யாமை", "கண்ணோட்டம்", "ஒற்றாடல்", "ஊக்கமுடைமை", "மடியின்மை", "ஆள்வினையுடைமை", "இடுக்கண் அழியாமை", "அமைச்சு", "சொல்வன்மை", "வினைத்தூய்மை", "வினைத்திட்பம்", "வினைசெயல்வகை", "தூது", "மன்னரைச் சேர்ந்தொழுதல்", "குறிப்பறிதல்", "அவையறிதல்", "அவையஞ்சாமை", "நாடு", "அரண்", "பொருள்செயல்வகை", "படைமாட்சி", "படைச்செருக்கு", "நட்பு", "நட்பாராய்தல்", "பழைமை", "தீய நட்பு", "கூடா நட்பு", "பேதைமை", "புல்லறிவாண்மை", "இகல்", "பகைமாட்சி", "பகைத்திறந்தெரிதல்", "உட்பகை", "பெரியாரைப் பிழையாமை", "பெண்வழிச் சேறல்", "வரைவின் மகளிர்", "கள்ளுண்ணாமை", "சூது", "மருந்து", "குடிமை", "மானம்பருமை", "சான்றாண்மை", "பண்புடைமை", "நன்றியில் செல்வம்", "நாணுடைமை", "குடிசெயல்வகை", "உழவு", "நல்குரவு", "இரவு", "இரவச்சம்", "கயமை", "தகையணங்குறுத்தல்", "குறிப்பறிதல்", "புணர்ச்சி மகிழ்தல்", "நலம்புனைந்துரைத்தல்", "காதல் சிறப்புரைத்தல்", "நாணுத்துறவுரைத்தல்", "அலரறிவுறுத்தல்", "பிரிவாற்றாமை", "படர்மெலிந்திரங்கல்", "கண்விதுப்பழிதல்", "பசப்புறு பருவரல்", "தனிப்படர் மிகுதி", "நினைந்தவர் புலம்பல்", "கனவுநிலை உரைத்தல்", "பொழுதுகண்டு இரங்கல்", "உறுப்புநலன் அழிதல்", "நெஞ்சொடு கிளத்தல்", "நிறையழிதல்", "அவர்வயின் விதும்பல்", "குறிப்பறிவுறுத்தல்", "புணர்ச்சி விதும்பல்", "நெஞ்சொடு புலத்தல்", "புலவி", "புலவி நுணுக்கம்", "ஊடலுவகை"];
 
+   const handleImageUpload = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+         const reader = new FileReader();
+         reader.onloadend = () => {
+            setSelectedImage(reader.result);
+         };
+         reader.readAsDataURL(file);
+      }
+   };
+
    const handleAsk = async (text) => {
-      if (!text.trim() || !aiEngine) return;
-      const userMsg = { role: 'user', content: text };
+      if (!text.trim() && !selectedImage) return;
+      if (!aiEngine) return;
+      
+      const userMsg = { 
+         role: 'user', 
+         content: text || (selectedImage ? "இந்த படத்தின் விளக்கம் என்ன?" : ""), 
+         image: selectedImage 
+      };
+      
       setMessages(prev => [...prev, userMsg]);
+      const currentText = text || userMsg.content;
+      const currentImage = selectedImage;
+      
       setQuery('');
+      setSelectedImage(null);
       setLoading(true);
+      
       try {
-         const result = await aiEngine.ask(text);
+         const result = await aiEngine.ask(currentText, currentImage);
          setMessages(prev => [...prev, { role: 'ai', content: result.answer, sources: result.sources }]);
       } catch (error) {
+         console.error(error);
          setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பிழை ஏற்பட்டுள்ளது.", sources: [] }]);
       } finally { setLoading(false); }
    };
@@ -192,7 +214,6 @@ const App = () => {
    useEffect(() => {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage && lastMessage.role === 'ai') {
-         // Scroll to the start of the bubble
          const bubbles = document.querySelectorAll('.chat-bubble-container.ai');
          if (bubbles.length > 0) {
             bubbles[bubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -237,6 +258,11 @@ const App = () => {
                               <div key={i} className={`chat-bubble-container ${m.role}`}>
                                  <div className="chat-bubble">
                                     <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
+                                    {m.image && (
+                                       <div className="chat-bubble-image">
+                                          <img src={m.image} alt="Uploaded" />
+                                       </div>
+                                    )}
                                     <div className="bubble-text">{parseFormattedContent(m.content)}</div>
                                     {m.sources && m.sources.length > 0 && (
                                        <div className="kural-source-cards">
@@ -275,6 +301,14 @@ const App = () => {
                         
                         <div className="chat-input-wrapper">
                            <AnimatePresence>
+                              {selectedImage && (
+                                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="image-preview-container">
+                                    <img src={selectedImage} alt="Preview" />
+                                    <button className="remove-image-btn" onClick={() => setSelectedImage(null)}><X size={14}/></button>
+                                 </motion.div>
+                              )}
+                           </AnimatePresence>
+                           <AnimatePresence>
                               {showKeyboard && (
                                  <motion.div initial={{ height: 0, opacity: 0, y: 10 }} animate={{ height: 'auto', opacity: 1, y: 0 }} exit={{ height: 0, opacity: 0, y: 10 }} className="tamil-keyboard-popup">
                                     <div className="tk-grid-wrapper">
@@ -298,6 +332,16 @@ const App = () => {
                                  <button className={`kb-toggle ${showKeyboard ? 'active' : ''}`} onClick={() => setShowKeyboard(!showKeyboard)} title="Toggle Tamil Keyboard">
                                     <Languages size={20} />
                                  </button>
+                                 <button className="kb-toggle" onClick={() => fileInputRef.current?.click()} title="Upload Image">
+                                    <Camera size={20} />
+                                 </button>
+                                 <input 
+                                    type="file" 
+                                    ref={fileInputRef} 
+                                    style={{ display: 'none' }} 
+                                    accept="image/*" 
+                                    onChange={handleImageUpload} 
+                                 />
                                  <input
                                     placeholder="Type in English (Hit Enter to Translate) or use Tamil keyboard..."
                                     value={query}
@@ -795,7 +839,14 @@ const App = () => {
         .chat-input-row { padding-top: 1rem; }
         .tamil-input-box { display: flex; background: var(--white); padding: 0.5rem; border: 2px solid var(--border); border-radius: 3rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); gap: 0.5rem; }
         .tamil-input-box input { flex: 1; border: none; outline: none; padding: 0.4rem 1rem; font-size: 1rem; background: transparent; }
-        .tamil-input-box button { /* removed old button style */ }
+        
+        .chat-bubble-image { margin-bottom: 1rem; border-radius: 0.5rem; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); }
+        .chat-bubble-image img { width: 100%; max-width: 300px; display: block; }
+        .user .chat-bubble-image { border-color: rgba(255,255,255,0.2); }
+
+        .image-preview-container { position: absolute; bottom: 100%; left: 1rem; margin-bottom: 1rem; background: white; padding: 0.5rem; border-radius: 1rem; border: 2px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 10; }
+        .image-preview-container img { height: 80px; width: auto; border-radius: 0.5rem; display: block; }
+        .remove-image-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
 
         /* Library Cards */
         .paal-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
@@ -1022,7 +1073,6 @@ const App = () => {
           .h-v-timeline { padding-left: 1.5rem; }
           .h-tl-year { position: static; text-align: left; margin-bottom: 0.5rem; display: block; }
           .h-feature-content { flex-direction: column; }
-          .h-content-box { padding: 3rem 2rem; }
         }
 
         .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); animation: pulse 1.5s infinite; }
@@ -1047,53 +1097,14 @@ const App = () => {
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
-          .scholarly-app { padding-bottom: 70px; } /* Space for bottom nav */
+          .scholarly-app { padding-bottom: 70px; }
           
-          .main-header { 
-            padding: 1.5rem 1rem; 
-            background: #ffffff !important; 
-            border-bottom: 2px solid #f8fafc;
-            display: grid !important;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-          }
-          .header-top-row { 
-            display: grid !important;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin: 0 auto;
-            width: 100%;
-          }
-          .srm-logo-top { 
-            height: 50px !important; 
-            width: auto !important;
-            max-width: 90%;
-            margin: 0 auto !important;
-            display: block !important;
-          }
-          .app-title-group { 
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 0.25rem;
-          }
-          .main-title { 
-            font-size: 1.4rem !important; 
-            font-weight: 950 !important; 
-            color: #9a3412 !important; 
-            margin: 0 !important;
-            line-height: 1.2;
-          }
-          .sub-title { 
-            font-size: 0.75rem !important; 
-            color: #64748b !important; 
-            font-weight: 900 !important; 
-            margin: 0 !important;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-          }
+          .main-header { padding: 1.5rem 1rem; background: #ffffff !important; border-bottom: 2px solid #f8fafc; display: grid !important; grid-template-columns: 1fr; gap: 1.5rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
+          .header-top-row { display: grid !important; grid-template-columns: 1fr; gap: 1rem; margin: 0 auto; width: 100%; }
+          .srm-logo-top { height: 50px !important; width: auto !important; max-width: 90%; margin: 0 auto !important; display: block !important; }
+          .app-title-group { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 0.25rem; }
+          .main-title { font-size: 1.4rem !important; font-weight: 950 !important; color: #9a3412 !important; margin: 0 !important; line-height: 1.2; }
+          .sub-title { font-size: 0.75rem !important; color: #64748b !important; font-weight: 900 !important; margin: 0 !important; letter-spacing: 2px; text-transform: uppercase; }
           
           .kural-item-card { padding: 1.25rem; }
           .kural-item-card p { font-size: 1.05rem; line-height: 1.4; }
@@ -1106,33 +1117,9 @@ const App = () => {
           .verse-line-1 { margin-bottom: 0.5rem; font-weight: 950; color: #1e293b; }
           .verse-line-2 { font-weight: 950; color: #1e293b; }
           
-          .nav-scroll-wrapper { 
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 0.75rem 1rem;
-            z-index: 2000;
-            border-top: 1px solid var(--border);
-            margin: 0;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
-          }
-          .header-nav-tabs { 
-            width: 100%; 
-            display: flex; 
-            justify-content: space-around; 
-            gap: 0; 
-          }
-          .header-nav-tabs button { 
-             flex-direction: column; 
-             gap: 4px; 
-             padding: 0.5rem; 
-             font-size: 0.65rem; 
-             background: none !important;
-             color: var(--muted);
-          }
+          .nav-scroll-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 0.75rem 1rem; z-index: 2000; border-top: 1px solid var(--border); margin: 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
+          .header-nav-tabs { width: 100%; display: flex; justify-content: space-around; gap: 0; }
+          .header-nav-tabs button { flex-direction: column; gap: 4px; padding: 0.5rem; font-size: 0.65rem; background: none !important; color: var(--muted); }
           .header-nav-tabs button.active { color: var(--primary); }
           .header-nav-tabs button span { font-weight: 900; }
           .header-nav-tabs button svg { width: 22px; height: 22px; }

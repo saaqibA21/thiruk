@@ -190,7 +190,7 @@ export class KuralAI {
         return results;
     }
 
-    async ask(question) {
+    async ask(question, imageBase64 = null) {
         const query = question.trim().toLowerCase();
         const searchResult = await this.search(query);
         const topMatches = searchResult.results || [];
@@ -202,36 +202,57 @@ export class KuralAI {
 
         if (isValidKey && !isNumberOnly) {
             try {
-                const llmContext = topMatches.slice(0, 15).map(k => 
+                const llmContext = topMatches.slice(0, 20).map(k => 
                     `Verse #${k.Number}: ${k.Line1} ${k.Line2} 
 Meaning: ${k.explanation}
+Tamil Meanings: MV: ${k.mv || ''}, MK: ${k.mk || ''}, SP: ${k.sp || ''}
 English: ${k.Translation}`
                 ).join('\n\n');
 
-                const systemPrompt = `You are "Thirukkural Expert". 
-The user is asking for verses. I have found ${topMatches.length} related kurals.
-Query Type: ${metadata.isStructuralQuery ? 'Structural search requested.' : 'General keyword search.'}
-Actual Stats: ${metadata.startMatchCount} start matches, ${metadata.endMatchCount} end matches.
-1. Provide a scholarly summary. Be honest about structural matches.
-2. If the user asked for a "start" match but none were found (even if general word matches exist), mention that clearly.
-3. Inform the user if the word is found at the start, end, or middle of verses based on the stats provided.
-4. Respond in the language of the user (Tamil/English).
+                const systemPrompt = `You are "Thirukkural Expert AI". 
+CRITICAL RULE: USE ONLY THE PROVIDED THIRUKKURAL DATA BELOW TO ANSWER. DO NOT USE EXTERNAL KNOWLEDGE OR OTHER VERSES.
+If the answer is not in the provided context, politely say that you can only answer based on Thirukkural.
 
-Context Data (Top 15):
-${llmContext}`;
+The user is asking a question ${imageBase64 ? 'about an image they uploaded' : ''}.
+I have found ${topMatches.length} related kurals from our database.
+
+Context Data (Our Only Source):
+${llmContext}
+
+Instructions:
+1. Analyze the user's query ${imageBase64 ? 'and the image' : ''}.
+2. Find the most relevant Kurals from the Context Data.
+3. Provide a scholarly answer in the language of the user (Tamil/English).
+4. If an image is provided, identify any themes, objects, or situations in it and relate them to specific Kurals in the Context.
+5. Be precise and quote the Verse Number and text.`;
+
+                const messages = [
+                    { role: "system", content: systemPrompt }
+                ];
+
+                const userContent = [{ type: "text", text: question }];
+                
+                if (imageBase64) {
+                    userContent.push({
+                        type: "image_url",
+                        image_url: {
+                            url: imageBase64 // Expecting data:image/jpeg;base64,...
+                        }
+                    });
+                }
+
+                messages.push({ role: "user", content: userContent });
 
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: question }
-                    ],
+                    messages: messages,
                     temperature: 0.1
                 });
 
                 return { answer: response.choices[0].message.content, sources: topMatches };
 
             } catch (err) {
+                console.error("AI Error:", err);
                 return { answer: this.fallback(question, topMatches, searchTerms, metadata), sources: topMatches };
             }
         } else {
