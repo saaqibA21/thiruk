@@ -22,7 +22,7 @@ export class KuralAI {
 
         // For image searches, skip refinement to preserve literal OCR characters
         const refinedQuery = isImageSearch ? query : await this.refineQuery(query);
-        const cleanQuery = refinedQuery.toLowerCase().trim().normalize('NFC');
+        const cleanQuery = refinedQuery.toLowerCase().trim().normalize('NFC').replace(/[-._…·]{2,}/g, ' ');
         const terms = cleanQuery.split(/\s+/).filter(t => t.length >= 1);
         
         // Structural search keywords
@@ -125,7 +125,7 @@ export class KuralAI {
                     messages: [
                         {
                             role: "system",
-                            content: "You are a Thirukkural scholar. Transcribe any Tamil text in the image exactly. Extract 3-5 core philosophical themes. Output only the transcription and keywords, no labels."
+                            content: "You are a Thirukkural scholar. Analyze the image. If it is a fill-in-the-blank question, ignore the dashes/dots and transcribe the core Tamil words. Extract the 3-4 most important keywords from the verse itself. Output only the words/keywords. No labels."
                         },
                         {
                             role: "user",
@@ -158,7 +158,7 @@ export class KuralAI {
                     model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
-                        content: "Identify the Thirukkural number(s) mentioned or shown in this image. Output ONLY the numbers separated by commas (e.g. 72, 101). If none found, output '0'."
+                        content: "Identify the REAL Thirukkural number(s) for the verse shown in this image based on its text and content. Ignore any workbook question numbers (like '25' if it's just a question number). Output ONLY the Kural number(s) from the canonical 1330 Kurals. If none found, output '0'."
                     }, {
                         role: "user",
                         content: [{ type: "image_url", image_url: { url: imageBase64 } }]
