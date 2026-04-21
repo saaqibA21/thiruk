@@ -78,7 +78,7 @@ export class KuralAI {
                     model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
-                        content: "Identify the REAL Thirukkural number(s) in this image based on the Tamil text. Ignore superficial question numbers. Output ONLY numbers separated by commas (e.g. 72, 101). If none, output '0'."
+                        content: "Analyze the image. Identify the ONE REAL Thirukkural number that matches the verse TEXT. Ignore any workbook question numbers (like '25' if it's just a label). Trust the Tamil words over the numbers. Output ONLY the number."
                     }, {
                         role: "user",
                         content: [{ type: "image_url", image_url: { url: imageBase64 } }]
@@ -127,7 +127,7 @@ export class KuralAI {
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a Thirukkural Expert. You must use the provided context to answer. If an image is provided, identify it and explain the Kural within it using our scholar data." },
+                        { role: "system", content: "You are a Thirukkural Scholar. Be extremely direct and concise. For an image matching a Kural, output ONLY the Kural Number, the Verse, and a very brief meaning (1 sentence). If there are multiple hits but one clearly matches the text in the image, prioritize only that one. No long explanations." },
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });
