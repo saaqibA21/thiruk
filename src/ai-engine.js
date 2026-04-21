@@ -153,7 +153,7 @@ export class KuralAI {
         .filter(k => k.score > 10) 
         .sort((a, b) => b.score - a.score);
 
-        return results;
+        return { results, searchTerms };
     }
 
     checkThemes(query, k, fullContent) {
@@ -180,12 +180,13 @@ export class KuralAI {
     }
 
     async semanticSearch(query) {
-        return this.search(query);
+        const { results } = await this.search(query);
+        return results;
     }
 
     async ask(question) {
         const query = question.trim().toLowerCase();
-        const topMatches = (await this.search(query)) || [];
+        const { results: topMatches, searchTerms } = (await this.search(query)) || { results: [], searchTerms: [] };
         const isNumberOnly = /^\d+$/.test(query) || (topMatches.length === 1 && query.includes(topMatches[0].Number.toString()));
 
         // Security: Only call OpenAI if key is valid sk- format
@@ -227,14 +228,14 @@ ${llmContext}`;
 
             } catch (err) {
                 if (err.status !== 401) console.error("Neural Reasoning Error:", err);
-                return { answer: this.fallback(question, topMatches), sources: topMatches };
+                return { answer: this.fallback(question, topMatches, searchTerms), sources: topMatches };
             }
         } else {
-            return { answer: this.fallback(question, topMatches), sources: topMatches };
+            return { answer: this.fallback(question, topMatches, searchTerms), sources: topMatches };
         }
     }
 
-    fallback(question, matches) {
+    fallback(question, matches, searchTerms = []) {
         if (matches.length === 0) return "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை. / Sorry, no matching Kurals were found.";
         
         const isNumberSearch = /^\d+$/.test(question.trim());
@@ -249,7 +250,8 @@ ${llmContext}`;
         if (hasStrict) {
             return `நிச்சயமாக, உங்கள் தேடலுக்குத் துல்லியமாகப் பொருந்தும் ${count} குறள்கள் இதோ:`;
         } else if (hasWord) {
-            return `மன்னிக்கவும், நீங்கள் குறிப்பிட்டபடி தொடங்கும் அல்லது முடியும் குறள் எதுவும் இல்லை. ஆனால் "${question}" என்ற சொல்லைக் கொண்ட ${count} குறள்கள் இதோ:`;
+            const matchedText = (searchTerms && searchTerms.length > 0) ? searchTerms.join(', ') : question;
+            return `மன்னிக்கவும், நீங்கள் குறிப்பிட்டபடி தொடங்கும் அல்லது முடியும் குறள் எதுவும் இல்லை. ஆனால் "${matchedText}" என்ற சொல்லைக் கொண்ட ${count} குறள்கள் இதோ:`;
         }
 
         return `உங்கள் தேடலுக்குத் தொடர்புடைய ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. அவற்றை கீழே உள்ள கார்டுகளில் விரிவாகக் காணலாம்:`;
