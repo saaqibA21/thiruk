@@ -41,7 +41,8 @@ export class KuralAI {
             'என்ற', 'சொல்லுடன்', 'சொல்லும்', 'சொல்', 'வார்த்தை', 'kural', 'kurals', 'குறள்', 'குறள்கள்', 
             'with', 'word', 'the', 'என்பது', 'என்றார்', 'எனக்கு', 'கொடு', 'வேண்டும்', 'கூறு', 'பற்றி', 
             'என', 'என்று', 'எண்று', 'ஆன', 'ஆக', 'எனும்', 'உடன்', 'ஆகிய', 'கொண்ட',
-            'about', 'give', 'me', 'tell', 'show', 'for', 'of', 'in', 'on', 'to', 'a', 'an', 'some'
+            'இந்த', 'என்ன', 'எப்படி', 'எங்கே', 'ஏன்', 'எது', 'எவை', 'யார்', 'யாருடைய', 'விளக்கம்', 'படம்', 'படத்தின்',
+            'about', 'give', 'me', 'tell', 'show', 'for', 'of', 'in', 'on', 'to', 'a', 'an', 'some', 'what', 'why', 'how', 'where', 'which', 'who', 'image', 'picture', 'explanation'
         ].map(s => s.normalize('NFC'));
         
         // Identification of potential search targets (words that aren't commands/stopwords)
@@ -191,14 +192,44 @@ export class KuralAI {
     }
 
     async ask(question, imageBase64 = null) {
-        const query = question.trim().toLowerCase();
+        let query = question.trim().toLowerCase();
+        const isValidKey = this.openai && this.openai.apiKey && this.openai.apiKey.startsWith('sk-');
+
+        // Step 1: Intelligent Image-to-Keyword mapping if image is present
+        if (imageBase64 && isValidKey) {
+            try {
+                const visionResponse = await this.openai.chat.completions.create({
+                    model: "gpt-4o-mini",
+                    messages: [
+                        {
+                            role: "system",
+                            content: "Analyze the image and provide 3-5 high-relevance Tamil keywords or themes related to human life, ethics, or nature that can be used to search for relevant Thirukkural verses. Output ONLY the keywords separated by spaces."
+                        },
+                        {
+                            role: "user",
+                            content: [
+                                { type: "text", text: "What are the core themes in this image?" },
+                                { type: "image_url", image_url: { url: imageBase64 } }
+                            ]
+                        }
+                    ],
+                    max_tokens: 50
+                });
+                const extractedKeywords = visionResponse.choices[0].message.content.trim();
+                console.log("Image Keywords Extracted:", extractedKeywords);
+                // Combine original query with vision-extracted keywords for better retrieval
+                query = `${query} ${extractedKeywords}`;
+            } catch (err) {
+                console.error("Vision Keyword Extraction Error:", err);
+            }
+        }
+
         const searchResult = await this.search(query);
         const topMatches = searchResult.results || [];
         const searchTerms = searchResult.searchTerms || [];
         const metadata = searchResult.metadata || {};
 
         const isNumberOnly = /^\d+$/.test(query) || (topMatches.length === 1 && query.includes(topMatches[0].Number.toString()));
-        const isValidKey = this.openai && this.openai.apiKey && this.openai.apiKey.startsWith('sk-');
 
         if (isValidKey && !isNumberOnly) {
             try {
