@@ -47,7 +47,7 @@ export class KuralAI {
         
         // Identification of potential search targets (words that aren't commands/stopwords)
         const searchTerms = terms
-            .map(t => t.replace(/[.,!?;:"]/g, '').normalize('NFC'))
+            .map(t => t.replace(/[.,!?;:"\-_…·]/g, '').normalize('NFC'))
             .filter(t => t.length >= 1 && !stopWords.some(sw => t === sw));
 
         let startMatchCount = 0;
@@ -62,8 +62,8 @@ export class KuralAI {
 
             const l1 = k.Line1.toLowerCase().normalize('NFC');
             const l2 = k.Line2.toLowerCase().normalize('NFC');
-            const cleanL1 = l1.replace(/[.,!?;:"]/g, '');
-            const cleanL2 = l2.replace(/[.,!?;:"]/g, '');
+            const cleanL1 = l1.replace(/[.,!?;:"\-_…·]/g, '');
+            const cleanL2 = l2.replace(/[.,!?;:"\-_…·]/g, '');
             
             const wordsL1 = cleanL1.trim().split(/\s+/);
             const wordsL2 = cleanL2.trim().split(/\s+/);
@@ -203,12 +203,12 @@ export class KuralAI {
                     messages: [
                         {
                             role: "system",
-                            content: "Analyze the image and provide 3-5 high-relevance Tamil keywords or themes related to human life, ethics, or nature that can be used to search for relevant Thirukkural verses. Output ONLY the keywords separated by spaces."
+                            content: "You are a Thirukkural expert. Analyze the image. 1. If the image contains Tamil text (especially Thirukkural verses), transcribe the text exactly. 2. Identify 3-5 high-relevance Tamil keywords or themes. Output only the transcribed text and keywords separated by spaces. Avoid numbering or labels."
                         },
                         {
                             role: "user",
                             content: [
-                                { type: "text", text: "What are the core themes in this image?" },
+                                { type: "text", text: "Transcribe any Tamil text and identify themes in this image." },
                                 { type: "image_url", image_url: { url: imageBase64 } }
                             ]
                         }
