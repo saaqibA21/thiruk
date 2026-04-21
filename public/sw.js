@@ -15,8 +15,9 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-    // Only intercept local GET requests
-    if (e.request.method !== 'GET' || e.request.url.includes('api.openai.com')) return;
+    // Aggressively ignore OpenAI and other non-GET API calls
+    if (e.request.url.includes('openai.com')) return;
+    if (e.request.method !== 'GET') return;
     
     e.respondWith(
         caches.match(e.request).then((res) => res || fetch(e.request))

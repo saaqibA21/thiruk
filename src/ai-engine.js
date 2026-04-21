@@ -11,9 +11,10 @@ export class KuralAI {
     }
 
     async init(apiKey) {
-        console.log("KuralAI Init - Key detected:", !!apiKey, "Prefix:", apiKey?.substring(0, 5) + "...");
-        if (apiKey && apiKey.startsWith('sk-')) {
-            this.openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+        const cleanKey = apiKey?.trim();
+        console.log("KuralAI Init - Key detected:", !!cleanKey, "Length:", cleanKey?.length);
+        if (cleanKey && cleanKey.startsWith('sk-')) {
+            this.openai = new OpenAI({ apiKey: cleanKey, dangerouslyAllowBrowser: true });
         }
         if (window.onNeuralProgress) window.onNeuralProgress(100);
     }
