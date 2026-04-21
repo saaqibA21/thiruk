@@ -1,5 +1,5 @@
 /**
- * THIRUKKURAL NEURAL CORE v4.6 (PARTIAL & STRUCTURAL MASTERY)
+ * THIRUKKURAL NEURAL CORE v4.7 (SYLLABIC PREFIX MASTERY)
  */
 
 import OpenAI from 'openai';
@@ -32,54 +32,56 @@ export class KuralAI {
 
         // Extract the target word for structural search
         let structuralTarget = "";
-        if (isStartsWith || isEndsWith) {
-            const words = cleanQuery.split(/\s+/);
-            // Try to find the word that isn't a structural keyword or a stopword
-            structuralTarget = words.find(w => 
-                !startKeywords.includes(w) && 
-                !endKeywords.includes(w) && 
-                w !== 'என்று' && w !== 'என' && w !== 'எண்று'
-            ) || "";
-        }
+        const allQueryWords = cleanQuery.split(/\s+/);
+        structuralTarget = allQueryWords.find(w => 
+            !startKeywords.includes(w) && 
+            !endKeywords.includes(w) && 
+            w.length > 2 &&
+            !['என்று', 'எண்று', 'என', 'சொல்லுடன்', 'தொடர்புடைய'].includes(w)
+        ) || allQueryWords[0];
 
-        const terms = cleanQuery.split(/\s+/).filter(t => t.length >= 2);
-        const stopWords = ['விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'என்று', 'எண்று'].map(s => s.normalize('NFC'));
-        const searchTerms = terms.filter(t => !stopWords.some(sw => t === sw) && !startKeywords.includes(t) && !endKeywords.includes(t));
+        // Clean target prefix (first 3-4 chars are usually enough for Tamil stems)
+        const targetPrefix = structuralTarget.substring(0, 4);
+
+        const stopWords = ['விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'என்று', 'எண்று', 'சொல்லுடன்', 'தொடர்புடைய'].map(s => s.normalize('NFC'));
+        const searchTerms = allQueryWords.filter(t => !stopWords.some(sw => t === sw) && !startKeywords.includes(t) && !endKeywords.includes(t));
 
         const results = this.dataset.map(k => {
             let score = 0;
-            const l1 = (k.Line1 || "").normalize('NFC').toLowerCase();
-            const l2 = (k.Line2 || "").normalize('NFC').toLowerCase();
-            const cleanL1 = l1.replace(/[.,!?;:"\-_…·]/g, '');
-            const cleanL2 = l2.replace(/[.,!?;:"\-_…·]/g, '');
-            const verseText = `${cleanL1} ${cleanL2}`;
+            const l1 = (k.Line1 || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·]/g, '');
+            const l2 = (k.Line2 || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·]/g, '');
+            const verseText = `${l1} ${l2}`;
             const words = verseText.trim().split(/\s+/);
 
             // 1. Structural Matches (High Priority)
-            if (isStartsWith && structuralTarget) {
-                if (cleanL1.startsWith(structuralTarget)) score += 10000;
-                else if (words[0].startsWith(structuralTarget)) score += 5000;
-            }
-            if (isEndsWith && structuralTarget) {
-                // Remove trailing punctuation from the last word
-                const lastWord = words[words.length - 1].replace(/[.,!?;:"\-_…·]$/, '');
-                if (cleanL2.endsWith(structuralTarget)) score += 10000;
-                else if (lastWord.endsWith(structuralTarget)) score += 5000;
-                else if (lastWord.includes(structuralTarget)) score += 1000;
+            if (isStartsWith || true) { // Always give some weight to prefix match even if not explicit
+                const weight = isStartsWith ? 10000 : 2000;
+                if (l1.startsWith(structuralTarget)) score += weight;
+                else if (l1.startsWith(targetPrefix)) score += (weight / 2);
+                else if (words[0].startsWith(targetPrefix)) score += (weight / 3);
             }
 
-            // 2. Keyword Density & Partial Matches
+            if (isEndsWith && structuralTarget) {
+                const targetSuffix = structuralTarget.length > 4 ? structuralTarget.slice(-4) : structuralTarget;
+                const lastWord = words[words.length - 1].replace(/[.,!?;:"\-_…·]$/, '');
+                if (l2.endsWith(structuralTarget)) score += 10000;
+                else if (lastWord.endsWith(structuralTarget)) score += 5000;
+                else if (lastWord.endsWith(targetSuffix)) score += 2000;
+            }
+
+            // 2. Keyword Density & Intelligent Partial Matches
             let matches = 0;
             searchTerms.forEach(t => {
-                // Exact Match
+                const tPrefix = t.substring(0, 4);
+                // Exact word match
                 if (words.some(w => w === t)) {
                     matches++;
                     score += 2000;
                 } 
-                // Partial Prefix Match (e.g. 'sel' matches 'selvam')
-                else if (words.some(w => w.startsWith(t))) {
-                    matches += 0.5;
-                    score += 800;
+                // Syllabic Prefix Match (very robust for Tamil sandhi)
+                else if (words.some(w => w.startsWith(tPrefix))) {
+                    matches += 0.7;
+                    score += 1500;
                 }
                 // Meaning match
                 else if ((k.mv || "").toLowerCase().includes(t)) {
@@ -95,7 +97,7 @@ export class KuralAI {
 
             return { ...k, score };
         })
-        .filter(k => k.score > 200)
+        .filter(k => k.score > 300)
         .sort((a, b) => b.score - a.score);
 
         return { results: results.slice(0, 15), searchTerms };
@@ -111,7 +113,7 @@ export class KuralAI {
                     model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
-                        content: "Transcribe the core Tamil verse from this image. Ignore labels and noise. Output ONLY text."
+                        content: "Transcribe the core Tamil verse from this image. Ignore labels. Output ONLY text."
                     }, {
                         role: "user",
                         content: [{ type: "image_url", image_url: { url: imageBase64 } }]
@@ -145,7 +147,7 @@ export class KuralAI {
     fallback(question, matches, searchTerms) {
         if (matches.length === 0) return "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை.";
         let msg = "இதோ நீங்கள் தேடிய குறள்கள்:\n\n";
-        matches.slice(0, 5).forEach(k => { msg += `குறள் ${k.Number}:\n${k.Line1}\n${k.Line2}\n\n`; });
+        matches.slice(0, 8).forEach(k => { msg += `குறள் ${k.Number}:\n${k.Line1}\n${k.Line2}\n\n`; });
         return msg;
     }
 
