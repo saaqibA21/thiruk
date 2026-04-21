@@ -15,6 +15,9 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+    // Only intercept local GET requests
+    if (e.request.method !== 'GET' || e.request.url.includes('api.openai.com')) return;
+    
     e.respondWith(
         caches.match(e.request).then((res) => res || fetch(e.request))
     );

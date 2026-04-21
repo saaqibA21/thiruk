@@ -101,6 +101,10 @@ export class KuralAI {
                 finalQuery += " " + kwResp.choices[0].message.content.trim();
             } catch (err) {
                 console.error("Vision Identification Error:", err);
+                if (err.status === 401) return { answer: "பிழை: உங்கள் OpenAI API Key தவறானது அல்லது காலாவதியானது. (Error: Invalid API Key 401)", sources: [] };
+                if (err.message?.includes('fetch') || err.message?.includes('Connection')) {
+                    return { answer: "இணைப்பு பிழை! உங்கள் இணையதளம் அல்லது API Key அமைப்புகளைச் சரிபார்க்கவும். (Network/CORS Error)", sources: [] };
+                }
             }
         }
 
