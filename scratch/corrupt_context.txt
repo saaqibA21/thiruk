@@ -1,0 +1,16 @@
+Hex: 0xfffd Pos: 50466 Context: ngu Vaazhpavan Vaanu�ryum",       "trans
+Hex: 0xfffd Pos: 166619 Context: eration2": "Vazhukka�yum Keteen Padhu"  
+Hex: 0xfffd Pos: 480781 Context: teration1": "Alavara�ndhu Vaazhaadhaan V
+Hex: 0xba7 Pos: 483864 Context:   "Line2": "காலம் அற஧ந்து செயின்.",     
+Hex: 0xfffd Pos: 775865 Context: aal Ennaam Uvari Ela�ppakai",       "tra
+Hex: 0xba7 Pos: 866234 Context: ne2": "பண்பின்மை பார஧க்கும் நோய்.",     
+Hex: 0xfffd Pos: 892009 Context: literation1": "Thera�num Theraa Vitinum 
+Hex: 0xba7 Pos: 929313 Context: ,       "Line2": "ஏத஧ல் பிணந்தழீஇ அற்று.
+Hex: 0xfffd Pos: 958339 Context: tion1": "Izhaththoru�um Kaadhalikkum Soo
+Hex: 0xfffd Pos: 958414 Context: tion2": "Uzhaththoru�um Kaadhatru Uyir" 
+Hex: 0xba7 Pos: 975031 Context: ,       "Line2": "மத஧க்கண் மறுப்போல் உயர
+Hex: 0xfffd Pos: 986319 Context: ndroruvan Vaazhdhala�n Annilaiye",      
+Hex: 0xba7 Pos: 1138950 Context: ne2": "காதலை வாழி மத஧.",       "Translat
+Hex: 0xfffd Pos: 1163215 Context: "Alarezha Aaruyir Na�rkum Adhanaip",    
+Hex: 0xfffd Pos: 1215321 Context: on2": "Veezhvaar Ala� Kkum Ali"     },  
+Hex: 0xba7 Pos: 1347809 Context: ne2": "வல்லது அவர்அள஧க்கு மாறு.",       
