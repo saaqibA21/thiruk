@@ -70,34 +70,23 @@ export class KuralAI {
             // --- 1. Structural Match Logic (Highest Priority) ---
             if (isStructural && searchTerms.length > 0) {
                 searchTerms.forEach(targetWord => {
-                    // Check Start
-                    if (isStartsWith) {
-                        const firstWord = wordsL1[0] || "";
-                        if (firstWord === targetWord) {
-                            score += 2000; // Major boost for exact start word
-                            hasStructuralMatch = true;
-                        } else if (firstWord.startsWith(targetWord)) {
-                            score += 1800; // Strong boost for first word prefix
-                            hasStructuralMatch = true;
-                        } else if (cleanL1.startsWith(targetWord)) {
-                            score += 1000; // Boost for line start prefix
-                            hasStructuralMatch = true;
-                        }
-                    }
-                    
-                    // Check End
-                    if (isEndsWith) {
-                        const lastWord = wordsL2[wordsL2.length - 1] || "";
-                        if (lastWord === targetWord) {
-                            score += 2000; // Major boost for exact end word
-                            hasStructuralMatch = true;
-                        } else if (lastWord.startsWith(targetWord)) {
-                            score += 1800; // Strong boost for last word prefix
-                            hasStructuralMatch = true;
-                        } else if (cleanL2.endsWith(targetWord)) {
-                            score += 1000; // Boost for line end suffix
-                            hasStructuralMatch = true;
-                        }
+                    const firstWord = wordsL1[0] || "";
+                    const lastWord = wordsL2[wordsL2.length - 1] || "";
+
+                    // Calculate potential scores for both positions
+                    const startScore = (firstWord === targetWord) ? 2000 : (firstWord.startsWith(targetWord) ? 1800 : (cleanL1.startsWith(targetWord) ? 1000 : 0));
+                    const endScore = (lastWord === targetWord) ? 2000 : (lastWord.startsWith(targetWord) ? 1800 : (cleanL2.endsWith(targetWord) ? 1000 : 0));
+
+                    if (isStartsWith && startScore > 0) {
+                        score += startScore;
+                        hasStructuralMatch = true;
+                    } else if (isEndsWith && endScore > 0) {
+                        score += endScore;
+                        hasStructuralMatch = true;
+                    } else if (startScore > 0 || endScore > 0) {
+                        // Match found on the OTHER structural boundary (e.g. user asked for start, we found end)
+                        score += Math.max(startScore, endScore) * 0.5; 
+                        hasStructuralMatch = true; // Still mark as structural match for better messaging
                     }
                 });
             }
