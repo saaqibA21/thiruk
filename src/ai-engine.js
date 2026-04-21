@@ -11,6 +11,7 @@ export class KuralAI {
     }
 
     async init(apiKey) {
+        console.log("KuralAI Init - Key detected:", !!apiKey, "Prefix:", apiKey?.substring(0, 5) + "...");
         if (apiKey && apiKey.startsWith('sk-')) {
             this.openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
         }
@@ -103,7 +104,7 @@ export class KuralAI {
                 console.error("Vision Identification Error:", err);
                 const isAuthError = err.status === 401 || err.code === 'invalid_api_key' || err.message?.includes('401');
                 if (isAuthError) {
-                    return { answer: "பிழை: உங்கள் OpenAI API Key தவறானது, காலாவதியானது அல்லது அமைப்பாரவில்லை. (Error: Invalid API Key 401). தயவுசெய்து Vercel Settings-ல் புதிய Key-ஐச் சேர்த்து Redeploy செய்யவும்.", sources: [] };
+                    return { answer: "பிழை: உங்கள் OpenAI API Key தவறானது அல்லது காலாவதியானது. (Error: 401). தயவுசெய்து உங்கள் OpenAI Usage Credits ($0.00 balance?) மற்றும் Vercel Settings-ஐச் சரிபார்க்கவும்.", sources: [] };
                 }
                 return { answer: "இணைப்பு பிழை! உங்கள் இணையதளம் அல்லது API Key அமைப்புகளைச் சரிபார்க்கவும். (Network/CORS Error). குறிப்பு: Vercel-ல் API Key சேர்த்த பிறகு 'Redeploy' செய்துள்ளீர்களா என உறுதிப்படுத்தவும்.", sources: [] };
             }
