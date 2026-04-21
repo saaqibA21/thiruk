@@ -148,18 +148,41 @@ export class KuralAI {
             }
         }
 
-        // Step 2: Search
-        const { results, searchTerms, metadata } = await this.search(finalQuery, !!imageBase64);
+        // Step 2: Search (Lexical)
+        let { results, searchTerms, metadata: searchMeta } = await this.search(finalQuery, !!imageBase64);
+        
+        // Step 3: Semantic Fallback (Ask AI for Kural Numbers if keyword search fails)
+        if (results.length === 0 && imageBase64 && isValidKey) {
+            try {
+                const semanticResp = await this.openai.chat.completions.create({
+                    model: "gpt-4o-mini",
+                    messages: [{
+                        role: "system",
+                        content: "Identify the Thirukkural number(s) mentioned or shown in this image. Output ONLY the numbers separated by commas (e.g. 72, 101). If none found, output '0'."
+                    }, {
+                        role: "user",
+                        content: [{ type: "image_url", image_url: { url: imageBase64 } }]
+                    }],
+                    max_tokens: 10
+                });
+                const identifiedNums = semanticResp.choices[0].message.content.match(/\d+/g);
+                if (identifiedNums) {
+                    const semanticMatches = this.dataset.filter(k => identifiedNums.map(Number).includes(k.Number));
+                    results = [...results, ...semanticMatches];
+                }
+            } catch (err) { console.error("Semantic identifying error:", err); }
+        }
+
         const topMatches = results.slice(0, 15);
 
-        // Step 3: AI Reasoning or Fallback
+        // Step 4: AI Reasoning or Fallback
         if (isValidKey && topMatches.length > 0) {
             try {
-                const context = topMatches.map(k => `Verse #${k.Number}: ${k.Line1} / ${k.Line2}\nTamil: ${k.mv}\nEnglish: ${k.Translation}`).join('\n\n');
+                const context = topMatches.map(k => `Verse #${k.Number}: ${k.Line1} / ${k.Line2}\nTamil: ${k.mv}\nMeaning: ${k.explanation}`).join('\n\n');
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a Thirukkural Expert. Answer using ONLY the context provided. If an image was provided, relate its content specifically to the listed Kurals. Format your response clearly." },
+                        { role: "system", content: "You are a Thirukkural Expert. You use the provided context to answer. If an image is provided, identify it and explain the Kural within it using our scholar data." },
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });
