@@ -149,7 +149,7 @@ export class KuralAI {
         }
 
         // Step 2: Search (Lexical)
-        let { results, searchTerms, metadata: searchMeta } = await this.search(finalQuery, !!imageBase64);
+        let { results, searchTerms, metadata } = await this.search(finalQuery, !!imageBase64);
         
         // Step 3: Semantic Fallback (Ask AI for Kural Numbers if keyword search fails)
         if (results.length === 0 && imageBase64 && isValidKey) {
