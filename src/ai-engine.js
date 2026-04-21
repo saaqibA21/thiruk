@@ -51,8 +51,8 @@ export class KuralAI {
             let currentIsStart = false;
             let currentIsEnd = false;
 
-            const l1 = k.Line1.toLowerCase().normalize('NFC');
-            const l2 = k.Line2.toLowerCase().normalize('NFC');
+            const l1 = (k.Line1 || "").toLowerCase().normalize('NFC');
+            const l2 = (k.Line2 || "").toLowerCase().normalize('NFC');
             const cleanL1 = l1.replace(/[.,!?;:"\-_…·]/g, '');
             const cleanL2 = l2.replace(/[.,!?;:"\-_…·]/g, '');
             
@@ -163,13 +163,13 @@ export class KuralAI {
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });
-                return response.choices[0].message.content.trim();
+                return { answer: response.choices[0].message.content.trim(), sources: topMatches };
             } catch (err) {
                 console.error("AI Reasoner Error:", err);
             }
         }
 
-        return this.fallback(question, topMatches, searchTerms, metadata);
+        return { answer: this.fallback(question, topMatches, searchTerms, metadata), sources: topMatches };
     }
 
     fallback(question, matches, searchTerms, metadata) {
