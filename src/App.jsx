@@ -1149,7 +1149,7 @@ const App = () => {
             --text: #1e293b;
             --muted: #64748b;
             --border: #e2e8f0;
-            font-size: 18px; /* Increased base font size */
+            font-size: 20px; /* Further increased base font size */
         }
 
         .scholarly-app { 
@@ -1164,38 +1164,38 @@ const App = () => {
         }
         
         .main-header { 
-            padding: 1.5rem 3rem; 
+            padding: 1.5rem 4rem; 
             background: white; 
-            border-bottom: 1px solid var(--border); 
+            border-bottom: 2px solid var(--border); 
             z-index: 1000; 
-            box-shadow: 0 4px 30px rgba(0,0,0,0.05); 
+            box-shadow: 0 4px 40px rgba(0,0,0,0.06); 
         }
         .header-container-inner { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            max-width: 1800px; 
+            max-width: 2000px; /* Ultra wide */
             margin: 0 auto; 
             width: 100%; 
         }
-        .header-left-group { display: flex; align-items: center; gap: 2rem; }
-        .srm-logo-top { height: 80px; width: auto; }
-        .main-title { font-size: 2.2rem; margin: 0; color: var(--primary); font-weight: 950; }
-        .sub-title { margin: 6px 0 0; font-weight: 800; color: var(--muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.15em; }
+        .header-left-group { display: flex; align-items: center; gap: 2.5rem; }
+        .srm-logo-top { height: 90px; width: auto; }
+        .main-title { font-size: 2.5rem; margin: 0; color: var(--primary); font-weight: 950; }
+        .sub-title { margin: 8px 0 0; font-weight: 800; color: var(--muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.2em; }
 
-        .header-right-group { display: flex; align-items: center; gap: 2rem; }
-        .header-nav-tabs { display: flex; gap: 0.75rem; background: #f1f5f9; padding: 0.5rem; border-radius: 2.5rem; }
+        .header-right-group { display: flex; align-items: center; gap: 2.5rem; }
+        .header-nav-tabs { display: flex; gap: 1rem; background: #f1f5f9; padding: 0.6rem; border-radius: 3rem; }
         .header-nav-tabs button { 
-           background: none; border: none; padding: 1rem 2rem; cursor: pointer; color: var(--muted);
-           display: flex; align-items: center; gap: 12px; font-weight: 900; border-radius: 2rem; transition: 0.3s;
-           font-size: 1.1rem;
+           background: none; border: none; padding: 1.25rem 2.5rem; cursor: pointer; color: var(--muted);
+           display: flex; align-items: center; gap: 15px; font-weight: 900; border-radius: 2.5rem; transition: 0.3s;
+           font-size: 1.2rem;
         }
-        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
 
         .content-container { 
             flex: 1; 
             width: 100%; 
-            max-width: 1800px; 
+            max-width: 2000px; 
             margin: 0 auto; 
             display: flex; 
             flex-direction: column; 
@@ -1204,62 +1204,68 @@ const App = () => {
         }
         .content-container > div { flex: 1; display: flex; flex-direction: column; height: 100%; }
 
-        /* Chat View - Big & Immersive */
+        /* Chat View - Ultra Big */
         .chat-view-container { flex: 1; display: flex; width: 100%; height: 100%; min-height: 0; }
-        .chat-view { flex: 1; display: flex; flex-direction: column; width: 100%; background: white; border-radius: 0; border: none; overflow: hidden; }
-        .chat-window { flex: 1; overflow-y: auto; padding: 3rem; display: flex; flex-direction: column; gap: 3rem; }
-        .chat-messages-scroll-area { max-width: 1100px; margin: 0 auto; width: 100%; }
+        .chat-view { flex: 1; display: flex; flex-direction: column; width: 100%; background: white; overflow: hidden; }
+        .chat-window { flex: 1; overflow-y: auto; padding: 4rem; display: flex; flex-direction: column; gap: 4rem; }
+        .chat-messages-scroll-area { max-width: 1400px; margin: 0 auto; width: 100%; }
         
         .chat-input-sticky-area { 
-            padding: 2.5rem 4rem; 
-            border-top: 1px solid var(--border); 
+            padding: 3rem 5rem; 
+            border-top: 2px solid var(--border); 
             background: white; 
-            box-shadow: 0 -10px 50px rgba(0,0,0,0.03);
+            box-shadow: 0 -15px 60px rgba(0,0,0,0.05);
         }
-        .chat-input-container-inner { max-width: 1000px; margin: 0 auto; width: 100%; }
+        .chat-input-container-inner { max-width: 1300px; margin: 0 auto; width: 100%; }
 
         .tamil-input-box-v2 { 
-            padding: 1rem; border-radius: 2rem; border: 2px solid var(--border); 
-            font-size: 1.3rem; background: #f8fafc;
+            padding: 1.5rem; border-radius: 2.5rem; border: 3px solid var(--border); 
+            font-size: 1.5rem; background: #f8fafc;
         }
         .tamil-input-box-v2:focus-within { border-color: var(--primary); background: white; }
-        .tamil-input-box-v2 input { font-size: 1.3rem; padding: 0.5rem 1rem; font-weight: 700; }
+        .tamil-input-box-v2 input { font-size: 1.5rem; padding: 0.75rem 1.5rem; font-weight: 800; }
         
-        .chat-bubble { max-width: 85%; padding: 2rem; border-radius: 2.5rem; font-size: 1.3rem; line-height: 1.6; }
-        .tamil-verse { font-size: 1.6rem; padding: 2.5rem; border-radius: 2rem; }
+        .chat-bubble { max-width: 90%; padding: 2.5rem; border-radius: 3rem; font-size: 1.5rem; line-height: 1.7; }
+        .tamil-verse { font-size: 1.8rem; padding: 3rem; border-radius: 2.5rem; }
 
-        /* Mobile Overrides - Truly Big */
+        /* Mobile Overrides - Extreme Big */
         @media (max-width: 768px) {
-          :root { font-size: 16px; }
+          :root { font-size: 18px; }
           .scholarly-app { height: 100vh; position: fixed; inset: 0; }
-          .main-header { padding: 1.25rem 1.5rem; }
-          .srm-logo-top { height: 55px !important; }
-          .main-title { font-size: 1.5rem !important; }
-          .sub-title { font-size: 0.7rem !important; }
+          .main-header { padding: 1.5rem 2rem; }
+          .srm-logo-top { height: 65px !important; }
+          .main-title { font-size: 1.8rem !important; }
+          .sub-title { font-size: 0.8rem !important; }
           
-          .content-container { padding: 0; height: calc(100vh - 100px - 85px); }
-          .chat-window { padding: 2rem 1.5rem; }
-          .chat-bubble { max-width: 95%; padding: 1.5rem; font-size: 1.2rem; }
+          .content-container { padding: 0; height: calc(100vh - 120px - 100px); }
+          .chat-window { padding: 3rem 2rem; }
+          .chat-bubble { max-width: 98%; padding: 2rem; font-size: 1.4rem; }
           
           .chat-input-sticky-area { 
-              position: absolute; bottom: 85px; left: 0; right: 0; 
-              padding: 1.5rem; z-index: 900; 
+              position: absolute; bottom: 100px; left: 0; right: 0; 
+              padding: 2rem; z-index: 900; 
               background: white; border-top: 1px solid #eee; 
           }
           .nav-scroll-wrapper { 
               position: absolute; bottom: 0; left: 0; right: 0; 
-              height: 85px; background: white; border-top: 2px solid #f1f5f9; 
+              height: 100px; background: white; border-top: 3px solid #f1f5f9; 
               z-index: 1000; display: block;
           }
           .header-nav-tabs-mobile { height: 100%; display: flex; align-items: center; justify-content: space-around; }
-          .header-nav-tabs-mobile button { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; font-weight: 900; }
-          .header-nav-tabs-mobile button svg { width: 28px; height: 28px; }
+          .header-nav-tabs-mobile button { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; font-weight: 950; }
+          .header-nav-tabs-mobile button svg { width: 32px; height: 32px; }
 
-          .paal-card { padding: 3rem 2rem; }
-          .paal-card h3 { font-size: 1.8rem; }
+          .paal-card { padding: 4rem 2.5rem; }
+          .paal-card h3 { font-size: 2.2rem; }
         }
 
-        .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); padding: 4rem; font-size: 1.5rem; }
+        .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); padding: 5rem; font-size: 1.8rem; }
+      `}} />
+      </div>
+   );
+};
+
+export default App;
       `}} />
       </div>
    );
