@@ -344,10 +344,25 @@ const App = () => {
                ) : activeTab === 'list' ? (
                   <motion.div key="list" className="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                      {!selectedPaal ? (
-                        <div className="paal-cards">
-                           <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> <h3>அறத்துப்பால்</h3> <p>அறநெறிகள்</p> </div>
-                           <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
-                           <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
+                        <div className="paal-cards-container">
+                           <h2 className="library-main-title">திருக்குறள் நூலகம்</h2>
+                           <div className="paal-cards">
+                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> 
+                                 <div className="paal-icon-circle"><Feather size={32} /></div>
+                                 <h3>அறத்துப்பால்</h3> 
+                                 <p>38 அதிகாரங்கள் - அறநெறிகள் மற்றும் ஒழுக்கங்கள்</p> 
+                              </div>
+                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> 
+                                 <div className="paal-icon-circle"><Globe size={32} /></div>
+                                 <h3>பொருட்பால்</h3> 
+                                 <p>70 அதிகாரங்கள் - அரசியல், செல்வம் மற்றும் சமூகம்</p> 
+                              </div>
+                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> 
+                                 <div className="paal-icon-circle"><Award size={32} /></div>
+                                 <h3>இன்பத்துப்பால்</h3> 
+                                 <p>25 அதிகாரங்கள் - காதல் மற்றும் இல்லற வாழ்க்கை</p> 
+                              </div>
+                           </div>
                         </div>
                      ) : !selectedChapter ? (
                         <div className="chapter-view">
