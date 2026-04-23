@@ -132,6 +132,48 @@ html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; overflow: 
 .paal-card .orn-bl { bottom: 15px; left: 15px; transform: rotate(-90deg); }
 .paal-card .orn-br { bottom: 15px; right: 15px; transform: rotate(180deg); }
 
+/* Kural List in Library - Better Cards */
+.kural-grid-stack { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem; max-width: 900px; margin: 2rem auto; }
+.kural-item-card {
+  background: white; border: 1.5px solid var(--border); padding: 2.5rem; border-radius: 2.5rem;
+  cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+.kural-item-card:hover {
+  border-color: var(--primary); transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(154,52,18,0.08);
+}
+.k-header-row { font-size: 0.85rem; font-weight: 950; color: var(--primary); text-transform: uppercase; margin-bottom: 1rem; opacity: 0.8; }
+.kural-item-card p { font-size: 1.4rem; font-weight: 800; color: var(--text); line-height: 1.5; margin: 0; }
+
+/* Premium Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
+  z-index: 2000; padding: 1.5rem;
+}
+.tamil-modal {
+  background: white; padding: 4rem; border-radius: 3.5rem; width: 100%;
+  max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.3);
+}
+.modal-close-btn {
+  position: absolute; top: 2rem; right: 2rem; width: 44px; height: 44px;
+  background: #f1f5f9; border: none; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; cursor: pointer; color: var(--muted);
+}
+.m-badge { background: #fff7ed; color: var(--primary); font-size: 0.9rem; padding: 0.75rem 2rem; border-radius: 2rem; font-weight: 900; margin-bottom: 2rem; display: inline-block; }
+.m-verse-box h3 { font-size: 2.4rem; font-weight: 950; margin: 0; line-height: 1.4; color: var(--text); letter-spacing: -0.02em; }
+.m-explanations-stack { margin-top: 4rem; display: flex; flex-direction: column; gap: 3rem; }
+.e-block { border-left: 4px solid #f1f5f9; padding-left: 2rem; }
+.e-block h5 { font-size: 0.95rem; font-weight: 950; color: var(--primary); text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.05em; }
+.e-block p { font-size: 1.35rem; line-height: 1.8; color: #334155; font-weight: 600; }
+
+/* Helpers */
+.mini-loader { width: 20px; height: 20px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+.mini-loader-orange { width: 20px; height: 20px; border: 2px solid #fdba74; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* History */
 .history-image-cards { display: flex; flex-direction: column; gap: 4rem; max-width: 1100px; margin: 4rem auto; }
 .h-image-card { display: flex; align-items: center; gap: 4rem; }
@@ -140,11 +182,6 @@ html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; overflow: 
 .h-card-img-wrapper img { width: 100%; height: auto; display: block; }
 .h-card-info h3 { font-size: 2.2rem; font-weight: 900; color: var(--primary); margin-bottom: 1.5rem; }
 .h-card-info p { font-size: 1.15rem; line-height: 1.8; color: #475569; font-weight: 600; }
-
-/* Helpers */
-.mini-loader { width: 20px; height: 20px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
-.mini-loader-orange { width: 20px; height: 20px; border: 2px solid #fdba74; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
 
 /* Tamil Keyboard */
 .tamil-keyboard-popup {

@@ -455,9 +455,20 @@ const App = () => {
                       </div>
                       
                       <div className="history-quote-block">
-                         <Quote size={48} className="q-icon" />
-                         <p className="q-text">"யாதும் ஊரே யாவரும் கேளிர்" என்ற உயர்ந்த தத்துவத்திற்கு திருக்குறளே அடித்தளம்.</p>
-                      </div>
+                          <Quote size={48} className="q-icon" />
+                          <p className="q-text">"நான் படித்தவற்றில் மிகவும் உயர்ந்த அறம் சார்ந்த நூல் திருக்குறள். இது உலகிற்கே ஒரு பொதுவான வழிகாட்டி."</p>
+                          <p className="h-stat-lbl" style={{marginTop: '1.5rem'}}>- மகாத்மா காந்தி</p>
+                       </div>
+
+                       <div className="history-hero" style={{background: '#f8fafc', border: '1px solid #e2e8f0', marginTop: '4rem', padding: '4rem 2rem'}}>
+                          <h2 className="h-title">குமரி முனை சிலை - சில தகவல்கள்</h2>
+                          <div className="h-hero-stats">
+                             <div className="h-hero-stat-card"> <span className="h-stat-num">133</span> <span className="h-stat-lbl">அடி உயரம் (அதிகாரங்கள்)</span> </div>
+                             <div className="h-hero-stat-card"> <span className="h-stat-num">7000</span> <span className="h-stat-lbl">டன் எடை</span> </div>
+                             <div className="h-hero-stat-card"> <span className="h-stat-num">3</span> <span className="h-stat-lbl">பால்களை குறிக்கும் பீடம்</span> </div>
+                          </div>
+                          <p className="h-card-info" style={{marginTop: '3rem', maxWidth: '800px', margin: '3rem auto 0', lineHeight: '2'}}>கன்னியாகுமரியில் அமைந்துள்ள இந்த பிரம்மாண்ட சிலை, திருக்குறளின் 133 அதிகாரங்களை உணர்த்தும் வகையில் 133 அடி உயரத்தில் அமைக்கப்பட்டுள்ளது. சிலையில் உள்ள 10 விரல்கள் 10 குறள்களைக் குறிக்கின்றன. பீடம் 38 அடி உயரத்தில் (அறத்துப்பால்) அமைக்கப்பட்டுள்ளது குறிப்பிடத்தக்கது.</p>
+                       </div>
                   </motion.div>
                )}
             </AnimatePresence>
