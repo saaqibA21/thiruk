@@ -74,7 +74,6 @@ const App = () => {
       const endsWithWordBoundary = /[\s,]$/.test(query);
       
       if (!hasEnglish || (!endsWithSentenceBoundary && !endsWithWordBoundary)) {
-         setIsTranslating(false);
          return;
       }
 
@@ -99,7 +98,7 @@ const App = () => {
                }
             } else {
                const match = query.match(/(\b[a-zA-Z\s']+\b)([\s,]$)$/);
-               if (!match) { setIsTranslating(false); return; }
+               if (!match) return;
                
                const segmentToTranslate = match[1];
                const boundary = match[2];
@@ -122,7 +121,7 @@ const App = () => {
          } finally {
             setIsTranslating(false);
          }
-      }, 150);
+      }, 300);
 
       return () => clearTimeout(timer);
    }, [query]);

@@ -68,9 +68,9 @@ html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; overflow: 
   padding: 1rem 2rem;
   background: white;
   border-top: 2px solid var(--border);
-  z-index: 10;
+  z-index: 100;
 }
-.chat-input-container-inner { max-width: 800px; margin: 0 auto; width: 100%; }
+.chat-input-container-inner { max-width: 800px; margin: 0 auto; width: 100%; position: relative; }
 
 .tamil-input-box-v2 {
   display: flex; gap: 0.5rem; align-items: center;
