@@ -180,9 +180,21 @@ const App = () => {
       if (lines.length === 0) return null;
 
       return lines.map((line, idx) => {
-         if (line.match(/^\d+\.\s+\*\*Kural\s+#\d+\*\*/)) {
-            return <h4 key={idx} className="tamil-k-header">{line.replace(/\*\*Kural\s+#/g, 'குறள் எண்: ').replace(/\*\*/g, '')}</h4>;
+         // Match patterns like "குறள் 72:" or "குறள் எண் 72:" or "Kural 72:"
+         const kuralMatch = line.match(/(?:குறள்|குறள் எண்|Kural)\s+(\d+)/i);
+         if (kuralMatch) {
+            const num = parseInt(kuralMatch[1]);
+            const kural = kuralData.find(k => k.Number === num);
+            if (kural) {
+               return (
+                  <div key={idx} className="chat-kural-link" onClick={() => setSelectedKural(kural)}>
+                     <div className="link-meta">குறள் {num} <ExternalLink size={14} /></div>
+                     <p className="link-text">{kural.Line1}</p>
+                  </div>
+               );
+            }
          }
+
          if (line.includes('**Tamil:**')) {
             const tamilText = line.replace('**Tamil:**', '').trim();
             const words = tamilText.split(/\s+/);
