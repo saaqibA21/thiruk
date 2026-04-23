@@ -1141,83 +1141,102 @@ const App = () => {
           letter-spacing: 0.1em;
         }
 
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media (max-width: 768px) {
-          .scholarly-app { height: 100vh; overflow: hidden; position: fixed; inset: 0; }
-          .main-header { padding: 0.6rem 1rem; border-bottom: 1px solid #e2e8f0; }
-          .header-left-group { gap: 0.75rem; }
-          .srm-logo-top { height: 42px !important; align-self: center; }
-          .main-title { font-size: 1.1rem !important; }
-          .sub-title { font-size: 0.55rem !important; }
-          .header-right-group { gap: 0.5rem; }
-          .header-nav-tabs { display: none; }
-          .settings-btn-top { width: 38px; height: 38px; }
-          
-          .nav-scroll-wrapper { display: block; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e2e8f0; padding: 0.5rem; z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); }
-          .header-nav-tabs-mobile { display: flex; justify-content: space-around; width: 100%; border: none !important; }
-          .header-nav-tabs-mobile button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; border: none !important; background: none !important; color: #64748b; font-size: 0.65rem; font-weight: 800; padding: 0.5rem; border-radius: 0.5rem; }
-          .header-nav-tabs-mobile button.active { color: var(--primary) !important; background: #fff7ed !important; }
-
-          .content-container { height: calc(100vh - 58px - 75px); margin-bottom: 75px; padding: 0; }
-          .chat-view-container { height: 100%; }
-          .chat-window { padding: 0; }
-          .chat-messages-scroll-area { padding: 1.5rem 1rem; padding-bottom: 2rem; }
-          .chat-input-sticky-area { padding: 0.75rem; background: white; border-top: 1px solid #eee; }
-          .tamil-input-box-v2 { border-radius: 1rem; padding: 0.35rem; }
-          .tamil-input-box-v2 input { font-size: 0.95rem; padding: 0.5rem; }
-          .chat-bubble { max-width: 95%; padding: 1.1rem; border-radius: 1.5rem; }
-          
-          .paal-cards { grid-template-columns: 1fr; gap: 1rem; }
-          .paal-card { padding: 2rem 1.5rem; display: flex; align-items: center; justify-content: space-between; text-align: left; }
-          .paal-card h3 { margin: 0; font-size: 1.3rem; }
-          .paal-card p { margin: 0; font-size: 0.8rem; }
-          
-          .res-grid-premium { grid-template-columns: 1fr; gap: 1rem; }
-          .res-card-v2 { padding: 1.25rem; border-radius: 1.25rem; }
-          
-          .h-title { font-size: 1.8rem; }
-          .h-hero-stats { gap: 1rem; }
-          .h-hero-stat-card { min-width: 30%; padding: 1rem 0.5rem; }
-          .h-stat-num { font-size: 1.6rem; }
-          
-          .h-card-premium { border-radius: 2rem; }
-          .h-content-box { padding: 2.5rem 1.5rem; }
-          .h-pillars-grid { grid-template-columns: 1fr; }
-          .h-timeline-vertical-section { padding: 2rem 1.5rem; }
-          .h-tl-year { position: static; text-align: left; margin: 0 0 0.5rem 0; }
-          
-          .h-manuscript-feature { padding: 2rem 1.5rem; border-radius: 2.5rem; }
-          .h-feature-content { gap: 2rem; }
-          .h-img-glow img { height: 200px; }
-          
-          .h-mega-quote { padding: 3rem 1.5rem; border-radius: 2.5rem; }
-          .h-mega-quote blockquote { font-size: 1.4rem; }
-          
-          .h-footer-premium { padding: 5rem 1.5rem; border-radius: 3rem; }
-          .h-footer-premium h3 { font-size: 1.8rem; }
-          
-          .tamil-modal { width: 98%; padding: 2rem 1.5rem; border-radius: 2rem; }
-          .m-verse-box { padding: 3rem 1rem; border-radius: 2.5rem; }
-
-          .history-statue-bg {
-            position: fixed;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80%;
-            background-image: url('statue.png');
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: -1;
-            filter: grayscale(100%) brightness(1.1);
-          }
+        .scholarly-app { 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%; 
+            background: #fafafa; 
+            position: relative;
         }
+        
+        .main-header { 
+            padding: 1rem 2rem; 
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border); 
+            position: sticky; top: 0; z-index: 1000; 
+            box-shadow: 0 4px 30px rgba(0,0,0,0.03); 
+            width: 100%; 
+        }
+        .header-container-inner { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            max-width: 1600px; /* Increased from 1400 */
+            margin: 0 auto; 
+            width: 100%; 
+            gap: 2rem; 
+        }
+        .header-left-group { display: flex; align-items: center; gap: 1.5rem; }
+        .srm-logo-top { height: 60px; width: auto; object-fit: contain; }
+        .app-title-group { display: flex; flex-direction: column; }
+        .main-title { font-size: 1.8rem; margin: 0; color: var(--primary); font-weight: 900; line-height: 1.1; }
+        .sub-title { margin: 4px 0 0; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
+
+        .header-right-group { display: flex; align-items: center; gap: 1.5rem; }
+        .header-nav-tabs { display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.4rem; border-radius: 2rem; }
+        .header-nav-tabs button { 
+           background: none; border: none; padding: 0.75rem 1.5rem; cursor: pointer; color: var(--muted);
+           display: flex; align-items: center; gap: 10px; font-weight: 800; border-radius: 1.5rem; transition: 0.3s;
+           font-size: 0.95rem;
+        }
+        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
+        .content-container { 
+            flex: 1; 
+            width: 100%; 
+            max-width: 1600px; 
+            margin: 0 auto; 
+            padding: 2rem;
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            min-height: calc(100vh - 100px);
+        }
+        .content-container > div { flex: 1; width: 100%; }
+
+        /* Chat View */
+        .chat-view-container { flex: 1; display: flex; width: 100%; min-height: 0; }
+        .chat-view { flex: 1; display: flex; flex-direction: column; width: 100%; background: white; border-radius: 2.5rem; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.02); }
+        .chat-window { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+        .chat-messages-scroll-area { max-width: 1000px; margin: 0 auto; width: 100%; }
+        
+        .chat-input-sticky-area { padding: 1.5rem 2rem; border-top: 1px solid #f1f5f9; background: #fff; }
+        .chat-input-container-inner { max-width: 900px; margin: 0 auto; width: 100%; }
+
+        /* Mobile Overrides */
+        @media (max-width: 768px) {
+          .scholarly-app { min-height: 100vh; height: auto; overflow: visible; position: relative; }
+          .main-header { padding: 1rem; position: sticky; top: 0; }
+          .header-left-group { gap: 1rem; width: 100%; justify-content: space-between; }
+          .srm-logo-top { height: 45px !important; order: 2; }
+          .app-title-group { order: 1; }
+          .main-title { font-size: 1.3rem !important; }
+          .sub-title { font-size: 0.6rem !important; }
+          .header-right-group { display: none; } /* Hide on mobile, use bottom nav */
+          
+          .content-container { padding: 1rem; padding-bottom: 100px; min-height: calc(100vh - 80px); }
+          .chat-view { border-radius: 1.5rem; border: none; box-shadow: none; background: transparent; }
+          .chat-window { padding: 1rem 0; }
+          .chat-bubble { max-width: 92%; padding: 1.25rem; font-size: 1.1rem; }
+          
+          .chat-input-sticky-area { position: fixed; bottom: 75px; left: 0; right: 0; padding: 1rem; z-index: 900; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top: 1px solid #eee; }
+          .nav-scroll-wrapper { display: block; position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: white; border-top: 1px solid #eee; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+          .header-nav-tabs-mobile { height: 100%; display: flex; align-items: center; justify-content: space-around; }
+          .header-nav-tabs-mobile button { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 0.75rem; color: #64748b; border: none; background: none; font-weight: 800; }
+          .header-nav-tabs-mobile button.active { color: var(--primary); }
+          .header-nav-tabs-mobile button svg { width: 24px; height: 24px; }
+
+          .paal-card { padding: 1.5rem; }
+          .paal-card h3 { font-size: 1.4rem; }
+          
+          .history-hero { padding: 4rem 1rem; }
+          .h-title { font-size: 2.2rem; }
+        }
+
+        .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); padding: 2rem; font-size: 1.2rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}} />
       </div>
    );
