@@ -487,13 +487,14 @@ const App = () => {
                <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
                   <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
                      <header className="m-header"> <span className="m-badge">குறள் {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
-                     <div className="m-verse-box">
+                     <div className="m-verse-box" style={{textAlign: 'center'}}>
                         <h3>{selectedKural.Line1}</h3>
                         <h3>{selectedKural.Line2}</h3>
                      </div>
-                     <div className="m-explanations-stack">
-                        <div className="e-block"> <h5>விளக்கம்</h5> <p>{selectedKural.explanation || selectedKural.mv}</p> </div>
-                        <div className="e-block en"> <h5>English Translation</h5> <p>{selectedKural.Translation}</p> </div>
+                     <div className="m-explanations-stack" style={{textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        {selectedKural.mv && <div className="e-block" style={{borderLeft: 'none', paddingLeft: 0}}> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
+                        {selectedKural.sp && <div className="e-block" style={{borderLeft: 'none', paddingLeft: 0}}> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
+                        {selectedKural.mk && <div className="e-block" style={{borderLeft: 'none', paddingLeft: 0}}> <h5>மு. கருணாநிதி உரை</h5> <p>{selectedKural.mk}</p> </div>}
                      </div>
                   </motion.div>
                </div>
