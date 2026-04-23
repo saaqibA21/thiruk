@@ -503,13 +503,6 @@ const App = () => {
                )}
             </AnimatePresence>
             
-            <div className="nav-scroll-wrapper">
-               <nav className="header-nav-tabs-mobile">
-                  <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={24} /> <span>நிபுணர்</span> </button>
-                  <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={24} /> <span>நூலகம்</span> </button>
-                  <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={24} /> <span>வரலாறு</span> </button>
-               </nav>
-            </div>
          </main>
 
          <AnimatePresence>
