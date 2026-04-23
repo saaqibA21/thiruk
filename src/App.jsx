@@ -393,18 +393,53 @@ const App = () => {
                   </motion.div>
                ) : (
                   <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                     <div className="history-hero">
-                        <h2 className="h-title">திருக்குறள் வரலாறு</h2>
-                        <p className="h-subtitle">உலகப் பொதுமறை</p>
-                        <div className="h-hero-stats">
-                           <div className="h-hero-stat-card"> <span className="h-stat-num">133</span> <span className="h-stat-lbl">அதிகாரங்கள்</span> </div>
-                           <div className="h-hero-stat-card"> <span className="h-stat-num">1330</span> <span className="h-stat-lbl">குறள்கள்</span> </div>
-                        </div>
-                     </div>
-                     <div style={{padding: '2rem', background: 'white', borderRadius: '2rem', border: '1px solid #eee', marginTop: '2rem'}}>
-                        <h3>திருவள்ளுவர் பற்றி</h3>
-                        <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் மனித குலத்திற்கு தேவையான அறநெறிகளை 'திருக்குறள்' மூலம் வழங்கியுள்ளார்.</p>
-                     </div>
+                      <div className="history-hero">
+                         <h2 className="h-title">திருக்குறள் வரலாறு</h2>
+                         <p className="h-subtitle">உலகப் பொதுமறை</p>
+                         <div className="h-hero-stats">
+                            <div className="h-hero-stat-card"> <span className="h-stat-num">133</span> <span className="h-stat-lbl">அதிகாரங்கள்</span> </div>
+                            <div className="h-hero-stat-card"> <span className="h-stat-num">1330</span> <span className="h-stat-lbl">குறள்கள்</span> </div>
+                            <div className="h-hero-stat-card"> <span className="h-stat-num">3</span> <span className="h-stat-lbl">பால்கள்</span> </div>
+                            <div className="h-hero-stat-card"> <span className="h-stat-num">2000+</span> <span className="h-stat-lbl">ஆண்டுகள்</span> </div>
+                         </div>
+                      </div>
+                      
+                      <div className="history-image-cards">
+                         <div className="h-image-card">
+                            <div className="h-card-img-wrapper">
+                               <img src="/statue.png" alt="Valluvar Statue" />
+                            </div>
+                            <div className="h-card-info">
+                               <h3>திருவள்ளுவர் பற்றி</h3>
+                               <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் மனித குலத்திற்கு தேவையான அறநெறிகளை 'திருக்குறள்' மூலம் வழங்கியுள்ளார். அவர் எந்த ஒரு குறிப்பிட்ட மதத்தையும் சாராதவர், எனவே திருக்குறள் "உலகப் பொதுமறை" என்று போற்றப்படுகிறது.</p>
+                            </div>
+                         </div>
+                         
+                         <div className="h-image-card reversed">
+                            <div className="h-card-info">
+                               <h3>நூலின் அமைப்பு</h3>
+                               <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது: அறத்துப்பால் (அறநெறி), பொருட்பால் (அரசியல் மற்றும் செல்வம்), மற்றும் காமத்துப்பால் (காதல் மற்றும் இல்லறம்). ஒவ்வொன்றும் முறையே 38, 70 மற்றும் 25 அதிகாரங்களைக் கொண்டுள்ளன. 133 அதிகாரங்களில் தலா 10 குறள்கள் வீதம் 1330 குறள்கள் உள்ளன.</p>
+                            </div>
+                            <div className="h-card-img-wrapper">
+                               <img src="/manuscript.png" alt="Ancient Manuscript" />
+                            </div>
+                         </div>
+                         
+                         <div className="h-image-card">
+                            <div className="h-card-img-wrapper">
+                               <img src="/translations.png" alt="Global Impact" />
+                            </div>
+                            <div className="h-card-info">
+                               <h3>உலக அங்கீகாரம்</h3>
+                               <p>திருக்குறள் லத்தீன், ஜெர்மன், பிரஞ்சு, ஆங்கிலம் உட்பட 100க்கும் மேற்பட்ட மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. இது ரஷியாவில் உள்ள கிரெம்ளின் மாளிகையில் பாதுகாப்பு பெட்டகத்திலும், இங்கிலாந்தின் விவிலியத்திலும் இடம்பெற்றுள்ள பெருமைக்குரிய நூல். ஜார்ஜ் எல். ஹார்ட் போன்ற அறிஞர்கள் இதனை "உலகத் தத்துவத்தின் ஒரு மணிமுடி" என்று அழைக்கிறார்கள்.</p>
+                            </div>
+                         </div>
+                      </div>
+                      
+                      <div className="history-quote-block">
+                         <Quote size={48} className="q-icon" />
+                         <p className="q-text">"யாதும் ஊரே யாவரும் கேளிர்" என்ற உயர்ந்த தத்துவத்திற்கு திருக்குறளே அடித்தளம்.</p>
+                      </div>
                   </motion.div>
                )}
             </AnimatePresence>
