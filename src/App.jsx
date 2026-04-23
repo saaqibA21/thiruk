@@ -536,8 +536,19 @@ const App = () => {
             )}
          </AnimatePresence>
 
-      </div>
-   );
-};
+          <nav className="mobile-bottom-nav">
+             <button className={`m-nav-item ${activeTab === 'ask' ? 'active' : ''}`} onClick={() => setActiveTab('ask')}>
+                <Cpu /> <span>AI நிபுணர்</span>
+             </button>
+             <button className={`m-nav-item ${activeTab === 'list' ? 'active' : ''}`} onClick={() => setActiveTab('list')}>
+                <BookOpen /> <span>நூலகம்</span>
+             </button>
+             <button className={`m-nav-item ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>
+                <HistoryIcon /> <span>வரலாறு</span>
+             </button>
+          </nav>
+       </div>
+    );
+ };
 
 export default App;
