@@ -53,54 +53,34 @@ export class KuralAI {
             const verseText = `${l1} ${l2}`;
             const words = verseText.trim().split(/\s+/);
 
-            // 1. Structural Matches (High Priority)
-            if (isStartsWith || true) { // Always give some weight to prefix match even if not explicit
-                const weight = isStartsWith ? 10000 : 2000;
-                if (l1.startsWith(structuralTarget)) score += weight;
-                else if (l1.startsWith(targetPrefix)) score += (weight / 2);
-                else if (words[0].startsWith(targetPrefix)) score += (weight / 3);
+            if (isStartsWith && structuralTarget) {
+                if (l1.startsWith(structuralTarget) || words[0].startsWith(structuralTarget)) score += 100000;
+                else return { ...k, score: 0 }; 
             }
-
             if (isEndsWith && structuralTarget) {
-                const targetSuffix = structuralTarget.length > 4 ? structuralTarget.slice(-4) : structuralTarget;
-                const lastWord = words[words.length - 1].replace(/[.,!?;:"\-_…·]$/, '');
-                if (l2.endsWith(structuralTarget)) score += 10000;
-                else if (lastWord.endsWith(structuralTarget)) score += 5000;
-                else if (lastWord.endsWith(targetSuffix)) score += 2000;
+                const lastWord = words[words.length - 1];
+                if (l2.endsWith(structuralTarget) || lastWord.endsWith(structuralTarget)) score += 100000;
+                else return { ...k, score: 0 };
             }
 
-            // 2. Keyword Density & Intelligent Partial Matches
-            let matches = 0;
-            searchTerms.forEach(t => {
-                const tPrefix = t.substring(0, 4);
-                // Exact word match
-                if (words.some(w => w === t)) {
-                    matches++;
-                    score += 2000;
-                } 
-                // Syllabic Prefix Match (very robust for Tamil sandhi)
-                else if (words.some(w => w.startsWith(tPrefix))) {
-                    matches += 0.7;
-                    score += 1500;
-                }
-                // Meaning match
-                else if ((k.mv || "").toLowerCase().includes(t)) {
-                    score += 100;
-                }
-            });
-
-            if (matches >= 2) score += 5000;
-            if (verseText.includes(cleanQuery)) score += 50000;
+            if (!isStartsWith && !isEndsWith) {
+                searchTerms.forEach(t => {
+                    if (words.includes(t)) score += 2000;
+                    else if (words.some(w => w.startsWith(t.substring(0, 4)))) score += 1000;
+                    if ((k.mv || "").toLowerCase().includes(t)) score += 100;
+                });
+                if (verseText.includes(cleanQuery)) score += 50000;
+            }
 
             const numMatch = query.match(/\b(\d+)\b/);
-            if (numMatch && k.Number === parseInt(numMatch[1])) score += 5000;
+            if (numMatch && k.Number === parseInt(numMatch[1])) score += 500000;
 
             return { ...k, score };
         })
-        .filter(k => k.score > 300)
+        .filter(k => k.score > 0)
         .sort((a, b) => b.score - a.score);
 
-        return { results: results.slice(0, 15), searchTerms };
+        return { results: results.slice(0, 20), searchTerms };
     }
 
     async ask(question, imageBase64 = null) {

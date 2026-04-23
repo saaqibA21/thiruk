@@ -287,7 +287,7 @@ const App = () => {
                                        )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
-                                             {m.sources.slice(0, m.showAllSources ? m.sources.length : 3).map((s, idx) => (
+                                             {m.sources.map((s, idx) => (
                                                 <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
                                                    <div className="k-mini-info">
                                                       <span className="k-mini-num">குறள் {s.Number}:</span>
