@@ -80,7 +80,7 @@ export class KuralAI {
         .filter(k => k.score > 0)
         .sort((a, b) => b.score - a.score);
 
-        return { results: results.slice(0, 20), searchTerms };
+        return { results: results.slice(0, 100), searchTerms };
     }
 
     async ask(question, imageBase64 = null) {
@@ -104,11 +104,10 @@ export class KuralAI {
             } catch (err) { console.error("Vision Error:", err); }
         }
 
-        const { results: lexicalResults, searchTerms } = await this.search(finalQuery, !!imageBase64);
-        const finalSources = lexicalResults.slice(0, 10);
+        const { results: lexicalResults, searchTerms } = await this.search(finalQuery);
+        const finalSources = lexicalResults;
 
-        if (isValidKey && finalSources.length > 0) {
-            // If it's a simple keyword search without specific question words or marks, stay silent
+        if (finalSources.length > 0) {
             const questionWords = ['what', 'explain', 'why', 'how', 'meaning', 'விளக்கம்', 'பொருள்', 'ஏன்', 'எப்படி', 'என்ன'].map(s => s.normalize('NFC'));
             const isQuestion = question.includes('?') || questionWords.some(w => question.toLowerCase().includes(w));
             

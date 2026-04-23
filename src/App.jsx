@@ -287,7 +287,7 @@ const App = () => {
                                        )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
-                                             {m.sources.map((s, idx) => (
+                                             {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
                                                 <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
                                                    <div className="k-mini-info">
                                                       <span className="k-mini-num">குறள் {s.Number}:</span>
@@ -299,6 +299,18 @@ const App = () => {
                                                    <ChevronRight size={20} className="k-mini-arrow" />
                                                 </div>
                                              ))}
+                                             {m.sources.length > 5 && (
+                                                <button 
+                                                   className="show-more-kurals-btn"
+                                                   onClick={() => {
+                                                      const newMessages = [...messages];
+                                                      newMessages[i].showMore = !newMessages[i].showMore;
+                                                      setMessages(newMessages);
+                                                   }}
+                                                >
+                                                   {m.showMore ? 'சுருக்கமாகக் காட்டு' : `மீதி ${m.sources.length - 5} குறள்களையும் காட்டு`}
+                                                </button>
+                                             )}
                                           </div>
                                        )}
                                        {m.content && (
