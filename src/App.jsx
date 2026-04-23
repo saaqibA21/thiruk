@@ -419,47 +419,57 @@ const App = () => {
                   </motion.div>
                ) : (
                   <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                      <div className="history-hero">
-                         <h2 className="h-title">திருக்குறள் வரலாறு</h2>
-                         <p className="h-subtitle">உலகப் பொதுமறை</p>
-                         <div className="h-hero-stats">
-                            <div className="h-hero-stat-card"> <span className="h-stat-num">133</span> <span className="h-stat-lbl">அதிகாரங்கள்</span> </div>
-                            <div className="h-hero-stat-card"> <span className="h-stat-num">1330</span> <span className="h-stat-lbl">குறள்கள்</span> </div>
-                            <div className="h-hero-stat-card"> <span className="h-stat-num">3</span> <span className="h-stat-lbl">பால்கள்</span> </div>
-                            <div className="h-hero-stat-card"> <span className="h-stat-num">2000+</span> <span className="h-stat-lbl">ஆண்டுகள்</span> </div>
+                      <div className="history-hero-v2">
+                         <div className="h-hero-content">
+                            <h2 className="h-title-big">திருக்குறள் வரலாறு</h2>
+                            <p className="h-subtitle-gold">உலகப் பொதுமறை - ஏழே சீர்களில் வாழ்வியல் தத்துவம்</p>
+                            <div className="h-hero-grid">
+                               <div className="h-stat-item"> <strong>133</strong> <span>அதிகாரங்கள்</span> </div>
+                               <div className="h-stat-item"> <strong>1330</strong> <span>குறள்கள்</span> </div>
+                               <div className="h-stat-item"> <strong>3</strong> <span>பால்கள்</span> </div>
+                               <div className="h-stat-item"> <strong>2000+</strong> <span>ஆண்டுகள்</span> </div>
+                            </div>
                          </div>
                       </div>
                       
-                      <div className="history-image-cards">
-                         <div className="h-image-card">
-                            <div className="h-card-img-wrapper">
-                               <img src="/statue.png" alt="Valluvar Statue" />
-                            </div>
-                            <div className="h-card-info">
+                      <div className="history-sections-stack">
+                         <section className="h-section-card">
+                            <div className="h-section-img"> <img src="/thiruvalluvar.jpg" alt="Thiruvalluvar" /> </div>
+                            <div className="h-section-text">
                                <h3>திருவள்ளுவர் பற்றி</h3>
-                               <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் மனித குலத்திற்கு தேவையான அறநெறிகளை 'திருக்குறள்' மூலம் வழங்கியுள்ளார். அவர் எந்த ஒரு குறிப்பிட்ட மதத்தையும் சாராதவர், எனவே திருக்குறள் "உலகப் பொதுமறை" என்று போற்றப்படுகிறது.</p>
+                               <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் எந்த ஒரு குறிப்பிட்ட மதத்தையும் சாராதவர், எனவே திருக்குறள் "உலகப் பொதுமறை" என்று போற்றப்படுகிறது.</p>
                             </div>
-                         </div>
-                         
-                         <div className="h-image-card reversed">
-                            <div className="h-card-info">
+                         </section>
+
+                         <section className="h-section-card statue-focus">
+                            <div className="h-section-text">
+                               <h3>கன்னியாகுமரி திருவள்ளுவர் சிலை</h3>
+                               <p><strong>அமைவிடம்:</strong> இந்தியாவின் தென்கோடி முனையான கன்னியாகுமரியில், மூன்று கடல்கள் சங்கமிக்கும் இடத்திற்கு அருகே கடல் நடுவே அமைந்துள்ள பிரம்மாண்டமான சிலை.</p>
+                               <ul className="statue-details">
+                                  <li><strong>உயரம்:</strong> 133 அடி (133 அதிகாரங்களை உணர்த்துகிறது).</li>
+                                  <li><strong>பீடம்:</strong> 38 அடி உயரம் (அறத்துப்பாலை குறிக்கிறது).</li>
+                                  <li><strong>சிலை:</strong> 95 அடி உயரம் (பொருட்பால் மற்றும் இன்பத்துப்பாலை குறிக்கிறது).</li>
+                                  <li><strong>எடை:</strong> சுமார் 7000 டன் கருங்கற்களால் ஆனது.</li>
+                               </ul>
+                            </div>
+                            <div className="h-section-img"> <img src="/statue.png" alt="Valluvar Statue" /> </div>
+                         </section>
+
+                         <section className="h-section-card">
+                            <div className="h-section-img"> <img src="/manuscript.png" alt="Ancient Manuscript" /> </div>
+                            <div className="h-section-text">
                                <h3>நூலின் அமைப்பு</h3>
-                               <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது: அறத்துப்பால் (அறநெறி), பொருட்பால் (அரசியல் மற்றும் செல்வம்), மற்றும் காமத்துப்பால் (காதல் மற்றும் இல்லறம்). ஒவ்வொன்றும் முறையே 38, 70 மற்றும் 25 அதிகாரங்களைக் கொண்டுள்ளன. 133 அதிகாரங்களில் தலா 10 குறள்கள் வீதம் 1330 குறள்கள் உள்ளன.</p>
+                               <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது: அறத்துப்பால், பொருட்பால், மற்றும் காமத்துப்பால். 133 அதிகாரங்களில் தலா 10 குறள்கள் வீதம் 1330 குறள்கள் உள்ளன. இவை ஒவ்வொன்றும் ஈரடி வெண்பாக்களால் ஆனவை.</p>
                             </div>
-                            <div className="h-card-img-wrapper">
-                               <img src="/manuscript.png" alt="Ancient Manuscript" />
-                            </div>
-                         </div>
-                         
-                         <div className="h-image-card">
-                            <div className="h-card-img-wrapper">
-                               <img src="/translations.png" alt="Global Impact" />
-                            </div>
-                            <div className="h-card-info">
+                         </section>
+
+                         <section className="h-section-card reversed">
+                            <div className="h-section-text">
                                <h3>உலக அங்கீகாரம்</h3>
-                               <p>திருக்குறள் லத்தீன், ஜெர்மன், பிரஞ்சு, ஆங்கிலம் உட்பட 100க்கும் மேற்பட்ட மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. இது ரஷியாவில் உள்ள கிரெம்ளின் மாளிகையில் பாதுகாப்பு பெட்டகத்திலும், இங்கிலாந்தின் விவிலியத்திலும் இடம்பெற்றுள்ள பெருமைக்குரிய நூல். ஜார்ஜ் எல். ஹார்ட் போன்ற அறிஞர்கள் இதனை "உலகத் தத்துவத்தின் ஒரு மணிமுடி" என்று அழைக்கிறார்கள்.</p>
+                               <p>லத்தீன், ஜெர்மன், பிரஞ்சு, ஆங்கிலம் உட்பட 100க்கும் மேற்பட்ட மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. மகாத்மா காந்தி போன்ற பல தலைவர்கள் திருக்குறளால் ஈர்க்கப்பட்டனர்.</p>
                             </div>
-                         </div>
+                            <div className="h-section-img"> <img src="/translations.png" alt="Global Impact" /> </div>
+                         </section>
                       </div>
                       
                       <div className="history-quote-block">
