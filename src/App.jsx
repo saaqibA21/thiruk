@@ -189,7 +189,15 @@ const App = () => {
                return (
                   <div key={idx} className="chat-kural-link" onClick={() => setSelectedKural(kural)}>
                      <div className="link-meta">குறள் {num} <ExternalLink size={14} /></div>
-                     <p className="link-text">{kural.Line1}</p>
+                     {(() => {
+                        const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
+                        return (
+                           <div className="link-text">
+                              <p>{allWords.slice(0, 4).join(' ')}</p>
+                              <p>{allWords.slice(4).join(' ')}</p>
+                           </div>
+                        );
+                     })()}
                   </div>
                );
             }
@@ -198,15 +206,12 @@ const App = () => {
          if (line.includes('**Tamil:**')) {
             const tamilText = line.replace('**Tamil:**', '').trim();
             const words = tamilText.split(/\s+/);
-            if (words.length >= 7) {
-               return (
-                  <div key={idx} className="tamil-verse">
-                     <p className="verse-line-1">{words.slice(0, 4).join(' ')}</p>
-                     <p className="verse-line-2">{words.slice(4).join(' ')}</p>
-                  </div>
-               );
-            }
-            return <p key={idx} className="tamil-verse"><strong>குறள்:</strong> {tamilText}</p>;
+            return (
+               <div key={idx} className="tamil-verse">
+                  <p className="verse-line-1">{words.slice(0, 4).join(' ')}</p>
+                  <p className="verse-line-2">{words.slice(4).join(' ')}</p>
+               </div>
+            );
          }
          if (line.includes('**Philosophical Meaning:**')) {
             return <div key={idx} className="tamil-exp"><strong>பொருள்:</strong> {line.replace('**Philosophical Meaning:**', '')}</div>;
@@ -398,13 +403,16 @@ const App = () => {
                         <div className="kural-view">
                            <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> Back </button>
                            <div className="kural-grid-stack">
-                              {filteredKurals.map(k => (
-                                 <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
-                                    <div className="k-header-row">குறள் எண்: {k.Number}</div>
-                                    <p>{k.Line1}</p>
-                                    <p>{k.Line2}</p>
-                                 </div>
-                              ))}
+                              {filteredKurals.map(k => {
+                                 const allWords = `${k.Line1} ${k.Line2}`.trim().split(/\s+/);
+                                 return (
+                                    <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
+                                       <div className="k-header-row">குறள் எண்: {k.Number}</div>
+                                       <p>{allWords.slice(0, 4).join(' ')}</p>
+                                       <p>{allWords.slice(4).join(' ')}</p>
+                                    </div>
+                                 );
+                              })}
                            </div>
                         </div>
                      )}
@@ -487,10 +495,15 @@ const App = () => {
                <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
                   <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
                      <header className="m-header"> <span className="m-badge">குறள் {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
-                     <div className="m-verse-box" style={{textAlign: 'center'}}>
-                        <h3>{selectedKural.Line1}</h3>
-                        <h3>{selectedKural.Line2}</h3>
-                     </div>
+                     {(() => {
+                        const allWords = `${selectedKural.Line1} ${selectedKural.Line2}`.trim().split(/\s+/);
+                        return (
+                           <div className="m-verse-box" style={{textAlign: 'center'}}>
+                              <h3>{allWords.slice(0, 4).join(' ')}</h3>
+                              <h3>{allWords.slice(4).join(' ')}</h3>
+                           </div>
+                        );
+                     })()}
                      <div className="m-explanations-stack" style={{textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                         {selectedKural.mv && <div className="e-block" style={{borderLeft: 'none', paddingLeft: 0}}> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
                         {selectedKural.sp && <div className="e-block" style={{borderLeft: 'none', paddingLeft: 0}}> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
