@@ -128,12 +128,20 @@ export class KuralAI {
         const finalSources = lexicalResults.slice(0, 10);
 
         if (isValidKey && finalSources.length > 0) {
+            // If it's a simple keyword search without specific question words or marks, stay silent
+            const questionWords = ['what', 'explain', 'why', 'how', 'meaning', 'விளக்கம்', 'பொருள்', 'ஏன்', 'எப்படி', 'என்ன'].map(s => s.normalize('NFC'));
+            const isQuestion = question.includes('?') || questionWords.some(w => question.toLowerCase().includes(w));
+            
+            if (!isQuestion && !imageBase64) {
+                return { answer: "", sources: finalSources };
+            }
+
             try {
                 const context = finalSources.map(k => `Verse #${k.Number}: ${k.Line1} / ${k.Line2}\nTamil: ${k.mv}`).join('\n\n');
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a Thirukkural Expert. Answer directly and concisely based on the context. If the user asks for kurals starting/ending with something, list them clearly." },
+                        { role: "system", content: "You are a Thirukkural Expert. Provide a direct, concise answer or philosophical context. IMPORTANT: Never repeat the Kural verse text or its number in your response, as they are already visible in cards below. Just provide the insight." },
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });
@@ -146,9 +154,7 @@ export class KuralAI {
 
     fallback(question, matches, searchTerms) {
         if (matches.length === 0) return "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை.";
-        let msg = "இதோ நீங்கள் தேடிய குறள்கள்:\n\n";
-        matches.slice(0, 8).forEach(k => { msg += `குறள் ${k.Number}:\n${k.Line1}\n${k.Line2}\n\n`; });
-        return msg;
+        return ""; // Return empty to avoid redundant "Here are the verses" text
     }
 
     async refineQuery(query) { return query; }

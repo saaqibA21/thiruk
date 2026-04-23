@@ -168,7 +168,10 @@ const App = () => {
    };
 
    const parseFormattedContent = (content) => {
-      const lines = content.split('\n');
+      if (!content || !content.trim()) return null;
+      const lines = content.split('\n').filter(l => l.trim() !== '');
+      if (lines.length === 0) return null;
+
       return lines.map((line, idx) => {
          if (line.match(/^\d+\.\s+\*\*Kural\s+#\d+\*\*/)) {
             return <h4 key={idx} className="tamil-k-header">{line.replace(/\*\*Kural\s+#/g, 'குறள் எண்: ').replace(/\*\*/g, '')}</h4>;
@@ -226,19 +229,22 @@ const App = () => {
    return (
       <div className="scholarly-app">
          <header className="main-header">
-            <div className="header-top-row">
-               <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
-               <div className="app-title-group">
-                  <h1 className="main-title">திருக்குறள் AI நிபுணர்</h1>
-                  <p className="sub-title">SRM உயர்கல்வி நிறுவனம்</p>
+            <div className="header-container-inner">
+               <div className="header-left-group">
+                  <div className="app-title-group">
+                     <h1 className="main-title">திருக்குறள் AI நிபுணர்</h1>
+                     <p className="sub-title">SRM உயர்கல்வி நிறுவனம்</p>
+                  </div>
+                  <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
                </div>
-            </div>
-            <div className="nav-scroll-wrapper">
-               <nav className="header-nav-tabs">
-                  <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>கேள்வி</span> </button>
-                  <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
-                  <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
-               </nav>
+               <div className="header-right-group">
+                  <nav className="header-nav-tabs">
+                     <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>AI நிபுணர்</span> </button>
+                     <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
+                     <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
+                  </nav>
+                  <button className="settings-btn-top" onClick={() => setShowSettings(true)}> <Settings size={20} /> </button>
+               </div>
             </div>
          </header>
 
@@ -248,136 +254,142 @@ const App = () => {
                   <motion.div key="ask" className="chat-view-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                      <div className="chat-view">
                         <div className="chat-window">
-                           {initProgress > 0 && initProgress < 100 && (
-                              <div className="init-progress-bar">
-                                 <div className="p-label">ஆய்வுத் தரவுகள் தயார் செய்யப்படுகின்றன... {initProgress}%</div>
-                                 <div className="p-track"> <div className="p-fill" style={{ width: `${initProgress}%` }}></div> </div>
-                              </div>
-                           )}
-                           {messages.map((m, i) => (
-                              <div key={i} className={`chat-bubble-container ${m.role}`}>
-                                 <div className="chat-bubble">
-                                    <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
-                                    {m.image && (
-                                       <div className="chat-bubble-image">
-                                          <img src={m.image} alt="Uploaded" />
-                                       </div>
-                                    )}
-                                    <div className="bubble-text">{parseFormattedContent(m.content)}</div>
-                                    {m.sources && m.sources.length > 0 && (
-                                       <div className="kural-source-cards">
-                                          {m.sources.slice(0, m.showAllSources ? m.sources.length : 10).map((s, idx) => (
-                                             <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
-                                                <div className="k-mini-info">
-                                                   <span className="k-mini-num">குறள் {s.Number}:</span>
-                                                   <div className="k-mini-lines">
-                                                      <p>{s.Line1}</p>
-                                                      <p>{s.Line2}</p>
-                                                   </div>
-                                                </div>
-                                                <ChevronRight size={20} className="k-mini-arrow" />
-                                             </div>
-                                          ))}
-                                          {m.sources.length > 10 && !m.showAllSources && (
-                                             <button 
-                                                className="show-all-sources-btn"
-                                                onClick={() => {
-                                                   const newMessages = [...messages];
-                                                   newMessages[i].showAllSources = true;
-                                                   setMessages(newMessages);
-                                                }}
-                                             >
-                                                அனைத்து {m.sources.length} குறள்களையும் காண்க / View all {m.sources.length} sources
-                                             </button>
-                                          )}
-                                       </div>
-                                    )}
+                           <div className="chat-messages-scroll-area">
+                              {initProgress > 0 && initProgress < 100 && (
+                                 <div className="init-progress-bar">
+                                    <div className="p-label">ஆய்வுத் தரவுகள் தயார் செய்யப்படுகின்றன... {initProgress}%</div>
+                                    <div className="p-track"> <div className="p-fill" style={{ width: `${initProgress}%` }}></div> </div>
                                  </div>
-                              </div>
-                           ))}
-                           {loading && <div className="tamil-loading">நிபுணர் விளக்கம் அளிக்கிறார்...</div>}
-                           <div ref={chatEndRef} />
+                              )}
+                              {messages.map((m, i) => (
+                                 <div key={i} className={`chat-bubble-container ${m.role}`}>
+                                    <div className="chat-bubble">
+                                       <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
+                                       {m.image && (
+                                          <div className="chat-bubble-image">
+                                             <img src={m.image} alt="Uploaded" />
+                                          </div>
+                                       )}
+                                       {m.sources && m.sources.length > 0 && (
+                                          <div className="kural-source-cards">
+                                             {m.sources.slice(0, m.showAllSources ? m.sources.length : 10).map((s, idx) => (
+                                                <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
+                                                   <div className="k-mini-info">
+                                                      <span className="k-mini-num">குறள் {s.Number}:</span>
+                                                      <div className="k-mini-lines">
+                                                         <p>{s.Line1}</p>
+                                                         <p>{s.Line2}</p>
+                                                      </div>
+                                                   </div>
+                                                   <ChevronRight size={20} className="k-mini-arrow" />
+                                                </div>
+                                             ))}
+                                             {m.sources.length > 10 && !m.showAllSources && (
+                                                <button 
+                                                   className="show-all-sources-btn"
+                                                   onClick={() => {
+                                                      const newMessages = [...messages];
+                                                      newMessages[i].showAllSources = true;
+                                                      setMessages(newMessages);
+                                                   }}
+                                                >
+                                                   அனைத்து {m.sources.length} குறள்களையும் காண்க / View all {m.sources.length} sources
+                                                </button>
+                                             )}
+                                          </div>
+                                       )}
+                                       {m.content && m.content.trim() !== "" && (
+                                          <div className="bubble-text">{parseFormattedContent(m.content)}</div>
+                                       )}
+                                    </div>
+                                 </div>
+                              ))}
+                              {loading && <div className="tamil-loading">நிபுணர் விளக்கம் அளிக்கிறார்...</div>}
+                              <div ref={chatEndRef} style={{ height: '1px' }} />
+                           </div>
                         </div>
                         
-                        <div className="chat-input-wrapper">
-                           <AnimatePresence>
-                              {selectedImage && (
-                                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="image-preview-container">
-                                    <img src={selectedImage} alt="Preview" />
-                                    <button className="remove-image-btn" onClick={() => setSelectedImage(null)}><X size={14}/></button>
-                                 </motion.div>
-                              )}
-                           </AnimatePresence>
-                           <AnimatePresence>
-                              {showKeyboard && (
-                                 <motion.div initial={{ height: 0, opacity: 0, y: 10 }} animate={{ height: 'auto', opacity: 1, y: 0 }} exit={{ height: 0, opacity: 0, y: 10 }} className="tamil-keyboard-popup">
-                                    <div className="tk-grid-wrapper">
-                                       {TAMIL_KEYS.map((row, i) => (
-                                          <div key={i} className="tk-row">
-                                             {row.map(char => (
-                                                <button key={char} className="tk-key" onClick={() => handleKeyClick(char)}>{char}</button>
-                                             ))}
+                        <div className="chat-input-sticky-area">
+                           <div className="chat-input-container-inner">
+                              <AnimatePresence>
+                                 {selectedImage && (
+                                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="image-preview-container">
+                                       <img src={selectedImage} alt="Preview" />
+                                       <button className="remove-image-btn" onClick={() => setSelectedImage(null)}><X size={14}/></button>
+                                    </motion.div>
+                                 )}
+                              </AnimatePresence>
+                              <AnimatePresence>
+                                 {showKeyboard && (
+                                    <motion.div initial={{ height: 0, opacity: 0, y: 10 }} animate={{ height: 'auto', opacity: 1, y: 0 }} exit={{ height: 0, opacity: 0, y: 10 }} className="tamil-keyboard-popup">
+                                       <div className="tk-grid-wrapper">
+                                          {TAMIL_KEYS.map((row, i) => (
+                                             <div key={i} className="tk-row">
+                                                {row.map(char => (
+                                                   <button key={char} className="tk-key" onClick={() => handleKeyClick(char)}>{char}</button>
+                                                ))}
+                                             </div>
+                                          ))}
+                                          <div className="tk-row tk-controls">
+                                             <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>இடைவெளி (Space)</button>
+                                             <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}><X size={16}/> அழி (Clear)</button>
                                           </div>
-                                       ))}
-                                       <div className="tk-row tk-controls">
-                                          <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>இடைவெளி (Space)</button>
-                                          <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}><X size={16}/> அழி (Clear)</button>
                                        </div>
-                                    </div>
-                                 </motion.div>
-                              )}
-                           </AnimatePresence>
-                           <div className="chat-input-row">
-                              <div className="tamil-input-box">
-                                 <button className={`kb-toggle ${showKeyboard ? 'active' : ''}`} onClick={() => setShowKeyboard(!showKeyboard)} title="Toggle Tamil Keyboard">
-                                    <Languages size={20} />
-                                 </button>
-                                 <button className="kb-toggle" onClick={() => fileInputRef.current?.click()} title="Upload Image">
-                                    <Camera size={20} />
-                                 </button>
-                                 <input 
-                                    type="file" 
-                                    ref={fileInputRef} 
-                                    style={{ display: 'none' }} 
-                                    accept="image/*" 
-                                    onChange={handleImageUpload} 
-                                 />
-                                 <input
-                                    placeholder="Type in English (Hit Enter to Translate) or use Tamil keyboard..."
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    onKeyPress={async (e) => {
-                                        if (e.key === 'Enter') {
-                                           let currentQuery = query.trim();
-                                           const hasEnglish = /[a-zA-Z]/.test(currentQuery);
-                                           setIsTranslating(true);
-                                           if (hasEnglish) {
-                                              try {
-                                                 const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(currentQuery)}`;
-                                                 const res = await fetch(url);
-                                                 const data = await res.json();
-                                                 if (data && data[0]) {
-                                                    const translated = data[0].map(x => x[0]).join('');
-                                                    if (translated) currentQuery = translated;
-                                                 }
-                                              } catch (err) {}
+                                    </motion.div>
+                                 )}
+                              </AnimatePresence>
+                              <div className="chat-input-row-modern">
+                                 <div className="tamil-input-box-v2">
+                                    <button className={`kb-toggle-v2 ${showKeyboard ? 'active' : ''}`} onClick={() => setShowKeyboard(!showKeyboard)} title="Toggle Tamil Keyboard">
+                                       <Languages size={20} />
+                                    </button>
+                                    <button className="kb-toggle-v2" onClick={() => fileInputRef.current?.click()} title="Upload Image">
+                                       <Camera size={20} />
+                                    </button>
+                                    <input 
+                                       type="file" 
+                                       ref={fileInputRef} 
+                                       style={{ display: 'none' }} 
+                                       accept="image/*" 
+                                       onChange={handleImageUpload} 
+                                    />
+                                    <input
+                                       placeholder="எதையும் கேளுங்கள்... (Type in English to Translate)"
+                                       value={query}
+                                       onChange={(e) => setQuery(e.target.value)}
+                                       onKeyPress={async (e) => {
+                                           if (e.key === 'Enter') {
+                                              let currentQuery = query.trim();
+                                              const hasEnglish = /[a-zA-Z]/.test(currentQuery);
+                                              setIsTranslating(true);
+                                              if (hasEnglish) {
+                                                 try {
+                                                    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(currentQuery)}`;
+                                                    const res = await fetch(url);
+                                                    const data = await res.json();
+                                                    if (data && data[0]) {
+                                                       const translated = data[0].map(x => x[0]).join('');
+                                                       if (translated) currentQuery = translated;
+                                                    }
+                                                 } catch (err) {}
+                                              }
+                                              if (aiEngine && currentQuery.length > 3) {
+                                                  const formed = await aiEngine.refineQuery(currentQuery);
+                                                  if (formed) currentQuery = formed;
+                                              }
+                                              setQuery(currentQuery);
+                                              setIsTranslating(false);
+                                              handleAsk(currentQuery);
                                            }
-                                           if (aiEngine && currentQuery.length > 3) {
-                                               const formed = await aiEngine.refineQuery(currentQuery);
-                                               if (formed) currentQuery = formed;
-                                           }
-                                           setQuery(currentQuery);
-                                           setIsTranslating(false);
-                                           handleAsk(currentQuery);
-                                        }
-                                     }}
-                                 />
-                                 <button onClick={() => handleAsk(query)} disabled={loading} className="send-btn">
-                                    {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
-                                 </button>
+                                        }}
+                                    />
+                                    <button onClick={() => handleAsk(query)} disabled={loading} className="send-btn-v2">
+                                       {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
+                                    </button>
+                                 </div>
                               </div>
-                              {isTranslating && <div className="auto-trans-status">Translating...</div>}
                            </div>
+                           {isTranslating && <div className="auto-trans-status-v2">Translating...</div>}
                         </div>
                      </div>
                   </motion.div>
@@ -423,7 +435,7 @@ const App = () => {
                                        <span>கல்வி மற்றும் பயிற்சித் தொகுப்பு</span>
                                     </div>
                                  </a>
-                                 <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="res-card-v2">
+                                 <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%81%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="res-card-v2">
                                     <Globe className="res-ico" size={24} />
                                     <div className="res-card-text">
                                        <strong>விக்கிப்பீடியா (Tamil)</strong>
@@ -677,7 +689,7 @@ const App = () => {
                               <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/#google_vignette" target="_blank" rel="noreferrer" className="h-link">
                                  <Globe size={18} /> <span>TNPSC வினாத்தாள்கள்</span>
                               </a>
-                              <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="h-link">
+                              <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%81%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="h-link">
                                  <BookOpen size={18} /> <span>விக்கிப்பீடியா (Tamil)</span>
                               </a>
                            </div>
@@ -694,6 +706,13 @@ const App = () => {
                   </motion.div>
                )}
             </AnimatePresence>
+            <div className="nav-scroll-wrapper">
+               <nav className="header-nav-tabs-mobile">
+                  <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={22} /> <span>கேள்வி</span> </button>
+                  <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={22} /> <span>நூலகம்</span> </button>
+                  <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={22} /> <span>வரலாறு</span> </button>
+               </nav>
+            </div>
          </main>
 
          <AnimatePresence>
@@ -746,32 +765,50 @@ const App = () => {
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; width: 100%; }
         h1, h2, h3, h4, .app-title-group { font-family: 'Outfit', sans-serif; }
 
-        .scholarly-app { min-height: 100vh; display: flex; flex-direction: column; width: 100%; overflow-x: hidden; }
-        .main-header { padding: 1.5rem 1rem; background: var(--white); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); width: 100%; text-align: center; }
-        .nav-scroll-wrapper { width: 100%; margin-top: 1rem; }
-        .header-top-row { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
-        .srm-logo-top { height: 50px; width: auto; max-width: 250px; object-fit: contain; margin-bottom: 0.5rem; }
-        .app-title-group { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
-        .main-title { font-size: 1.5rem; margin: 0; color: var(--primary); font-weight: 950; letter-spacing: -0.02em; line-height: 1.2; }
-        .sub-title { margin: 0; font-weight: 800; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
+        .scholarly-app { height: 100vh; display: flex; flex-direction: column; width: 100%; overflow: hidden; background: #fafafa; position: fixed; inset: 0; }
+        .main-header { 
+            padding: 0.75rem 2rem; 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border); 
+            position: relative; z-index: 1000; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+            width: 100%; 
+        }
+        .header-container-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; width: 100%; gap: 2rem; }
+        .header-left-group { display: flex; align-items: center; gap: 1.5rem; flex: 1; }
+        .srm-logo-top { height: 55px; width: auto; object-fit: contain; margin-top: 6px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); align-self: center; }
+        .app-title-group { display: flex; flex-direction: column; align-items: flex-start; }
+        .main-title { font-size: 1.4rem; margin: 0; color: var(--primary); font-weight: 900; line-height: 1; }
+        .sub-title { margin: 2px 0 0; font-weight: 700; color: var(--muted); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
-        .header-nav-tabs { display: flex; gap: 1rem; align-items: center; }
+        .header-right-group { display: flex; align-items: center; gap: 1.5rem; justify-content: flex-end; }
+        .header-nav-tabs { display: flex; gap: 0.25rem; align-items: center; background: #f1f5f9; padding: 0.3rem; border-radius: 1.25rem; }
         .header-nav-tabs button { 
-           background: none; border: none; padding: 0.5rem 1.25rem; cursor: pointer; color: var(--muted);
-           display: flex; align-items: center; gap: 6px; font-weight: 800; border-radius: 0.5rem; transition: 0.3s;
+           background: none; border: none; padding: 0.6rem 1.25rem; cursor: pointer; color: var(--muted);
+           display: flex; align-items: center; gap: 8px; font-weight: 800; border-radius: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
            font-size: 0.85rem;
         }
-        .header-nav-tabs button.active { background: var(--primary); color: white; }
-        .header-nav-tabs button:hover:not(.active) { background: #f1f5f9; color: var(--text); }
+        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        .settings-btn-top { background: #f1f5f9; border: none; width: 42px; height: 42px; border-radius: 50%; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .settings-btn-top:hover { background: #e2e8f0; color: var(--primary); transform: rotate(45deg); }
 
-        .content-container { flex: 1; padding: 2rem 4rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .content-container { flex: 1; padding: 0; max-width: 1400px; margin: 0 auto; width: 100%; overflow: hidden; display: flex; flex-direction: column; position: relative; }
 
-        /* Chat View */
-        .chat-view-container { display: flex; height: calc(100vh - 220px); width: 100%; }
-        .chat-view { flex: 1; display: flex; flex-direction: column; height: 100%; min-width: 0; }
-        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 1.5rem; padding-right: 0.5rem; }
+        /* Chat View - Refactored for Scroll Stability */
+        .chat-view-container { flex: 1; display: flex; width: 100%; height: 100%; overflow: hidden; }
+        .chat-view { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; min-width: 0; position: relative; background: #fcfcfc; }
+        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; width: 100%; }
+        .chat-messages-scroll-area { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; padding-bottom: 2rem; max-width: 900px; margin: 0 auto; width: 100%; }
 
-        .chat-input-wrapper { display: flex; flex-direction: column; width: 100%; position: relative; }
+        .chat-input-sticky-area { 
+            padding: 1.5rem 2rem; 
+            background: white; 
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
+        }
+        .chat-input-container-inner { max-width: 900px; margin: 0 auto; width: 100%; position: relative; }
         .tamil-keyboard-popup { background: white; border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: 0 -10px 40px rgba(0,0,0,0.08); margin-bottom: 1rem; overflow: hidden; }
         .tk-grid-wrapper { display: flex; flex-direction: column; gap: 8px; padding: 1.5rem; }
         .tk-row { display: flex; gap: 6px; justify-content: center; overflow-x: auto; }
@@ -784,10 +821,23 @@ const App = () => {
         .tk-key.bs { flex: 1; background: #fef2f2; color: #dc2626; border-color: #fecaca; }
         .tk-key.bs:hover { background: #fee2e2; color: #b91c1c; }
 
-        .kb-toggle { background: #f1f5f9; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); transition: 0.3s; flex-shrink: 0; }
-        .kb-toggle:hover { background: #e2e8f0; color: var(--text); }
-        .kb-toggle.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(154,52,18,0.3); }
-        .send-btn { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .tamil-input-box-v2 { 
+            display: flex; background: white; padding: 0.5rem; 
+            border: 1px solid #e2e8f0; border-radius: 1.5rem; 
+            align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); gap: 0.5rem; 
+        }
+        .tamil-input-box-v2 input { 
+            flex: 1; border: none; outline: none; padding: 0.75rem 1rem; 
+            font-size: 1rem; background: transparent; color: #1e293b; font-weight: 600;
+        }
+        .kb-toggle-v2 { background: #f8fafc; border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: 0.2s; }
+        .kb-toggle-v2:hover { background: #f1f5f9; color: var(--primary); }
+        .kb-toggle-v2.active { background: var(--primary); color: white; }
+        .send-btn-v2 { background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(154,52,18,0.2); transition: 0.2s; }
+        .send-btn-v2:hover { transform: scale(1.05); }
+
+        .auto-trans-status-v2 { font-size: 0.6rem; color: var(--muted); position: absolute; bottom: -1rem; left: 2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+
         .chat-bubble-container { display: flex; width: 100%; }
         .chat-bubble-container.user { justify-content: flex-end; }
         .chat-bubble { max-width: 80%; padding: 1.25rem; background: var(--white); border-radius: 1.25rem; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
@@ -836,10 +886,6 @@ const App = () => {
            transform: scale(0.98);
         }
 
-        .chat-input-row { padding-top: 1rem; }
-        .tamil-input-box { display: flex; background: var(--white); padding: 0.5rem; border: 2px solid var(--border); border-radius: 3rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); gap: 0.5rem; }
-        .tamil-input-box input { flex: 1; border: none; outline: none; padding: 0.4rem 1rem; font-size: 1rem; background: transparent; }
-        
         .chat-bubble-image { margin-bottom: 1rem; border-radius: 0.5rem; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); }
         .chat-bubble-image img { width: 100%; max-width: 300px; display: block; }
         .user .chat-bubble-image { border-color: rgba(255,255,255,0.2); }
@@ -1097,38 +1143,29 @@ const App = () => {
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
-          .scholarly-app { padding-bottom: 70px; }
+          .scholarly-app { height: 100vh; overflow: hidden; position: fixed; inset: 0; }
+          .main-header { padding: 0.6rem 1rem; border-bottom: 1px solid #e2e8f0; }
+          .header-left-group { gap: 0.75rem; }
+          .srm-logo-top { height: 42px !important; align-self: center; }
+          .main-title { font-size: 1.1rem !important; }
+          .sub-title { font-size: 0.55rem !important; }
+          .header-right-group { gap: 0.5rem; }
+          .header-nav-tabs { display: none; }
+          .settings-btn-top { width: 38px; height: 38px; }
           
-          .main-header { padding: 1.5rem 1rem; background: #ffffff !important; border-bottom: 2px solid #f8fafc; display: grid !important; grid-template-columns: 1fr; gap: 1.5rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-          .header-top-row { display: grid !important; grid-template-columns: 1fr; gap: 1rem; margin: 0 auto; width: 100%; }
-          .srm-logo-top { height: 50px !important; width: auto !important; max-width: 90%; margin: 0 auto !important; display: block !important; }
-          .app-title-group { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 0.25rem; }
-          .main-title { font-size: 1.4rem !important; font-weight: 950 !important; color: #9a3412 !important; margin: 0 !important; line-height: 1.2; }
-          .sub-title { font-size: 0.75rem !important; color: #64748b !important; font-weight: 900 !important; margin: 0 !important; letter-spacing: 2px; text-transform: uppercase; }
-          
-          .kural-item-card { padding: 1.25rem; }
-          .kural-item-card p { font-size: 1.05rem; line-height: 1.4; }
-          .kural-line-1 { margin-bottom: 0.5rem !important; }
-          
-          .m-verse-box { padding: 2.5rem 1rem; border-radius: 2rem; margin-bottom: 2rem; }
-          .m-verse-box h3 { font-size: 1.25rem; line-height: 1.4; }
-          
-          .tamil-verse { font-size: 1rem; padding: 1rem; }
-          .verse-line-1 { margin-bottom: 0.5rem; font-weight: 950; color: #1e293b; }
-          .verse-line-2 { font-weight: 950; color: #1e293b; }
-          
-          .nav-scroll-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 0.75rem 1rem; z-index: 2000; border-top: 1px solid var(--border); margin: 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
-          .header-nav-tabs { width: 100%; display: flex; justify-content: space-around; gap: 0; }
-          .header-nav-tabs button { flex-direction: column; gap: 4px; padding: 0.5rem; font-size: 0.65rem; background: none !important; color: var(--muted); }
-          .header-nav-tabs button.active { color: var(--primary); }
-          .header-nav-tabs button span { font-weight: 900; }
-          .header-nav-tabs button svg { width: 22px; height: 22px; }
-          
-          .content-container { padding: 1rem 0.5rem; margin-bottom: 70px; }
-          .chat-view-container { height: calc(100vh - 200px); gap: 0; flex-direction: column; }
-          .chat-view { height: 100%; }
-          .tamil-keyboard-popup { border-radius: 1rem; margin-bottom: 0.5rem; }
-          .chat-bubble { max-width: 98%; padding: 1rem; border-radius: 1.25rem; }
+          .nav-scroll-wrapper { display: block; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e2e8f0; padding: 0.5rem; z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); }
+          .header-nav-tabs-mobile { display: flex; justify-content: space-around; width: 100%; border: none !important; }
+          .header-nav-tabs-mobile button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; border: none !important; background: none !important; color: #64748b; font-size: 0.65rem; font-weight: 800; padding: 0.5rem; border-radius: 0.5rem; }
+          .header-nav-tabs-mobile button.active { color: var(--primary) !important; background: #fff7ed !important; }
+
+          .content-container { height: calc(100vh - 58px - 75px); margin-bottom: 75px; padding: 0; }
+          .chat-view-container { height: 100%; }
+          .chat-window { padding: 0; }
+          .chat-messages-scroll-area { padding: 1.5rem 1rem; padding-bottom: 2rem; }
+          .chat-input-sticky-area { padding: 0.75rem; background: white; border-top: 1px solid #eee; }
+          .tamil-input-box-v2 { border-radius: 1rem; padding: 0.35rem; }
+          .tamil-input-box-v2 input { font-size: 0.95rem; padding: 0.5rem; }
+          .chat-bubble { max-width: 95%; padding: 1.1rem; border-radius: 1.5rem; }
           
           .paal-cards { grid-template-columns: 1fr; gap: 1rem; }
           .paal-card { padding: 2rem 1.5rem; display: flex; align-items: center; justify-content: space-between; text-align: left; }
