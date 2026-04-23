@@ -215,15 +215,7 @@ const App = () => {
    }, [kuralData, searchQuery, selectedPaal, selectedChapter]);
 
    useEffect(() => {
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage && lastMessage.role === 'ai') {
-         const bubbles = document.querySelectorAll('.chat-bubble-container.ai');
-         if (bubbles.length > 0) {
-            bubbles[bubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
-         }
-      } else {
-         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
    }, [messages]);
 
    return (
@@ -243,7 +235,6 @@ const App = () => {
                      <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
                      <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
                   </nav>
-
                </div>
             </div>
          </header>
@@ -251,7 +242,7 @@ const App = () => {
          <main className="content-container">
             <AnimatePresence mode="wait">
                {activeTab === 'ask' ? (
-                  <motion.div key="ask" className="chat-view-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <motion.div key="ask" className="chat-view-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                      <div className="chat-view">
                         <div className="chat-window">
                            <div className="chat-messages-scroll-area">
@@ -267,12 +258,12 @@ const App = () => {
                                        <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
                                        {m.image && (
                                           <div className="chat-bubble-image">
-                                             <img src={m.image} alt="Uploaded" />
+                                             <img src={m.image} alt="Uploaded" style={{maxWidth: '100%', borderRadius: '10px'}} />
                                           </div>
                                        )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
-                                             {m.sources.slice(0, m.showAllSources ? m.sources.length : 10).map((s, idx) => (
+                                             {m.sources.slice(0, m.showAllSources ? m.sources.length : 3).map((s, idx) => (
                                                 <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
                                                    <div className="k-mini-info">
                                                       <span className="k-mini-num">குறள் {s.Number}:</span>
@@ -284,21 +275,9 @@ const App = () => {
                                                    <ChevronRight size={20} className="k-mini-arrow" />
                                                 </div>
                                              ))}
-                                             {m.sources.length > 10 && !m.showAllSources && (
-                                                <button 
-                                                   className="show-all-sources-btn"
-                                                   onClick={() => {
-                                                      const newMessages = [...messages];
-                                                      newMessages[i].showAllSources = true;
-                                                      setMessages(newMessages);
-                                                   }}
-                                                >
-                                                   அனைத்து {m.sources.length} குறள்களையும் காண்க / View all {m.sources.length} sources
-                                                </button>
-                                             )}
                                           </div>
                                        )}
-                                       {m.content && m.content.trim() !== "" && (
+                                       {m.content && (
                                           <div className="bubble-text">{parseFormattedContent(m.content)}</div>
                                        )}
                                     </div>
@@ -313,142 +292,66 @@ const App = () => {
                            <div className="chat-input-container-inner">
                               <AnimatePresence>
                                  {selectedImage && (
-                                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="image-preview-container">
-                                       <img src={selectedImage} alt="Preview" />
-                                       <button className="remove-image-btn" onClick={() => setSelectedImage(null)}><X size={14}/></button>
+                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="image-preview-container" style={{position: 'absolute', bottom: '100%', left: 0, marginBottom: '1rem', background: 'white', padding: '0.5rem', borderRadius: '1rem', border: '1px solid #ddd'}}>
+                                       <img src={selectedImage} alt="Preview" style={{height: '60px', borderRadius: '8px'}} />
+                                       <button onClick={() => setSelectedImage(null)} style={{position: 'absolute', top: -10, right: -10, background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer'}}>×</button>
                                     </motion.div>
                                  )}
                               </AnimatePresence>
-                              <AnimatePresence>
-                                 {showKeyboard && (
-                                    <motion.div initial={{ height: 0, opacity: 0, y: 10 }} animate={{ height: 'auto', opacity: 1, y: 0 }} exit={{ height: 0, opacity: 0, y: 10 }} className="tamil-keyboard-popup">
-                                       <div className="tk-grid-wrapper">
-                                          {TAMIL_KEYS.map((row, i) => (
-                                             <div key={i} className="tk-row">
-                                                {row.map(char => (
-                                                   <button key={char} className="tk-key" onClick={() => handleKeyClick(char)}>{char}</button>
-                                                ))}
-                                             </div>
-                                          ))}
-                                          <div className="tk-row tk-controls">
-                                             <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>இடைவெளி (Space)</button>
-                                             <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}><X size={16}/> அழி (Clear)</button>
+                              {showKeyboard && (
+                                 <div className="tamil-keyboard-popup">
+                                    <div className="tk-grid-wrapper">
+                                       {TAMIL_KEYS.map((row, i) => (
+                                          <div key={i} className="tk-row">
+                                             {row.map(char => (
+                                                <button key={char} className="tk-key" onClick={() => handleKeyClick(char)}>{char}</button>
+                                             ))}
                                           </div>
+                                       ))}
+                                       <div className="tk-row tk-controls">
+                                          <button className="tk-key ctrl space" onClick={() => handleKeyClick(' ')}>Space</button>
+                                          <button className="tk-key ctrl bs" onClick={() => setQuery(prev => prev.slice(0, -1))}>Delete</button>
                                        </div>
-                                    </motion.div>
-                                 )}
-                              </AnimatePresence>
-                              <div className="chat-input-row-modern">
-                                 <div className="tamil-input-box-v2">
-                                    <button className={`kb-toggle-v2 ${showKeyboard ? 'active' : ''}`} onClick={() => setShowKeyboard(!showKeyboard)} title="Toggle Tamil Keyboard">
-                                       <Languages size={20} />
-                                    </button>
-                                    <button className="kb-toggle-v2" onClick={() => fileInputRef.current?.click()} title="Upload Image">
-                                       <Camera size={20} />
-                                    </button>
-                                    <input 
-                                       type="file" 
-                                       ref={fileInputRef} 
-                                       style={{ display: 'none' }} 
-                                       accept="image/*" 
-                                       onChange={handleImageUpload} 
-                                    />
-                                    <input
-                                       placeholder="எதையும் கேளுங்கள்... (Type in English to Translate)"
-                                       value={query}
-                                       onChange={(e) => setQuery(e.target.value)}
-                                       onKeyPress={async (e) => {
-                                           if (e.key === 'Enter') {
-                                              let currentQuery = query.trim();
-                                              const hasEnglish = /[a-zA-Z]/.test(currentQuery);
-                                              setIsTranslating(true);
-                                              if (hasEnglish) {
-                                                 try {
-                                                    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(currentQuery)}`;
-                                                    const res = await fetch(url);
-                                                    const data = await res.json();
-                                                    if (data && data[0]) {
-                                                       const translated = data[0].map(x => x[0]).join('');
-                                                       if (translated) currentQuery = translated;
-                                                    }
-                                                 } catch (err) {}
-                                              }
-                                              if (aiEngine && currentQuery.length > 3) {
-                                                  const formed = await aiEngine.refineQuery(currentQuery);
-                                                  if (formed) currentQuery = formed;
-                                              }
-                                              setQuery(currentQuery);
-                                              setIsTranslating(false);
-                                              handleAsk(currentQuery);
-                                           }
-                                        }}
-                                    />
-                                    <button onClick={() => handleAsk(query)} disabled={loading} className="send-btn-v2">
-                                       {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
-                                    </button>
+                                    </div>
                                  </div>
+                              )}
+                              <div className="tamil-input-box-v2">
+                                 <button className={`kb-toggle-v2 ${showKeyboard ? 'active' : ''}`} onClick={() => setShowKeyboard(!showKeyboard)}>
+                                    <Languages size={20} />
+                                 </button>
+                                 <button className="kb-toggle-v2" onClick={() => fileInputRef.current?.click()}>
+                                    <Camera size={20} />
+                                 </button>
+                                 <input 
+                                    type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" 
+                                    onChange={handleImageUpload} 
+                                 />
+                                 <input
+                                    placeholder="எதையும் கேளுங்கள்..."
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
+                                 />
+                                 <button onClick={() => handleAsk(query)} disabled={loading} className="send-btn-v2">
+                                    {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
+                                 </button>
                               </div>
                            </div>
-                           {isTranslating && <div className="auto-trans-status-v2">Translating...</div>}
                         </div>
                      </div>
                   </motion.div>
                ) : activeTab === 'list' ? (
-                  <motion.div key="list" className="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <motion.div key="list" className="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                      {!selectedPaal ? (
-                        <>
-                           <div className="library-section-title">மூல நூல்கள் (Main Sections)</div>
-                           <div className="paal-cards">
-                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> <h3>அறத்துப்பால்</h3> <p>அறநெறிகள்</p> </div>
-                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
-                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
-                           </div>
-
-                           <div className="library-resource-header-box" style={{ marginTop: '4rem' }}>
-                              <h3 className="res-title-main"><BookOpen size={20} /> டிஜிட்டல் ஆராய்ச்சி நூலகம் / Research Archives</h3>
-                              <div className="res-grid-premium">
-                                 <a href="https://www.tamilvu.org/library/nationalized/pdf/59-puliyurkesigan/013.thirukuralputhiyaurai.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
-                                    <Database className="res-ico" size={24} />
-                                    <div className="res-card-text">
-                                       <strong>தமிழ் இணையக் கல்விக்கழகம்</strong>
-                                       <span>புலியூர்க் கேசிகன் உரை (PDF)</span>
-                                    </div>
-                                 </a>
-                                 <a href="https://www.projectmadurai.org/pm_etexts/pdf/pm0001.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
-                                    <Feather className="res-ico" size={24} />
-                                    <div className="res-card-text">
-                                       <strong>புராஜெக்ட் மதுரை</strong>
-                                       <span>மின்னணுத் தமிழ் இலக்கியத் தொகுப்பு (PDF)</span>
-                                    </div>
-                                 </a>
-                                 <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noreferrer" className="res-card-v2">
-                                    <Zap className="res-ico" size={24} />
-                                    <div className="res-card-text">
-                                       <strong>பாஜக மின்னூலகம்</strong>
-                                       <span>ஆராய்ச்சி பதிப்பு (PDF)</span>
-                                    </div>
-                                 </a>
-                                 <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/#google_vignette" target="_blank" rel="noreferrer" className="res-card-v2">
-                                    <Globe className="res-ico" size={24} />
-                                    <div className="res-card-text">
-                                       <strong>TNPSC வினாத்தாள்கள்</strong>
-                                       <span>கல்வி மற்றும் பயிற்சித் தொகுப்பு</span>
-                                    </div>
-                                 </a>
-                                 <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%81%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="res-card-v2">
-                                    <Globe className="res-ico" size={24} />
-                                    <div className="res-card-text">
-                                       <strong>விக்கிப்பீடியா (Tamil)</strong>
-                                       <span>கட்டுரைகள் & வரலாற்றுத் தரவுகள்</span>
-                                    </div>
-                                 </a>
-                              </div>
-                           </div>
-                        </>
+                        <div className="paal-cards">
+                           <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> <h3>அறத்துப்பால்</h3> <p>அறநெறிகள்</p> </div>
+                           <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> <h3>பொருட்பால்</h3> <p>அரசியல் & செல்வம்</p> </div>
+                           <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> <h3>இன்பத்துப்பால்</h3> <p>காதல் & இல்லறம்</p> </div>
+                        </div>
                      ) : !selectedChapter ? (
                         <div className="chapter-view">
-                           <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> பால் தெரிவு </button>
-                           <div className="chapter-header-text">{selectedPaal}</div>
+                           <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> Back </button>
+                           <h2>{selectedPaal}</h2>
                            <div className="chapter-grid">
                               {ATHIGARAMS.map((name, i) => {
                                  const num = i + 1;
@@ -459,13 +362,13 @@ const App = () => {
                         </div>
                      ) : (
                         <div className="kural-view">
-                           <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> அதிகாரங்கள் </button>
+                           <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> Back </button>
                            <div className="kural-grid-stack">
                               {filteredKurals.map(k => (
                                  <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
                                     <div className="k-header-row">குறள் எண்: {k.Number}</div>
-                                    <p className="kural-line-1">{k.Line1}</p>
-                                    <p className="kural-line-2">{k.Line2}</p>
+                                    <p>{k.Line1}</p>
+                                    <p>{k.Line2}</p>
                                  </div>
                               ))}
                            </div>
@@ -473,244 +376,28 @@ const App = () => {
                      )}
                   </motion.div>
                ) : (
-                  <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                     <div className="history-statue-bg"></div>
+                  <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                      <div className="history-hero">
-                        <div className="h-hero-bg"></div>
-                        <div className="h-decorator"></div>
-                        <motion.div
-                           initial={{ opacity: 0, scale: 0.9 }}
-                           animate={{ opacity: 1, scale: 1 }}
-                           transition={{ duration: 0.8 }}
-                        >
-                           <h2 className="h-title">திருக்குறள்: காலத்தைக் கடந்த ஒரு மாபெரும் வரலாறு</h2>
-                           <p className="h-subtitle">2000 ஆண்டுகால ஞானம் • உலகப் பொதுமறை • விவேகத்தின் சிகரம்</p>
-                        </motion.div>
+                        <h2 className="h-title">திருக்குறள் வரலாறு</h2>
+                        <p className="h-subtitle">உலகப் பொதுமறை</p>
                         <div className="h-hero-stats">
-                           <div className="h-hero-stat-card">
-                              <span className="h-stat-num">133</span>
-                              <span className="h-stat-lbl">அதிகாரங்கள்</span>
-                           </div>
-                           <div className="h-hero-stat-card">
-                              <span className="h-stat-num">1330</span>
-                              <span className="h-stat-lbl">குறட்பாக்கள்</span>
-                           </div>
-                           <div className="h-hero-stat-card">
-                              <span className="h-stat-num">100+</span>
-                              <span className="h-stat-lbl">மொழிகள்</span>
-                           </div>
+                           <div className="h-hero-stat-card"> <span className="h-stat-num">133</span> <span className="h-stat-lbl">அதிகாரங்கள்</span> </div>
+                           <div className="h-hero-stat-card"> <span className="h-stat-num">1330</span> <span className="h-stat-lbl">குறள்கள்</span> </div>
                         </div>
                      </div>
-
-                     <div className="history-content-sections">
-                        <section className="h-section-split">
-                           <div className="h-card-premium creator-card">
-                              <div className="h-img-container">
-                                 <img src="statue.png" alt="திருவள்ளுவர்" className="h-main-img" />
-                                 <div className="h-img-badge">தெய்வப்புலவர்</div>
-                              </div>
-                              <div className="h-content-box">
-                                 <span className="h-label-top">வாழ்வியல் வழிகாட்டி</span>
-                                 <h3>திருவள்ளுவர்: காலக் கண்ணாடி</h3>
-                                 <p>சுமார் 2,000 ஆண்டுகளுக்கு முன்பே சாதி, மதம், இனம் எனப் பாராமல் மனித குலம் முழுமைக்கும் பொதுவான நீதியை வழங்கியவர் திருவள்ளுவர்.</p>
-                                 <div className="h-info-grid">
-                                    <div className="h-info-item">
-                                       <Award className="h-icon" size={20} />
-                                       <div>
-                                          <strong>காலம்</strong>
-                                          <span>கி.மு. 31 (திருவள்ளுவர் ஆண்டு)</span>
-                                       </div>
-                                    </div>
-                                    <div className="h-info-item">
-                                       <BrainCircuit className="h-icon" size={20} />
-                                       <div>
-                                          <strong>தத்துவம்</strong>
-                                          <span>உலகளாவிய மனிதநேயம்</span>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-                        </section>
-
-                        <div className="h-pillars-section">
-                           <div className="h-section-header-center">
-                              <span className="h-label">கட்டமைப்பு</span>
-                              <h3>முப்பால்: வாழ்வின் மூன்று பரிமாணங்கள்</h3>
-                           </div>
-                           <div className="h-pillars-grid">
-                              <motion.div whileHover={{ y: -10 }} className="h-pillar-card aram">
-                                 <div className="p-icon"><BookOpen size={24} /></div>
-                                 <h4>அறத்துப்பால்</h4>
-                                 <p>38 அதிகாரங்கள்</p>
-                                 <span className="p-desc">தனிமனித ஒழுக்கம், இல்லறம் மற்றும் துறவறம் குறித்த நெறிகள்.</span>
-                              </motion.div>
-                              <motion.div whileHover={{ y: -10 }} className="h-pillar-card porul">
-                                 <div className="p-icon"><Database size={24} /></div>
-                                 <h4>பொருட்பால்</h4>
-                                 <p>70 அதிகாரங்கள்</p>
-                                 <span className="p-desc">அரசியல், அமைச்சியல், படை, அரண் மற்றும் சமூக நிர்வகிப்பு.</span>
-                              </motion.div>
-                              <motion.div whileHover={{ y: -10 }} className="h-pillar-card inbam">
-                                 <div className="p-icon"><Sparkles size={24} /></div>
-                                 <h4>இன்பத்துப்பால்</h4>
-                                 <p>25 அதிகாரங்கள்</p>
-                                 <span className="p-desc">காதல், அன்பு மற்றும் அகவாழ்வின் ஆழமான உணர்வுகள்.</span>
-                              </motion.div>
-                           </div>
-                        </div>
-
-                        <div className="h-timeline-vertical-section">
-                           <div className="h-section-header">
-                              <span className="h-label">காலப்பயணம்</span>
-                              <h3>வரலாற்று மைல்கற்கள்</h3>
-                           </div>
-                           <div className="h-v-timeline">
-                              <div className="h-tl-line"></div>
-                              <div className="h-tl-node-item">
-                                 <div className="h-tl-year">கி.மு / கி.பி</div>
-                                 <div className="h-tl-marker"></div>
-                                 <div className="h-tl-info">
-                                    <h4>சங்க காலம் (அரங்கேற்றம்)</h4>
-                                    <p>மதுரை தமிழ்ச் சங்கத்தில் 'திருவள்ளுவ மாலை' சான்றோர் முன்னிலையில் அரங்கேற்றப்பட்டது.</p>
-                                 </div>
-                              </div>
-                              <div className="h-tl-node-item">
-                                 <div className="h-tl-year">1812</div>
-                                 <div className="h-tl-marker"></div>
-                                 <div className="h-tl-info">
-                                    <h4>அச்சு வடிவம்</h4>
-                                    <p>தஞ்சை ஞானப்பிரகாசம் அவர்களால் முதன்முதலில் நூல் வடிவில் அச்சிடப்பட்டது.</p>
-                                 </div>
-                              </div>
-                              <div className="h-tl-node-item">
-                                 <div className="h-tl-year">1886</div>
-                                 <div className="h-tl-marker"></div>
-                                 <div className="h-tl-info">
-                                    <h4>உலகளாவிய அங்கீகாரம்</h4>
-                                    <p>ஜி.யு. போப் (G.U. Pope) அவர்களால் ஆங்கிலத்தில் மொழிபெயர்க்கப்பட்டு உலகிற்கு அறிமுகமானது.</p>
-                                 </div>
-                              </div>
-                              <div className="h-tl-node-item active">
-                                 <div className="h-tl-year">இன்று</div>
-                                 <div className="h-tl-marker"></div>
-                                 <div className="h-tl-info">
-                                    <h4>டிஜிட்டல் யுகம் (SRM AI)</h4>
-                                    <p>நவீன தொழில்நுட்பத்தின் மூலம் திருக்குறள் அடுத்த தலைமுறைக்குக் கொண்டு செல்லப்படுகிறது.</p>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-
-                        <section className="h-manuscript-feature">
-                           <div className="h-feature-content">
-                              <div className="h-img-glow">
-                                 <img src="manuscript.png" alt="ஓலைச்சுவடி" />
-                              </div>
-                              <div className="h-feature-text">
-                                 <span className="h-label">மீட்டெடுப்பு</span>
-                                 <h3>ஓலைச்சுவடியிலிருந்து டிஜிட்டல் வரை</h3>
-                                 <p>திருக்குறள் பல நூற்றாண்டுகளாக ஓலைச்சுவடிகளில் மட்டுமே பாதுகாக்கப்பட்டது. 'எழுத்தாணி' கொண்டு பனை ஓலைகளில் செதுக்கப்பட்ட இந்த வரிகள், இயற்கை சீற்றங்களைக் கடந்து நம்மிடம் வந்து சேர்ந்தது ஒரு அதிசயம்.</p>
-                                 <p>தமிழ் தாத்தா உ.வே. சாமிநாதையர் அவர்களின் அயராத உழைப்பால் இவை மீட்டெடுக்கப்பட்டு இன்று உங்கள் விரல் நுனியில் உள்ளது.</p>
-                              </div>
-                           </div>
-                        </section>
-
-                        <section className="h-statue-section">
-                           <div className="h-statue-container">
-                              <div className="h-statue-text">
-                                 <span className="h-label">நினைவுச் சின்னம் / Monument</span>
-                                 <h3>கன்னியாகுமரி திருவள்ளுவர் சிலை</h3>
-                                 <p>தமிழின் பெருமையை உலகிற்குப் பறைசாற்றும் வகையில், இந்தியாவின் தென்கோடி முனையான கன்னியாகுமரியில் இந்த பிரம்மாண்ட சிலை அமைக்கப்பட்டுள்ளது.</p>
-                                 
-                                 <div className="h-statue-metrics">
-                                    <div className="h-metric">
-                                       <strong>133 அடி</strong>
-                                       <span>மொத்த உயரம் (133 அதிகாரங்கள்)</span>
-                                    </div>
-                                    <div className="h-metric">
-                                       <strong>38 அடி</strong>
-                                       <span>பீடத்தின் உயரம் (அறத்துப்பால்)</span>
-                                    </div>
-                                    <div className="h-metric">
-                                       <strong>95 அடி</strong>
-                                       <span>சிலையின் உயரம் (பொருள் & இன்பம்)</span>
-                                    </div>
-                                 </div>
-                                 
-                                 <p className="h-statue-detail">டாக்டர் வி. கணபதி ஸ்தபதி அவர்களால் வடிவமைக்கப்பட்ட இந்த சிலை, அரபிக்கடல், வங்காள விரிகுடா மற்றும் இந்தியப் பெருங்கடல் கூடும் இடத்தில் கம்பீரமாக நிற்கிறது.</p>
-                              </div>
-                              <div className="h-statue-image">
-                                 <img src="statue.png" alt="திருவள்ளுவர் சிலை" />
-                              </div>
-                           </div>
-                        </section>
-
-                        <section className="h-global-influence">
-                           <div className="h-section-header-center">
-                              <span className="h-label">உலகளாவிய தாக்கம்</span>
-                              <h3>உலகத் தலைவர்களின் உந்துதல்</h3>
-                           </div>
-                           <div className="h-influence-grid">
-                              <div className="h-influence-card">
-                                 <div className="h-card-inner">
-                                    <p><strong>மகாத்மா காந்தி:</strong> "திருக்குறளில் உள்ள 'இன்னா செய்தாரையும்' என்ற கருத்தே அகிம்சை கொள்கைக்கு அடித்தளம்."</p>
-                                 </div>
-                              </div>
-                              <div className="h-influence-card">
-                                 <div className="h-card-inner">
-                                    <p><strong>ஆல்பர்ட் சுவைட்சர்:</strong> "திருக்குறளைப் போல வாழ்வின் அனைத்துப் பகுதிகளுக்கும் வழிகாட்டும் மற்றொரு நூல் உலகில் இல்லை."</p>
-                                 </div>
-                              </div>
-                              <div className="h-influence-card">
-                                 <div className="h-card-inner">
-                                    <p><strong>லியோ டால்ஸ்டாய்:</strong> ரஷ்யாவிலிருந்து திருக்குறளை மொழிபெயர்த்துப் படித்து வியந்தவர்.</p>
-                                 </div>
-                              </div>
-                           </div>
-                           <div className="h-mega-quote">
-                              <Quote className="h-q-icon" size={60} />
-                              <blockquote>"திருக்குறள் என்பது மனிதன் மனிதனாக வாழ, மனிதன் மனிதனுக்குச் சொன்ன உன்னத நெறி."</blockquote>
-                           </div>
-                        </section>
-
-                        <div className="h-resources-v2">
-                           <h3>கல்வி மற்றும் ஆய்வு ஆதாரங்கள்</h3>
-                           <div className="h-links-flex">
-                              <a href="https://www.projectmadurai.org/pm_etexts/pdf/pm0001.pdf" target="_blank" rel="noreferrer" className="h-link">
-                                 <Database size={18} /> <span>புராஜெக்ட் மதுரை (PDF)</span>
-                              </a>
-                              <a href="https://www.tamilvu.org/library/nationalized/pdf/59-puliyurkesigan/013.thirukuralputhiyaurai.pdf" target="_blank" rel="noreferrer" className="h-link">
-                                 <BookOpen size={18} /> <span>தமிழ் இணையக் கல்விக்கழகம் (PDF)</span>
-                              </a>
-                              <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noreferrer" className="h-link">
-                                 <Zap size={18} /> <span>பாஜக மின்னூலகம் (PDF)</span>
-                              </a>
-                              <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/#google_vignette" target="_blank" rel="noreferrer" className="h-link">
-                                 <Globe size={18} /> <span>TNPSC வினாத்தாள்கள்</span>
-                              </a>
-                              <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%81%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noreferrer" className="h-link">
-                                 <BookOpen size={18} /> <span>விக்கிப்பீடியா (Tamil)</span>
-                              </a>
-                           </div>
-                        </div>
-                     </div>
-
-                     <div className="h-footer-premium">
-                        <div className="h-footer-content">
-                           <h3>காலம் கடந்த வழிகாட்டி</h3>
-                           <p>இன்று நவீன செயற்கை நுண்ணறிவு யுகத்திலும், திருக்குறள் நமக்கு வாழ்வியல் தீர்வுகளை வழங்குகிறது.</p>
-                           <div className="h-srm-badge">SRM Institute of Science and Technology • Tamil Research Centre</div>
-                        </div>
+                     <div style={{padding: '2rem', background: 'white', borderRadius: '2rem', border: '1px solid #eee', marginTop: '2rem'}}>
+                        <h3>திருவள்ளுவர் பற்றி</h3>
+                        <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் மனித குலத்திற்கு தேவையான அறநெறிகளை 'திருக்குறள்' மூலம் வழங்கியுள்ளார்.</p>
                      </div>
                   </motion.div>
                )}
             </AnimatePresence>
+            
             <div className="nav-scroll-wrapper">
                <nav className="header-nav-tabs-mobile">
-                  <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={22} /> <span>கேள்வி</span> </button>
-                  <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={22} /> <span>நூலகம்</span> </button>
-                  <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={22} /> <span>வரலாறு</span> </button>
+                  <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={24} /> <span>நிபுணர்</span> </button>
+                  <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={24} /> <span>நூலகம்</span> </button>
+                  <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={24} /> <span>வரலாறு</span> </button>
                </nav>
             </div>
          </main>
@@ -718,34 +405,17 @@ const App = () => {
          <AnimatePresence>
             {selectedKural && (
                <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
-                  <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
+                  <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
                      <header className="m-header"> <span className="m-badge">குறள் {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
                      <div className="m-verse-box">
-                        <h3 className="kural-line-1">{selectedKural.Line1}</h3>
-                        <h3 className="kural-line-2">{selectedKural.Line2}</h3>
+                        <h3>{selectedKural.Line1}</h3>
+                        <h3>{selectedKural.Line2}</h3>
                      </div>
                      <div className="m-explanations-stack">
-                        <div className="e-block"> <h5>மு. வரதராசனார் விளக்கம்</h5> <p>{selectedKural.mv || selectedKural.explanation}</p> </div>
-                        <div className="e-block"> <h5>மு. கருணாநிதி விளக்கம்</h5> <p>{selectedKural.mk || "தகவல் இல்லை"}</p> </div>
-                        <div className="e-block"> <h5>சாலமன் பாப்பையா விளக்கம்</h5> <p>{selectedKural.sp || "தகவல் இல்லை"}</p> </div>
-                        <div className="e-block en"> <h5>ஆங்கில மொழிபெயர்ப்பு</h5> <p>{selectedKural.Translation}</p> </div>
+                        <div className="e-block"> <h5>விளக்கம்</h5> <p>{selectedKural.explanation || selectedKural.mv}</p> </div>
+                        <div className="e-block en"> <h5>English Translation</h5> <p>{selectedKural.Translation}</p> </div>
                      </div>
                   </motion.div>
-               </div>
-            )}
-         </AnimatePresence>
-
-         <AnimatePresence>
-            {showSettings && (
-               <div className="settings-modal-overlay" onClick={() => setShowSettings(false)}>
-                  <div className="settings-modal" onClick={e => e.stopPropagation()}>
-                     <h3>அமைப்புகள்</h3>
-                     <div className="set-field">
-                        <label>OpenAI சாவி (API Key)</label>
-                        <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} />
-                     </div>
-                     <button className="save-btn" onClick={() => setShowSettings(false)}>சரி</button>
-                  </div>
                </div>
             )}
          </AnimatePresence>
@@ -762,396 +432,9 @@ const App = () => {
         }
 
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; width: 100%; }
-        h1, h2, h3, h4, .app-title-group { font-family: 'Outfit', sans-serif; }
+        body { margin: 0; font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; width: 100vw; height: 100vh; }
 
-        .scholarly-app { height: 100vh; display: flex; flex-direction: column; width: 100%; overflow: hidden; background: #fafafa; position: fixed; inset: 0; }
-        .main-header { 
-            padding: 0.75rem 2rem; 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--border); 
-            position: relative; z-index: 1000; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
-            width: 100%; 
-        }
-        .header-container-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; width: 100%; gap: 2rem; }
-        .header-left-group { display: flex; align-items: center; gap: 1.5rem; flex: 1; }
-        .srm-logo-top { height: 55px; width: auto; object-fit: contain; margin-top: 6px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); align-self: center; }
-        .app-title-group { display: flex; flex-direction: column; align-items: flex-start; }
-        .main-title { font-size: 1.4rem; margin: 0; color: var(--primary); font-weight: 900; line-height: 1; }
-        .sub-title { margin: 2px 0 0; font-weight: 700; color: var(--muted); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; }
-
-        .header-right-group { display: flex; align-items: center; gap: 1.5rem; justify-content: flex-end; }
-        .header-nav-tabs { display: flex; gap: 0.25rem; align-items: center; background: #f1f5f9; padding: 0.3rem; border-radius: 1.25rem; }
-        .header-nav-tabs button { 
-           background: none; border: none; padding: 0.6rem 1.25rem; cursor: pointer; color: var(--muted);
-           display: flex; align-items: center; gap: 8px; font-weight: 800; border-radius: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-           font-size: 0.85rem;
-        }
-        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
-        .settings-btn-top { background: #f1f5f9; border: none; width: 42px; height: 42px; border-radius: 50%; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .settings-btn-top:hover { background: #e2e8f0; color: var(--primary); transform: rotate(45deg); }
-
-        .content-container { flex: 1; padding: 0; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; position: relative; min-height: 0; }
-        .content-container > div { height: 100%; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-
-        /* Chat View - Refactored for Scroll Stability */
-        .chat-view-container { flex: 1; display: flex; width: 100%; height: 100%; overflow: hidden; }
-        .chat-view { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; min-width: 0; position: relative; background: #fcfcfc; }
-        .chat-window { flex: 1; overflow-y: auto; display: flex; flex-direction: column; width: 100%; }
-        .chat-messages-scroll-area { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; padding-bottom: 2rem; max-width: 900px; margin: 0 auto; width: 100%; }
-
-        .chat-input-sticky-area { 
-            padding: 1.5rem 2rem; 
-            background: white; 
-            border-top: 1px solid var(--border);
-            z-index: 100;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
-        }
-        .chat-input-container-inner { max-width: 900px; margin: 0 auto; width: 100%; position: relative; }
-        .tamil-keyboard-popup { background: white; border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: 0 -10px 40px rgba(0,0,0,0.08); margin-bottom: 1rem; overflow: hidden; }
-        .tk-grid-wrapper { display: flex; flex-direction: column; gap: 8px; padding: 1.5rem; }
-        .tk-row { display: flex; gap: 6px; justify-content: center; overflow-x: auto; }
-        .tk-key { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 0; font-size: 1.2rem; font-weight: 800; cursor: pointer; transition: 0.2s; color: #1e293b; display: flex; align-items: center; justify-content: center; min-width: 35px; }
-        .tk-key:hover { background: #e0f2fe; border-color: #bae6fd; transform: translateY(-2px); color: #0284c7; }
-        .tk-key:active { transform: translateY(0); }
-        .tk-controls { margin-top: 8px; }
-        .tk-key.ctrl { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; padding: 12px; gap: 6px; }
-        .tk-key.space { flex: 2; background: #f1f5f9; }
-        .tk-key.bs { flex: 1; background: #fef2f2; color: #dc2626; border-color: #fecaca; }
-        .tk-key.bs:hover { background: #fee2e2; color: #b91c1c; }
-
-        .tamil-input-box-v2 { 
-            display: flex; background: white; padding: 0.5rem; 
-            border: 1px solid #e2e8f0; border-radius: 1.5rem; 
-            align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); gap: 0.5rem; 
-        }
-        .tamil-input-box-v2 input { 
-            flex: 1; border: none; outline: none; padding: 0.75rem 1rem; 
-            font-size: 1rem; background: transparent; color: #1e293b; font-weight: 600;
-        }
-        .kb-toggle-v2 { background: #f8fafc; border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: 0.2s; }
-        .kb-toggle-v2:hover { background: #f1f5f9; color: var(--primary); }
-        .kb-toggle-v2.active { background: var(--primary); color: white; }
-        .send-btn-v2 { background: var(--primary); color: white; border: none; width: 42px; height: 42px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(154,52,18,0.2); transition: 0.2s; }
-        .send-btn-v2:hover { transform: scale(1.05); }
-
-        .auto-trans-status-v2 { font-size: 0.6rem; color: var(--muted); position: absolute; bottom: -1rem; left: 2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
-
-        .chat-bubble-container { display: flex; width: 100%; }
-        .chat-bubble-container.user { justify-content: flex-end; }
-        .chat-bubble { max-width: 80%; padding: 1.25rem; background: var(--white); border-radius: 1.25rem; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        .user .chat-bubble { background: var(--primary); color: white; border: none; }
-        .bubble-meta { font-size: 0.7rem; font-weight: 950; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        
-        .bubble-text p { margin: 0 0 1rem; line-height: 1.6; }
-        .tamil-k-header { color: var(--primary); font-weight: 900; margin: 1rem 0 0.5rem; border-left: 4px solid var(--primary); padding-left: 1rem; }
-        .tamil-verse { font-weight: 950; font-size: 1.1rem; background: #f8fafc; padding: 1rem; border-radius: 1rem; color: #334155; }
-        .tamil-exp { color: #475569; margin-bottom: 1rem; font-weight: 600; line-height: 1.5; }
-
-        .kural-source-cards { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
-        .kural-mini-card { 
-           display: flex; align-items: center; justify-content: space-between; 
-           background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 1.25rem; 
-           padding: 1.25rem 1.5rem; cursor: pointer; transition: 0.3s; 
-        }
-        .kural-mini-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #7dd3fc; }
-        .k-mini-info { flex: 1; }
-        .k-mini-num { display: block; font-size: 0.75rem; font-weight: 900; color: #0369a1; margin-bottom: 0.5rem; opacity: 0.8; }
-        .k-mini-lines p { margin: 0; font-size: 1.15rem; font-weight: 950; color: #0c4a6e; line-height: 1.4; }
-        .k-mini-arrow { color: #0369a1; opacity: 0.5; margin-left: 1rem; }
-
-        .show-all-sources-btn {
-           background: #eff6ff; 
-           border: 1px solid #dbeafe; 
-           color: #2563eb; 
-           padding: 1rem; 
-           border-radius: 1.25rem; 
-           font-weight: 900; 
-           font-size: 0.85rem; 
-           cursor: pointer; 
-           transition: 0.3s;
-           margin-top: 0.5rem;
-           width: 100%;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           text-transform: uppercase;
-           letter-spacing: 0.5px;
-        }
-        .show-all-sources-btn:hover {
-           background: #dbeafe;
-           color: #1d4ed8;
-           border-color: #bfdbfe;
-           transform: scale(0.98);
-        }
-
-        .chat-bubble-image { margin-bottom: 1rem; border-radius: 0.5rem; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); }
-        .chat-bubble-image img { width: 100%; max-width: 300px; display: block; }
-        .user .chat-bubble-image { border-color: rgba(255,255,255,0.2); }
-
-        .image-preview-container { position: absolute; bottom: 100%; left: 1rem; margin-bottom: 1rem; background: white; padding: 0.5rem; border-radius: 1rem; border: 2px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 10; }
-        .image-preview-container img { height: 80px; width: auto; border-radius: 0.5rem; display: block; }
-        .remove-image-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
-
-        /* Library Cards */
-        .paal-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-        .paal-card { background: white; padding: 2.5rem; border-radius: 1.5rem; border: 1px solid var(--border); text-align: center; cursor: pointer; transition: 0.3s; }
-        .paal-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
-        .paal-card.aram { border-top: 6px solid #fbbf24; }
-        .paal-card.porul { border-top: 6px solid #10b981; }
-        .paal-card.inbam { border-top: 6px solid #ef4444; }
-        .paal-card h3 { font-size: 1.4rem; margin: 0 0 0.5rem; }
-        .paal-card p { margin: 0; font-weight: 700; color: var(--muted); font-size: 0.9rem; }
-
-        .library-view, .chapter-view, .kural-view { flex: 1; overflow-y: auto; padding: 2rem; width: 100%; }
-        .library-resource-header-box { margin-bottom: 3rem; background: #f8fafc; padding: 2.5rem; border-radius: 2rem; border: 1px solid var(--border); }
-        .res-title-main { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 950; margin-bottom: 2rem; color: var(--primary); }
-        .library-section-title { font-size: 1.1rem; font-weight: 950; color: #64748b; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
-
-        .res-grid-premium { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
-        .res-card-v2 { 
-           display: flex; align-items: center; gap: 1.25rem; background: white; 
-           padding: 1.5rem; border-radius: 1.5rem; text-decoration: none; 
-           border: 1px solid var(--border); transition: 0.3s;
-        }
-        .res-card-v2:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .res-ico { color: var(--primary); }
-        .res-card-text { display: flex; flex-direction: column; }
-        .res-card-text strong { font-size: 1rem; color: #1e293b; font-weight: 950; }
-        .res-card-text span { font-size: 0.8rem; color: #64748b; font-weight: 700; }
-
-        .chapter-view { display: flex; flex-direction: column; }
-        .tamil-back { background: none; border: none; color: var(--primary); font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 1.5rem; text-transform: uppercase; font-size: 0.75rem; }
-        .chapter-header-text { font-size: 1.8rem; font-weight: 950; margin-bottom: 1.5rem; }
-        .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; }
-        .chapter-tile { background: white; border: 1px solid var(--border); padding: 1rem; border-radius: 1rem; font-weight: 800; text-align: left; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-        .chapter-tile span { opacity: 0.3; font-size: 0.7rem; }
-        .chapter-tile:hover { border-color: var(--primary); background: #fdf5f2; }
-
-        .kural-grid-stack { display: flex; flex-direction: column; gap: 1rem; }
-        .kural-item-card { background: white; border: 1.5px solid var(--border); padding: 1.5rem; border-radius: 1.5rem; cursor: pointer; transition: 0.3s; }
-        .kural-item-card:hover { border-color: var(--primary); transform: translateX(5px); }
-        .h-statue-section { margin-top: 6rem; background: #f8fafc; padding: 6rem 4rem; border-radius: 4rem; border: 1px solid #f1f5f9; }
-         .h-statue-container { display: flex; align-items: center; gap: 4rem; }
-         .h-statue-text { flex: 1.2; }
-         .h-statue-image { flex: 1; position: relative; }
-         .h-statue-image img { width: 100%; border-radius: 2.5rem; box-shadow: 0 30px 60px rgba(15,23,42,0.15); border: 8px solid white; }
-         .h-statue-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2.5rem 0; }
-         .h-metric { background: white; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid #e2e8f0; text-align: center; }
-         .h-metric strong { display: block; font-size: 1.5rem; color: var(--primary); font-weight: 950; margin-bottom: 0.25rem; }
-         .h-metric span { font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase; }
-         .h-statue-detail { font-size: 0.95rem; color: #475569; font-style: italic; border-left: 3px solid #cbd5e1; padding-left: 1rem; }
-
-         .h-global-influence { margin-top: 6rem; padding-bottom: 2rem; }
-         .h-section-header-center { text-align: center; margin-bottom: 4rem; }
-         .h-influence-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 4rem; }
-        .k-header-row { font-size: 0.7rem; font-weight: 950; color: var(--primary); margin-bottom: 0.5rem; opacity: 0.6; }
-
-        /* Modals - Fixed and optimized */
-        .tamil-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-        .tamil-modal { background: white; padding: 2rem 3rem; border-radius: 2.5rem; width: 100%; max-width: 950px; max-height: 92vh; overflow-y: auto; box-shadow: 0 40px 80px rgba(0,0,0,0.3); position: relative; }
-        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; position: sticky; top: -2rem; background: white; padding-top: 1rem; padding-bottom: 1rem; z-index: 10; border-bottom: 1px solid #f1f5f9; }
-        .m-badge { background: #fff7ed; color: var(--primary); padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 950; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; border: 1px solid #ffedd5; }
-        .m-verse-box { 
-           background: #fffaf2; padding: 3.5rem 6%; border-radius: 4rem; 
-           margin-bottom: 3.5rem; border: 1.5px solid #fde68a; text-align: center; 
-           box-shadow: inset 0 0 80px rgba(154,52,18,0.03), 0 20px 40px rgba(0,0,0,0.02); 
-           width: 100%;
-        }
-        .m-verse-box h3 { 
-           font-size: clamp(1rem, 5vw, 2.2rem); 
-           margin: 0; line-height: 1.4; font-weight: 950; 
-           color: #431407; letter-spacing: -0.01em; 
-           text-rendering: optimizeLegibility;
-        }
-        .m-verse-box h3:first-child { margin-bottom: 2rem; }
-        .m-explanations-stack { display: flex; flex-direction: column; gap: 2rem; }
-        .e-block h5 { margin: 0 0 0.6rem; color: var(--primary); font-weight: 950; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
-        .e-block p { margin: 0; font-size: 1.25rem; line-height: 1.6; font-weight: 700; color: #1e293b; }
-        .e-block.en { background: #f8fafc; padding: 2rem; border-radius: 1.5rem; border-left: 6px solid var(--primary); }
-        .e-block.en p { color: #475569; font-style: italic; font-weight: 800; font-size: 1.1rem; }
-
-        /* History - Premium Museum Layout V2 */
-        .history-view { max-width: 1100px; margin: 0 auto; width: 100%; padding: 2rem; padding-bottom: 5rem; flex: 1; overflow-y: auto; }
-        
-        .history-hero { 
-          text-align: center; padding: 6rem 2rem; margin-bottom: 4rem; position: relative; 
-          background: #fff; border-radius: 3rem; overflow: hidden; border: 1px solid #f1f5f9;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.03);
-        }
-        .h-hero-bg { 
-          position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
-          background-image: radial-gradient(#9a3412 1px, transparent 1px);
-          background-size: 30px 30px;
-        }
-        .h-decorator { width: 80px; height: 5px; background: linear-gradient(90deg, var(--primary), var(--accent)); margin: 0 auto 2rem; border-radius: 10px; }
-        .h-title { font-size: 3rem; font-weight: 950; color: #1e293b; margin: 0 0 1.5rem; letter-spacing: -0.02em; line-height: 1.2; }
-        .h-subtitle { font-size: 1.1rem; color: var(--primary); font-weight: 950; text-transform: uppercase; letter-spacing: 0.15em; }
-        
-        .h-hero-stats { display: flex; justify-content: center; gap: 2rem; margin-top: 3.5rem; flex-wrap: wrap; }
-        .h-hero-stat-card { 
-          background: #fdfcfa; padding: 2rem 3rem; border-radius: 2rem; border: 1px solid #f1f5f9;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.02); min-width: 200px;
-        }
-        .h-stat-num { display: block; font-size: 2.5rem; font-weight: 950; color: var(--primary); margin-bottom: 0.5rem; }
-        .h-stat-lbl { font-size: 0.85rem; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
-
-        .h-section-split { margin: 4rem 0; }
-        .h-card-premium { 
-          display: flex; background: white; border-radius: 3rem; overflow: hidden; 
-          border: 1px solid #f1f5f9; box-shadow: 0 30px 60px rgba(0,0,0,0.05);
-        }
-        .h-img-container { flex: 1; position: relative; min-height: 400px; }
-        .h-main-img { width: 100%; height: 100%; object-fit: cover; }
-        .h-img-badge { 
-          position: absolute; top: 2rem; left: 2rem; background: var(--primary); color: white; 
-          padding: 0.6rem 1.5rem; border-radius: 2rem; font-weight: 950; font-size: 0.8rem;
-          box-shadow: 0 10px 20px rgba(154,52,18,0.3);
-        }
-        .h-content-box { flex: 1.2; padding: 4rem; display: flex; flex-direction: column; justify-content: center; }
-        .h-label-top { color: var(--primary); font-weight: 950; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; }
-        .h-content-box h3 { font-size: 2.2rem; margin: 0 0 1.5rem; color: #0f172a; font-weight: 950; }
-        .h-content-box p { font-size: 1.15rem; line-height: 1.8; color: #475569; margin-bottom: 2rem; font-weight: 600; }
-        
-        .h-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-        .h-info-item { display: flex; gap: 1rem; align-items: flex-start; }
-        .h-icon { color: var(--primary); background: #fff7ed; padding: 0.75rem; border-radius: 1rem; box-sizing: content-box; }
-        .h-info-item strong { display: block; font-size: 0.85rem; color: #1e293b; margin-bottom: 0.25rem; }
-        .h-info-item span { font-size: 0.9rem; color: #64748b; font-weight: 800; }
-
-        .h-pillars-section { padding: 6rem 0; }
-        .h-section-header-center { text-align: center; margin-bottom: 4rem; }
-        .h-label { display: block; font-size: 0.75rem; font-weight: 950; color: var(--primary); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 1rem; }
-        .h-section-header-center h3 { font-size: 2.4rem; font-weight: 950; }
-        
-        .h-pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-        .h-pillar-card { 
-          background: white; padding: 3rem 2rem; border-radius: 2.5rem; text-align: center;
-          border: 1px solid #f1f5f9; box-shadow: 0 15px 35px rgba(0,0,0,0.03); transition: 0.4s;
-        }
-        .h-pillar-card:hover { transform: translateY(-10px); border-color: var(--primary); }
-        .p-icon { 
-          width: 70px; height: 70px; background: #fdfcfa; color: var(--primary); 
-          border-radius: 2rem; display: flex; align-items: center; justify-content: center; 
-          margin: 0 auto 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.03);
-        }
-        .h-pillar-card h4 { font-size: 1.6rem; margin: 0 0 0.5rem; color: #1e293b; font-weight: 950; }
-        .h-pillar-card p { font-size: 0.9rem; color: var(--primary); font-weight: 950; margin-bottom: 1.5rem; }
-        .p-desc { font-size: 0.95rem; color: #64748b; line-height: 1.6; font-weight: 700; }
-        .h-pillar-card.aram { border-top: 6px solid #fbbf24; }
-        .h-pillar-card.porul { border-top: 6px solid #10b981; }
-        .h-pillar-card.inbam { border-top: 6px solid #ef4444; }
-
-        .h-timeline-vertical-section { margin: 6rem 0; padding: 4rem; background: #fff; border-radius: 3rem; border: 1px solid #f1f5f9; }
-        .h-v-timeline { position: relative; padding-left: 3rem; margin-top: 4rem; }
-        .h-tl-line { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #f1f5f9; border-radius: 2px; }
-        .h-tl-node-item { position: relative; padding-bottom: 4rem; }
-        .h-tl-node-item:last-child { padding-bottom: 0; }
-        .h-tl-marker { 
-          position: absolute; left: -35px; top: 0; width: 14px; height: 14px; 
-          background: white; border: 4px solid #f1f5f9; border-radius: 50%; z-index: 2;
-          transition: 0.3s;
-        }
-        .h-tl-node-item.active .h-tl-marker { border-color: var(--primary); background: var(--primary); box-shadow: 0 0 15px rgba(154,52,18,0.4); }
-        .h-tl-year { 
-          position: absolute; left: -140px; top: -3px; width: 100px; text-align: right;
-          font-weight: 950; color: var(--primary); font-size: 0.9rem;
-        }
-        .h-tl-info h4 { margin: 0 0 0.5rem; font-size: 1.3rem; color: #1e293b; font-weight: 950; }
-        .h-tl-info p { margin: 0; color: #64748b; font-weight: 700; line-height: 1.5; font-size: 1rem; }
-
-        .h-manuscript-feature { margin: 6rem 0; background: #1e293b; border-radius: 4rem; padding: 5rem; color: white; position: relative; overflow: hidden; }
-        .h-feature-content { display: flex; gap: 4rem; align-items: center; position: relative; z-index: 2; }
-        .h-img-glow { flex: 1; position: relative; border-radius: 2rem; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .h-img-glow img { width: 100%; height: 400px; object-fit: cover; }
-        .h-feature-text { flex: 1.2; }
-        .h-feature-text h3 { font-size: 2.5rem; margin: 1rem 0 1.5rem; color: #fbbf24; font-weight: 950; }
-        .h-feature-text p { font-size: 1.2rem; line-height: 1.8; color: #cbd5e1; font-weight: 700; margin-bottom: 1.5rem; }
-
-        .h-global-influence { padding: 6rem 0; }
-        .h-influence-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 4rem; }
-        .h-influence-card { 
-          background: #fff; border-radius: 2rem; padding: 2rem; border: 1px solid #f1f5f9;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-        }
-        .h-influence-card strong { display: block; color: var(--primary); margin-bottom: 0.75rem; font-size: 1.1rem; }
-        .h-influence-card p { margin: 0; color: #475569; font-weight: 700; line-height: 1.7; font-size: 1rem; }
-        
-        .h-mega-quote { 
-          margin-top: 5rem; text-align: center; padding: 5rem; background: #fff7ed; 
-          border-radius: 4rem; position: relative; border: 1px solid #ffedd5;
-        }
-        .h-q-icon { position: absolute; top: 2rem; left: 50%; transform: translateX(-50%); color: var(--primary); opacity: 0.1; }
-        .h-mega-quote blockquote { 
-          font-size: 2rem; font-weight: 950; color: #431407; font-style: italic; 
-          margin: 0; position: relative; line-height: 1.4;
-        }
-
-        .h-resources-v2 { text-align: center; margin-top: 6rem; padding: 4rem; background: #fff; border-radius: 3rem; border: 1px solid #f1f5f9; }
-        .h-resources-v2 h3 { margin-bottom: 2.5rem; font-weight: 950; font-size: 1.8rem; }
-        .h-links-flex { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
-        .h-link { 
-          display: flex; align-items: center; gap: 10px; padding: 1rem 2rem; 
-          background: #fdfcfa; border: 1px solid #e2e8f0; border-radius: 1.5rem;
-          color: #1e293b; text-decoration: none; font-weight: 950; transition: 0.3s;
-        }
-        .h-link:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-5px); }
-
-        .h-footer-premium { 
-          margin-top: 6rem; padding: 8rem 4rem; background: #0f172a; border-radius: 5rem; 
-          color: white; text-align: center; position: relative; overflow: hidden;
-        }
-        .h-footer-premium h3 { font-size: 2.5rem; margin-bottom: 1.5rem; color: #fbbf24; font-weight: 950; }
-        .h-footer-premium p { font-size: 1.25rem; font-weight: 800; color: #94a3b8; max-width: 800px; margin: 0 auto 3rem; }
-        .h-srm-badge { 
-          display: inline-block; padding: 0.75rem 2rem; background: rgba(255,255,255,0.05); 
-          border-radius: 2rem; font-weight: 950; color: #64748b; text-transform: uppercase; 
-          letter-spacing: 2px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        @media (max-width: 992px) {
-          .h-card-premium { flex-direction: column; }
-          .h-pillars-grid, .h-influence-grid { grid-template-columns: 1fr; }
-          .h-statue-container { flex-direction: column; text-align: center; }
-          .h-statue-metrics { grid-template-columns: 1fr; }
-          .h-statue-detail { border-left: none; border-top: 3px solid #cbd5e1; padding-left: 0; padding-top: 1rem; }
-          .h-title { font-size: 2.2rem; }
-          .h-v-timeline { padding-left: 1.5rem; }
-          .h-tl-year { position: static; text-align: left; margin-bottom: 0.5rem; display: block; }
-          .h-feature-content { flex-direction: column; }
-        }
-
-        .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-
-        .init-progress-bar { padding: 1.5rem; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 1.5rem; margin-bottom: 2rem; }
-        .p-label { font-size: 0.85rem; font-weight: 900; color: #92400e; margin-bottom: 0.75rem; }
-        .p-track { height: 8px; background: #fef3c7; border-radius: 10px; overflow: hidden; }
-        .p-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
-
-        .auto-trans-status {
-          font-size: 0.7rem;
-          color: var(--muted);
-          margin-top: 0.5rem;
-          margin-left: 1.5rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-        }
-
-        :root {
-            --primary: #9a3412;
-            --accent: #c2410c;
-            --bg: #fafafa;
-            --white: #ffffff;
-            --text: #1e293b;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            font-size: 20px; /* Further increased base font size */
-        }
-
+        /* Full-Screen Layout */
         .scholarly-app { 
             height: 100vh; 
             width: 100vw;
@@ -1164,114 +447,115 @@ const App = () => {
         }
         
         .main-header { 
-            padding: 1.5rem 4rem; 
+            flex: 0 0 auto;
+            padding: 1.25rem 2.5rem; 
             background: white; 
             border-bottom: 2px solid var(--border); 
             z-index: 1000; 
-            box-shadow: 0 4px 40px rgba(0,0,0,0.06); 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
         }
-        .header-container-inner { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            max-width: 2000px; /* Ultra wide */
-            margin: 0 auto; 
-            width: 100%; 
-        }
-        .header-left-group { display: flex; align-items: center; gap: 2.5rem; }
-        .srm-logo-top { height: 90px; width: auto; }
-        .main-title { font-size: 2.5rem; margin: 0; color: var(--primary); font-weight: 950; }
-        .sub-title { margin: 8px 0 0; font-weight: 800; color: var(--muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.2em; }
+        .header-container-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1600px; margin: 0 auto; width: 100%; }
+        .header-left-group { display: flex; align-items: center; gap: 1.5rem; }
+        .srm-logo-top { height: 60px; width: auto; }
+        .main-title { font-size: 1.8rem; margin: 0; color: var(--primary); font-weight: 900; line-height: 1.1; }
+        .sub-title { margin: 4px 0 0; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; }
 
-        .header-right-group { display: flex; align-items: center; gap: 2.5rem; }
-        .header-nav-tabs { display: flex; gap: 1rem; background: #f1f5f9; padding: 0.6rem; border-radius: 3rem; }
+        .header-right-group { display: flex; align-items: center; gap: 1.5rem; }
+        .header-nav-tabs { display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.4rem; border-radius: 2rem; }
         .header-nav-tabs button { 
-           background: none; border: none; padding: 1.25rem 2.5rem; cursor: pointer; color: var(--muted);
-           display: flex; align-items: center; gap: 15px; font-weight: 900; border-radius: 2.5rem; transition: 0.3s;
-           font-size: 1.2rem;
+           background: none; border: none; padding: 0.8rem 1.5rem; cursor: pointer; color: var(--muted);
+           display: flex; align-items: center; gap: 10px; font-weight: 800; border-radius: 1.5rem; transition: 0.3s;
+           font-size: 1rem;
         }
-        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
 
         .content-container { 
             flex: 1; 
             width: 100%; 
-            max-width: 2000px; 
+            max-width: 1600px; 
             margin: 0 auto; 
+            overflow: hidden;
             display: flex; 
             flex-direction: column; 
-            overflow: hidden;
             position: relative;
         }
-        .content-container > div { flex: 1; display: flex; flex-direction: column; height: 100%; }
+        
+        .content-container > div { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
 
-        /* Chat View - Ultra Big */
-        .chat-view-container { flex: 1; display: flex; width: 100%; height: 100%; min-height: 0; }
-        .chat-view { flex: 1; display: flex; flex-direction: column; width: 100%; background: white; overflow: hidden; }
-        .chat-window { flex: 1; overflow-y: auto; padding: 4rem; display: flex; flex-direction: column; gap: 4rem; }
-        .chat-messages-scroll-area { max-width: 1400px; margin: 0 auto; width: 100%; }
+        /* Universal Scrollable View */
+        .chat-view-container, .library-view, .history-view, .chapter-view, .kural-view { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+            width: 100%; 
+            overflow-y: auto; 
+            padding: 2.5rem;
+            background: white;
+        }
+
+        .chat-view { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100%; }
+        .chat-window { flex: 1; overflow-y: auto; padding-bottom: 2rem; }
+        .chat-messages-scroll-area { max-width: 1000px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 2rem; }
         
         .chat-input-sticky-area { 
-            padding: 3rem 5rem; 
+            flex: 0 0 auto;
+            padding: 1.5rem 2.5rem; 
             border-top: 2px solid var(--border); 
+            background: #fafafa;
+            z-index: 100;
+        }
+        .chat-input-container-inner { max-width: 1000px; margin: 0 auto; width: 100%; position: relative; }
+
+        .nav-scroll-wrapper { 
+            flex: 0 0 auto;
             background: white; 
-            box-shadow: 0 -15px 60px rgba(0,0,0,0.05);
+            border-top: 2px solid var(--border); 
+            height: 85px; 
+            display: none; 
+            visibility: hidden;
         }
-        .chat-input-container-inner { max-width: 1300px; margin: 0 auto; width: 100%; }
 
-        .tamil-input-box-v2 { 
-            padding: 1.5rem; border-radius: 2.5rem; border: 3px solid var(--border); 
-            font-size: 1.5rem; background: #f8fafc;
-        }
-        .tamil-input-box-v2:focus-within { border-color: var(--primary); background: white; }
-        .tamil-input-box-v2 input { font-size: 1.5rem; padding: 0.75rem 1.5rem; font-weight: 800; }
-        
-        .chat-bubble { max-width: 90%; padding: 2.5rem; border-radius: 3rem; font-size: 1.5rem; line-height: 1.7; }
-        .tamil-verse { font-size: 1.8rem; padding: 3rem; border-radius: 2.5rem; }
-
-        /* Mobile Overrides - Extreme Big & Tight */
+        /* Mobile Optimization */
         @media (max-width: 768px) {
-          :root { font-size: 18px; }
-          .scholarly-app { height: 100vh; width: 100vw; position: fixed; inset: 0; }
-          .main-header { padding: 1rem 1.5rem; }
-          .srm-logo-top { height: 60px !important; }
-          .main-title { font-size: 1.6rem !important; }
-          .sub-title { font-size: 0.75rem !important; }
+          .main-header { padding: 0.75rem 1.5rem; }
+          .srm-logo-top { height: 45px; }
+          .main-title { font-size: 1.3rem; }
+          .header-right-group { display: none; }
+          .nav-scroll-wrapper { display: block; visibility: visible; }
           
-          .content-container { padding: 0; height: calc(100vh - 90px - 70px); }
-          .chat-window { padding: 2rem 1rem; }
-          .chat-bubble { max-width: 98%; padding: 1.5rem; font-size: 1.3rem; }
+          .chat-view-container, .library-view, .history-view, .chapter-view, .kural-view { padding: 1.5rem 1rem; }
+          .chat-input-sticky-area { padding: 1rem; }
           
-          .chat-input-sticky-area { 
-              position: absolute; bottom: 70px; left: 0; right: 0; 
-              padding: 1rem 1.5rem; z-index: 900; 
-              background: white; border-top: 1px solid #eee; 
-          }
-          .nav-scroll-wrapper { 
-              position: absolute; bottom: 0; left: 0; right: 0; 
-              height: 70px; background: white; border-top: 2px solid #f1f5f9; 
-              z-index: 1000; display: block;
-          }
-          .header-nav-tabs-mobile { height: 100%; display: flex; align-items: center; justify-content: space-around; }
-          .header-nav-tabs-mobile button { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 0.85rem; font-weight: 950; }
-          .header-nav-tabs-mobile button svg { width: 26px; height: 26px; }
-
-          .paal-card { padding: 2.5rem 1.5rem; }
-          .paal-card h3 { font-size: 1.8rem; }
+          .h-title { font-size: 1.8rem !important; }
         }
 
-        .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); padding: 5rem; font-size: 1.8rem; }
-      `}} />
-      </div>
-   );
-};
+        .chat-bubble-container { display: flex; width: 100%; }
+        .chat-bubble-container.user { justify-content: flex-end; }
+        .chat-bubble { max-width: 85%; padding: 1.5rem; background: var(--white); border-radius: 1.5rem; border: 1.5px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.02); font-size: 1.1rem; line-height: 1.6; }
+        .user .chat-bubble { background: var(--primary); color: white; border: none; }
+        .bubble-meta { font-size: 0.8rem; font-weight: 900; color: var(--muted); margin-bottom: 0.75rem; text-transform: uppercase; }
+        
+        .tamil-verse { font-weight: 900; font-size: 1.4rem; background: #f8fafc; padding: 2rem; border-radius: 1.5rem; color: #1e293b; margin: 1.5rem 0; border: 1px solid #e2e8f0; }
+        .tamil-exp { color: #475569; margin-bottom: 1.5rem; font-weight: 700; font-size: 1.1rem; }
 
-export default App;
-      `}} />
-      </div>
-   );
-};
+        .tamil-input-box-v2 { display: flex; background: white; padding: 0.6rem; border: 2px solid #e2e8f0; border-radius: 1.5rem; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.06); gap: 0.6rem; }
+        .tamil-input-box-v2 input { flex: 1; border: none; outline: none; padding: 0.8rem 1.2rem; font-size: 1.2rem; font-weight: 700; }
+        .send-btn-v2 { background: var(--primary); color: white; border: none; width: 50px; height: 50px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .send-btn-v2:hover { transform: scale(1.05); background: #7c2d12; }
 
-export default App;
+        .history-hero { text-align: center; padding: 6rem 3rem; background: white; border-radius: 3rem; margin-bottom: 4rem; border: 1.5px solid #f1f5f9; box-shadow: 0 20px 40px rgba(0,0,0,0.02); }
+        .h-title { font-size: 3.2rem; font-weight: 950; line-height: 1.1; margin-bottom: 2rem; color: #1e293b; }
+        .h-subtitle { color: var(--primary); font-weight: 900; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.2em; }
+        
+        .paal-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
+        .paal-card { background: white; padding: 3.5rem 2rem; border-radius: 2rem; border: 1.5px solid var(--border); text-align: center; cursor: pointer; transition: 0.4s; }
+        .paal-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.05); border-color: var(--primary); }
+        .paal-card h3 { font-size: 2rem; margin-bottom: 1rem; }
+        .paal-card p { font-size: 1.1rem; color: var(--muted); }
+
+        .mini-loader { border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; width: 22px; height: 22px; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}} />
       </div>
    );
