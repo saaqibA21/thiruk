@@ -1141,102 +1141,131 @@ const App = () => {
           letter-spacing: 0.1em;
         }
 
+        :root {
+            --primary: #9a3412;
+            --accent: #c2410c;
+            --bg: #fafafa;
+            --white: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            font-size: 18px; /* Increased base font size */
+        }
+
         .scholarly-app { 
-            min-height: 100vh; 
+            height: 100vh; 
+            width: 100vw;
             display: flex; 
             flex-direction: column; 
-            width: 100%; 
-            background: #fafafa; 
-            position: relative;
+            background: var(--bg); 
+            overflow: hidden;
+            position: fixed;
+            top: 0; left: 0;
         }
         
         .main-header { 
-            padding: 1rem 2rem; 
-            background: rgba(255, 255, 255, 0.98); 
-            backdrop-filter: blur(20px);
+            padding: 1.5rem 3rem; 
+            background: white; 
             border-bottom: 1px solid var(--border); 
-            position: sticky; top: 0; z-index: 1000; 
-            box-shadow: 0 4px 30px rgba(0,0,0,0.03); 
-            width: 100%; 
+            z-index: 1000; 
+            box-shadow: 0 4px 30px rgba(0,0,0,0.05); 
         }
         .header-container-inner { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            max-width: 1600px; /* Increased from 1400 */
+            max-width: 1800px; 
             margin: 0 auto; 
             width: 100%; 
-            gap: 2rem; 
         }
-        .header-left-group { display: flex; align-items: center; gap: 1.5rem; }
-        .srm-logo-top { height: 60px; width: auto; object-fit: contain; }
-        .app-title-group { display: flex; flex-direction: column; }
-        .main-title { font-size: 1.8rem; margin: 0; color: var(--primary); font-weight: 900; line-height: 1.1; }
-        .sub-title { margin: 4px 0 0; font-weight: 700; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
+        .header-left-group { display: flex; align-items: center; gap: 2rem; }
+        .srm-logo-top { height: 80px; width: auto; }
+        .main-title { font-size: 2.2rem; margin: 0; color: var(--primary); font-weight: 950; }
+        .sub-title { margin: 6px 0 0; font-weight: 800; color: var(--muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.15em; }
 
-        .header-right-group { display: flex; align-items: center; gap: 1.5rem; }
-        .header-nav-tabs { display: flex; gap: 0.5rem; background: #f1f5f9; padding: 0.4rem; border-radius: 2rem; }
+        .header-right-group { display: flex; align-items: center; gap: 2rem; }
+        .header-nav-tabs { display: flex; gap: 0.75rem; background: #f1f5f9; padding: 0.5rem; border-radius: 2.5rem; }
         .header-nav-tabs button { 
-           background: none; border: none; padding: 0.75rem 1.5rem; cursor: pointer; color: var(--muted);
-           display: flex; align-items: center; gap: 10px; font-weight: 800; border-radius: 1.5rem; transition: 0.3s;
-           font-size: 0.95rem;
+           background: none; border: none; padding: 1rem 2rem; cursor: pointer; color: var(--muted);
+           display: flex; align-items: center; gap: 12px; font-weight: 900; border-radius: 2rem; transition: 0.3s;
+           font-size: 1.1rem;
         }
-        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .header-nav-tabs button.active { background: white; color: var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 
         .content-container { 
             flex: 1; 
             width: 100%; 
-            max-width: 1600px; 
+            max-width: 1800px; 
             margin: 0 auto; 
-            padding: 2rem;
             display: flex; 
             flex-direction: column; 
-            position: relative; 
-            min-height: calc(100vh - 100px);
+            overflow: hidden;
+            position: relative;
         }
-        .content-container > div { flex: 1; width: 100%; }
+        .content-container > div { flex: 1; display: flex; flex-direction: column; height: 100%; }
 
-        /* Chat View */
-        .chat-view-container { flex: 1; display: flex; width: 100%; min-height: 0; }
-        .chat-view { flex: 1; display: flex; flex-direction: column; width: 100%; background: white; border-radius: 2.5rem; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.02); }
-        .chat-window { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
-        .chat-messages-scroll-area { max-width: 1000px; margin: 0 auto; width: 100%; }
+        /* Chat View - Big & Immersive */
+        .chat-view-container { flex: 1; display: flex; width: 100%; height: 100%; min-height: 0; }
+        .chat-view { flex: 1; display: flex; flex-direction: column; width: 100%; background: white; border-radius: 0; border: none; overflow: hidden; }
+        .chat-window { flex: 1; overflow-y: auto; padding: 3rem; display: flex; flex-direction: column; gap: 3rem; }
+        .chat-messages-scroll-area { max-width: 1100px; margin: 0 auto; width: 100%; }
         
-        .chat-input-sticky-area { padding: 1.5rem 2rem; border-top: 1px solid #f1f5f9; background: #fff; }
-        .chat-input-container-inner { max-width: 900px; margin: 0 auto; width: 100%; }
+        .chat-input-sticky-area { 
+            padding: 2.5rem 4rem; 
+            border-top: 1px solid var(--border); 
+            background: white; 
+            box-shadow: 0 -10px 50px rgba(0,0,0,0.03);
+        }
+        .chat-input-container-inner { max-width: 1000px; margin: 0 auto; width: 100%; }
 
-        /* Mobile Overrides */
+        .tamil-input-box-v2 { 
+            padding: 1rem; border-radius: 2rem; border: 2px solid var(--border); 
+            font-size: 1.3rem; background: #f8fafc;
+        }
+        .tamil-input-box-v2:focus-within { border-color: var(--primary); background: white; }
+        .tamil-input-box-v2 input { font-size: 1.3rem; padding: 0.5rem 1rem; font-weight: 700; }
+        
+        .chat-bubble { max-width: 85%; padding: 2rem; border-radius: 2.5rem; font-size: 1.3rem; line-height: 1.6; }
+        .tamil-verse { font-size: 1.6rem; padding: 2.5rem; border-radius: 2rem; }
+
+        /* Mobile Overrides - Truly Big */
         @media (max-width: 768px) {
-          .scholarly-app { min-height: 100vh; height: auto; overflow: visible; position: relative; }
-          .main-header { padding: 1rem; position: sticky; top: 0; }
-          .header-left-group { gap: 1rem; width: 100%; justify-content: space-between; }
-          .srm-logo-top { height: 45px !important; order: 2; }
-          .app-title-group { order: 1; }
-          .main-title { font-size: 1.3rem !important; }
-          .sub-title { font-size: 0.6rem !important; }
-          .header-right-group { display: none; } /* Hide on mobile, use bottom nav */
+          :root { font-size: 16px; }
+          .scholarly-app { height: 100vh; position: fixed; inset: 0; }
+          .main-header { padding: 1.25rem 1.5rem; }
+          .srm-logo-top { height: 55px !important; }
+          .main-title { font-size: 1.5rem !important; }
+          .sub-title { font-size: 0.7rem !important; }
           
-          .content-container { padding: 1rem; padding-bottom: 100px; min-height: calc(100vh - 80px); }
-          .chat-view { border-radius: 1.5rem; border: none; box-shadow: none; background: transparent; }
-          .chat-window { padding: 1rem 0; }
-          .chat-bubble { max-width: 92%; padding: 1.25rem; font-size: 1.1rem; }
+          .content-container { padding: 0; height: calc(100vh - 100px - 85px); }
+          .chat-window { padding: 2rem 1.5rem; }
+          .chat-bubble { max-width: 95%; padding: 1.5rem; font-size: 1.2rem; }
           
-          .chat-input-sticky-area { position: fixed; bottom: 75px; left: 0; right: 0; padding: 1rem; z-index: 900; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top: 1px solid #eee; }
-          .nav-scroll-wrapper { display: block; position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: white; border-top: 1px solid #eee; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+          .chat-input-sticky-area { 
+              position: absolute; bottom: 85px; left: 0; right: 0; 
+              padding: 1.5rem; z-index: 900; 
+              background: white; border-top: 1px solid #eee; 
+          }
+          .nav-scroll-wrapper { 
+              position: absolute; bottom: 0; left: 0; right: 0; 
+              height: 85px; background: white; border-top: 2px solid #f1f5f9; 
+              z-index: 1000; display: block;
+          }
           .header-nav-tabs-mobile { height: 100%; display: flex; align-items: center; justify-content: space-around; }
-          .header-nav-tabs-mobile button { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 0.75rem; color: #64748b; border: none; background: none; font-weight: 800; }
-          .header-nav-tabs-mobile button.active { color: var(--primary); }
-          .header-nav-tabs-mobile button svg { width: 24px; height: 24px; }
+          .header-nav-tabs-mobile button { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; font-weight: 900; }
+          .header-nav-tabs-mobile button svg { width: 28px; height: 28px; }
 
-          .paal-card { padding: 1.5rem; }
-          .paal-card h3 { font-size: 1.4rem; }
-          
-          .history-hero { padding: 4rem 1rem; }
-          .h-title { font-size: 2.2rem; }
+          .paal-card { padding: 3rem 2rem; }
+          .paal-card h3 { font-size: 1.8rem; }
         }
 
-        .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); padding: 2rem; font-size: 1.2rem; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); padding: 4rem; font-size: 1.5rem; }
+      `}} />
+      </div>
+   );
+};
+
+export default App;
       `}} />
       </div>
    );
