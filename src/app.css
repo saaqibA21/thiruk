@@ -144,7 +144,10 @@ html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; overflow: 
   box-shadow: 0 20px 40px rgba(154,52,18,0.08);
 }
 .k-header-row { font-size: 0.85rem; font-weight: 950; color: var(--primary); text-transform: uppercase; margin-bottom: 1rem; opacity: 0.8; }
-.kural-item-card p { font-size: 1.4rem; font-weight: 800; color: var(--text); line-height: 1.5; margin: 0; }
+.kural-item-card p {
+  font-size: 1.4rem; font-weight: 800; color: var(--text); line-height: 1.5; margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 
 /* Premium Modal */
 .modal-overlay {
@@ -163,9 +166,14 @@ html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; overflow: 
   align-items: center; justify-content: center; cursor: pointer; color: var(--muted);
 }
 .m-badge { background: #fff7ed; color: var(--primary); font-size: 0.9rem; padding: 0.75rem 2rem; border-radius: 2rem; font-weight: 900; margin-bottom: 2rem; display: inline-block; }
-.m-verse-box h3 { font-size: 2.4rem; font-weight: 950; margin: 0; line-height: 1.4; color: var(--text); letter-spacing: -0.02em; }
-.m-explanations-stack { margin-top: 4rem; display: flex; flex-direction: column; gap: 3rem; }
-.e-block { border-left: 4px solid #f1f5f9; padding-left: 2rem; }
+.m-verse-box { margin-bottom: 3rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.m-verse-box h3 {
+  font-size: 2.2rem; font-weight: 950; margin: 0; line-height: 1.3; color: var(--text);
+  letter-spacing: -0.01em; white-space: nowrap; width: 100%; text-align: center;
+}
+@media (max-width: 600px) {
+  .m-verse-box h3 { font-size: 1.4rem; white-space: normal; }
+}
 .e-block h5 { font-size: 0.95rem; font-weight: 950; color: var(--primary); text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.05em; }
 .e-block p { font-size: 1.35rem; line-height: 1.8; color: #334155; font-weight: 600; }
 
