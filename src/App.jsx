@@ -1228,35 +1228,35 @@ const App = () => {
         .chat-bubble { max-width: 90%; padding: 2.5rem; border-radius: 3rem; font-size: 1.5rem; line-height: 1.7; }
         .tamil-verse { font-size: 1.8rem; padding: 3rem; border-radius: 2.5rem; }
 
-        /* Mobile Overrides - Extreme Big */
+        /* Mobile Overrides - Extreme Big & Tight */
         @media (max-width: 768px) {
           :root { font-size: 18px; }
-          .scholarly-app { height: 100vh; position: fixed; inset: 0; }
-          .main-header { padding: 1.5rem 2rem; }
-          .srm-logo-top { height: 65px !important; }
-          .main-title { font-size: 1.8rem !important; }
-          .sub-title { font-size: 0.8rem !important; }
+          .scholarly-app { height: 100vh; width: 100vw; position: fixed; inset: 0; }
+          .main-header { padding: 1rem 1.5rem; }
+          .srm-logo-top { height: 60px !important; }
+          .main-title { font-size: 1.6rem !important; }
+          .sub-title { font-size: 0.75rem !important; }
           
-          .content-container { padding: 0; height: calc(100vh - 120px - 100px); }
-          .chat-window { padding: 3rem 2rem; }
-          .chat-bubble { max-width: 98%; padding: 2rem; font-size: 1.4rem; }
+          .content-container { padding: 0; height: calc(100vh - 90px - 70px); }
+          .chat-window { padding: 2rem 1rem; }
+          .chat-bubble { max-width: 98%; padding: 1.5rem; font-size: 1.3rem; }
           
           .chat-input-sticky-area { 
-              position: absolute; bottom: 100px; left: 0; right: 0; 
-              padding: 2rem; z-index: 900; 
+              position: absolute; bottom: 70px; left: 0; right: 0; 
+              padding: 1rem 1.5rem; z-index: 900; 
               background: white; border-top: 1px solid #eee; 
           }
           .nav-scroll-wrapper { 
               position: absolute; bottom: 0; left: 0; right: 0; 
-              height: 100px; background: white; border-top: 3px solid #f1f5f9; 
+              height: 70px; background: white; border-top: 2px solid #f1f5f9; 
               z-index: 1000; display: block;
           }
           .header-nav-tabs-mobile { height: 100%; display: flex; align-items: center; justify-content: space-around; }
-          .header-nav-tabs-mobile button { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; font-weight: 950; }
-          .header-nav-tabs-mobile button svg { width: 32px; height: 32px; }
+          .header-nav-tabs-mobile button { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 0.85rem; font-weight: 950; }
+          .header-nav-tabs-mobile button svg { width: 26px; height: 26px; }
 
-          .paal-card { padding: 4rem 2.5rem; }
-          .paal-card h3 { font-size: 2.2rem; }
+          .paal-card { padding: 2.5rem 1.5rem; }
+          .paal-card h3 { font-size: 1.8rem; }
         }
 
         .tamil-loading { text-align: center; font-weight: 900; color: var(--primary); padding: 5rem; font-size: 1.8rem; }
