@@ -31,8 +31,11 @@ const App = () => {
    const fileInputRef = useRef(null);
 
    const getInitialKey = () => {
-      const envKey = import.meta.env.VITE_OPENAI_API_KEY;
-      if (envKey && envKey.startsWith('sk-')) return envKey;
+      try {
+         const envKey = import.meta.env.VITE_OPENAI_API_KEY;
+         if (envKey && envKey.length > 20 && envKey.startsWith('sk-')) return envKey;
+      } catch (e) {}
+      // Fallback to the provided key if env is not set
       return atob('c2stcHJvai1IR09OVnJuZlZkamZjdTB3Q1BHY3ptMTBsT09sTG8yRmtxUWNXV296Uk1UWXk2NUE5NFA4aEk5V1hQZzVpMzRUd0laUlBDcmprVDNCbGtkRkpVTmo0OEdkekpwLVA0b3E2Y2txNTdlTVBoTE1OeGxMT3dsYXVkSk55ZUk5ZjZHeFo5SzRxTUdNTlo3b0ZYZUZOVlFKUWhDeHdB');
    };
 
@@ -139,7 +142,10 @@ const App = () => {
 
    const handleAsk = async (text) => {
       if (!text.trim() && !selectedImage) return;
-      if (!aiEngine) return;
+      if (!aiEngine) {
+         setMessages(prev => [...prev, { role: 'ai', content: 'நிபுணர் தரவுத்தளம் இன்னும் தயாராகவில்லை. தயவுசெய்து சிறிது நேரம் காத்திருக்கவும்...', sources: [] }]);
+         return;
+      }
       
       const userMsg = { 
          role: 'user', 
@@ -157,10 +163,11 @@ const App = () => {
       
       try {
          const result = await aiEngine.ask(currentText, currentImage);
-         setMessages(prev => [...prev, { role: 'ai', content: result.answer, sources: result.sources }]);
+         if (!result) throw new Error("No response from engine");
+         setMessages(prev => [...prev, { role: 'ai', content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", sources: result.sources || [] }]);
       } catch (error) {
-         console.error(error);
-         setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பிழை ஏற்பட்டுள்ளது.", sources: [] }]);
+         console.error("Chat Error:", error);
+         setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பதிலைத் தேடுவதில் தொழில்நுட்பக் கோளாறு ஏற்பட்டுள்ளது. மீண்டும் ஒருமுறை முயற்சி செய்யுங்கள்.", sources: [] }]);
       } finally { setLoading(false); }
    };
 
@@ -333,8 +340,8 @@ const App = () => {
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
                                  />
-                                 <button onClick={() => handleAsk(query)} disabled={loading} className="send-btn-v2">
-                                    {isTranslating ? <div className="mini-loader"></div> : <Send size={20} />}
+                                 <button onClick={() => handleAsk(query)} disabled={loading || !aiEngine} className="send-btn-v2" title={!aiEngine ? "தயாராகிறது..." : "அனுப்பு"}>
+                                    {isTranslating ? <div className="mini-loader"></div> : !aiEngine ? <div className="mini-loader-orange"></div> : <Send size={20} />}
                                  </button>
                               </div>
                            </div>

@@ -133,7 +133,11 @@ export class KuralAI {
             const isQuestion = question.includes('?') || questionWords.some(w => question.toLowerCase().includes(w));
             
             if (!isQuestion && !imageBase64) {
-                return { answer: "", sources: finalSources };
+                const count = finalSources.length;
+                const intro = count > 0 
+                    ? `இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
+                    : "மன்னிக்கவும், இது குறித்த குறள்கள் என் தரவுத்தளத்தில் இல்லை.";
+                return { answer: intro, sources: finalSources };
             }
 
             try {
@@ -141,20 +145,23 @@ export class KuralAI {
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a Thirukkural Expert. Provide a direct, concise answer or philosophical context. IMPORTANT: Never repeat the Kural verse text or its number in your response, as they are already visible in cards below. Just provide the insight." },
+                        { role: "system", content: "You are a Thirukkural Expert. Provide a direct, concise answer or philosophical context in Tamil. IMPORTANT: Never repeat the Kural verse text or its number in your response, as they are already visible in cards below. Just provide the insight." },
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });
                 return { answer: response.choices[0].message.content.trim(), sources: finalSources };
-            } catch (err) { console.error("AI Error:", err); }
+            } catch (err) { 
+                console.error("AI Error:", err); 
+                return { answer: "மன்னிக்கவும், பதிலைத் தயார் செய்வதில் சிறு பிழை ஏற்பட்டுள்ளது.", sources: finalSources };
+            }
         }
 
         return { answer: this.fallback(question, finalSources, searchTerms), sources: finalSources };
     }
 
     fallback(question, matches, searchTerms) {
-        if (matches.length === 0) return "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை.";
-        return ""; // Return empty to avoid redundant "Here are the verses" text
+        if (matches.length === 0) return "மன்னிக்கவும், நீங்கள் கேட்ட தலைப்பில் என்னிடம் குறள்கள் இல்லை. வேறு ஏதேனும் தலைப்பை முயற்சி செய்யுங்கள்.";
+        return `இது குறித்து ${matches.length} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ:`;
     }
 
     async refineQuery(query) { return query; }

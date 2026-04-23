@@ -165,6 +165,10 @@ html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; overflow: 
 .q-icon { color: var(--primary); opacity: 0.1; margin-bottom: 1.5rem; }
 .q-text { font-size: 1.6rem; font-weight: 800; color: var(--text); line-height: 1.5; font-style: italic; }
 
+.mini-loader { width: 20px; height: 20px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+.mini-loader-orange { width: 20px; height: 20px; border: 2px solid #fdba74; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
 @media (max-width: 768px) {
   .header-right-group { display: none; }
   .nav-scroll-wrapper { display: block; }
