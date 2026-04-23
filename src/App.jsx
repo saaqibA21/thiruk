@@ -243,7 +243,7 @@ const App = () => {
                      <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
                      <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
                   </nav>
-                  <button className="settings-btn-top" onClick={() => setShowSettings(true)}> <Settings size={20} /> </button>
+
                </div>
             </div>
          </header>
@@ -793,7 +793,8 @@ const App = () => {
         .settings-btn-top { background: #f1f5f9; border: none; width: 42px; height: 42px; border-radius: 50%; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
         .settings-btn-top:hover { background: #e2e8f0; color: var(--primary); transform: rotate(45deg); }
 
-        .content-container { flex: 1; padding: 0; max-width: 1400px; margin: 0 auto; width: 100%; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+        .content-container { flex: 1; padding: 0; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; position: relative; min-height: 0; }
+        .content-container > div { height: 100%; display: flex; flex-direction: column; flex: 1; min-height: 0; }
 
         /* Chat View - Refactored for Scroll Stability */
         .chat-view-container { flex: 1; display: flex; width: 100%; height: 100%; overflow: hidden; }
@@ -904,6 +905,7 @@ const App = () => {
         .paal-card h3 { font-size: 1.4rem; margin: 0 0 0.5rem; }
         .paal-card p { margin: 0; font-weight: 700; color: var(--muted); font-size: 0.9rem; }
 
+        .library-view, .chapter-view, .kural-view { flex: 1; overflow-y: auto; padding: 2rem; width: 100%; }
         .library-resource-header-box { margin-bottom: 3rem; background: #f8fafc; padding: 2.5rem; border-radius: 2rem; border: 1px solid var(--border); }
         .res-title-main { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 950; margin-bottom: 2rem; color: var(--primary); }
         .library-section-title { font-size: 1.1rem; font-weight: 950; color: #64748b; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
@@ -972,7 +974,7 @@ const App = () => {
         .e-block.en p { color: #475569; font-style: italic; font-weight: 800; font-size: 1.1rem; }
 
         /* History - Premium Museum Layout V2 */
-        .history-view { max-width: 1100px; margin: 0 auto; width: 100%; padding-bottom: 5rem; }
+        .history-view { max-width: 1100px; margin: 0 auto; width: 100%; padding: 2rem; padding-bottom: 5rem; flex: 1; overflow-y: auto; }
         
         .history-hero { 
           text-align: center; padding: 6rem 2rem; margin-bottom: 4rem; position: relative; 
