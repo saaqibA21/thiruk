@@ -25,7 +25,11 @@ export class KuralAI {
         const cleanQuery = normalize(query);
         const allQueryWords = cleanQuery.split(/\s+/);
         
-        // Structural Logic
+        // Fill-in-the-blank Regex (Powerful for textbook queries)
+        // If the original query has gaps like "word1 ...... word2", create a regex: word1.*word2
+        const gapQuery = query.toLowerCase().normalize('NFC').replace(/[-._…·]{2,}/g, '.*');
+        let gapRegex = null;
+        try { if (gapQuery.includes('.*')) gapRegex = new RegExp(gapQuery.replace(/[.,!?;:"\-_]/g, '')); } catch(e) {}
         const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'சதொடங்கு'].map(s => s.normalize('NFC'));
         const endKeywords = ['முடியும்', 'முடிகிற', 'ending', 'ends with', 'முடிவு', 'ஈறு'].map(s => s.normalize('NFC'));
 
@@ -66,24 +70,32 @@ export class KuralAI {
                 searchTerms.forEach(t => {
                     const wordWeight = t.length * 1000;
                     if (words.includes(t)) {
-                        score += 20000 + wordWeight; // Heavily weight exact matches
+                        score += 50000 + wordWeight; // Significantly boosted
                         matchedUniqueWords++;
                     } else if (words.some(w => w.startsWith(t.substring(0, 3)))) {
-                        score += 5000 + (t.length * 500); // Significant prefix match weight
+                        score += 5000 + (t.length * 500);
                         matchedPrefixes++;
                     }
                     if (normalize(k.mv).includes(t)) score += 1000;
                 });
 
+                // Unique Word Supremacy: More matches = Exponentially higher score
+                score += (matchedUniqueWords * 200000);
+
                 // Semantic Density Bonus
                 const totalDensity = matchedUniqueWords + (matchedPrefixes * 0.5);
-                if (totalDensity >= 4) score += 1000000;
-                else if (totalDensity >= 2.5) score += 500000;
-                else if (totalDensity >= 1.5) score += 200000;
+                if (totalDensity >= 4) score += 2000000;
+                else if (totalDensity >= 2.5) score += 1000000;
+                else if (totalDensity >= 1.5) score += 500000;
 
-                if (verseText.includes(cleanQuery)) score += 500000;
+                if (verseText.includes(cleanQuery)) score += 1000000;
 
-                // Sequence Match Bonus (Perfect for fill-in-the-blanks)
+                // Gap Regex Match (The ultimate fix for fill-in-the-blanks)
+                if (gapRegex && gapRegex.test(verseText)) {
+                    score += 5000000; 
+                }
+
+                // Sequence Match Bonus
                 if (searchTerms.length > 1) {
                     let lastIdx = -1;
                     let matchCount = 0;
@@ -94,8 +106,8 @@ export class KuralAI {
                             lastIdx = idx;
                         }
                     }
-                    if (matchCount >= searchTerms.length) score += 1000000;
-                    else if (matchCount >= 2) score += 100000;
+                    if (matchCount >= searchTerms.length) score += 2000000;
+                    else if (matchCount >= 2) score += 200000;
                 }
             }
 
