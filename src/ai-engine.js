@@ -131,11 +131,23 @@ export class KuralAI {
             }
 
             return { ...k, score, matchedUniqueWords };
-        })
-        .filter(k => k.score > 0)
-        .sort((a, b) => b.score - a.score);
+        });
+        const scoredResults = results.filter(k => k.score > 0).sort((a, b) => b.score - a.score);
+        
+        // Dynamic Relevance Threshold: 
+        // If we have a very strong match (Gap Match or Sequence Match), hide the "noise".
+        if (scoredResults.length > 0) {
+            const topScore = scoredResults[0].score;
+            if (topScore >= 2000000) {
+                // If we have a 2M+ score, hide anything less than 10% of top score
+                return { 
+                    results: scoredResults.filter(k => k.score >= topScore * 0.1).slice(0, 50), 
+                    searchTerms, isStartsWith, isEndsWith 
+                };
+            }
+        }
 
-        return { results: results.slice(0, 100), searchTerms, isStartsWith, isEndsWith };
+        return { results: scoredResults.slice(0, 100), searchTerms, isStartsWith, isEndsWith };
     }
 
     async ask(question, imageBase64 = null) {
@@ -189,8 +201,8 @@ export class KuralAI {
             if ((!isQuestion || isStartsWith || isEndsWith) && !imageBase64) {
                 const count = finalSources.length;
                 const intro = count > 0 
-                    ? `(v4.9.6) இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
-                    : "(v4.9.6) மன்னிக்கவும், இது குறித்த குறள்கள் என் தரவுத்தளத்தில் இல்லை.";
+                    ? `(v4.9.8) இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
+                    : "(v4.9.8) மன்னிக்கவும், இது குறித்த குறள்கள் என் தரவுத்தளத்தில் இல்லை.";
                 return { answer: intro, sources: finalSources };
             }
 
