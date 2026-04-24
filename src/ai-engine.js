@@ -65,15 +65,21 @@ export class KuralAI {
 
             if (!isStartsWith && !isEndsWith) {
                 searchTerms.forEach(t => {
-                    if (words.includes(t)) score += 2000;
-                    else if (words.some(w => w.startsWith(t.substring(0, 4)))) score += 1000;
-                    if ((k.mv || "").toLowerCase().includes(t)) score += 100;
+                    if (words.includes(t)) score += 5000;
+                    else if (words.some(w => w.startsWith(t.substring(0, 4)))) score += 2000;
+                    if ((k.mv || "").toLowerCase().includes(t)) score += 500;
                 });
-                if (verseText.includes(cleanQuery)) score += 50000;
+                if (verseText.includes(cleanQuery)) score += 100000;
             }
 
             const numMatch = query.match(/\b(\d+)\b/);
-            if (numMatch && k.Number === parseInt(numMatch[1])) score += 500000;
+            if (numMatch) {
+                const matchedNum = parseInt(numMatch[1]);
+                if (k.Number === matchedNum) {
+                    // Image searches should almost never rely on numbers found in the image
+                    score += isImageSearch ? 1000 : 500000;
+                }
+            }
 
             return { ...k, score };
         })
@@ -93,18 +99,36 @@ export class KuralAI {
                     model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
-                        content: "Transcribe the core Tamil verse from this image. Ignore labels. Output ONLY text."
+                        content: `Analyze the image of a Thirukkural verse.
+                        1. Identify the actual Kural text in Tamil.
+                        2. If there is a Kural number mentioned (1-1330), identify it. 
+                        3. EXTREMELY IMPORTANT: Ignore question numbers (like 25., 1., Q1) which are part of a textbook test. Only identify the Kural's canonical number if present.
+                        Output format:
+                        TEXT: [transcribed Tamil text]
+                        NUM: [Kural number if found, otherwise NONE]`
                     }, {
                         role: "user",
                         content: [{ type: "image_url", image_url: { url: imageBase64 } }]
                     }],
-                    max_tokens: 100
+                    max_tokens: 150
                 });
-                finalQuery = visionResp.choices[0].message.content.trim() + " " + finalQuery;
+                
+                const visionText = visionResp.choices[0].message.content;
+                const textMatch = visionText.match(/TEXT:\s*(.*)/i);
+                const numMatch = visionText.match(/NUM:\s*(\d+)/i);
+                
+                let transcribed = textMatch ? textMatch[1].trim() : visionText.trim();
+                const identifiedNum = numMatch ? parseInt(numMatch[1]) : null;
+                
+                if (identifiedNum && identifiedNum > 0 && identifiedNum <= 1330) {
+                    finalQuery = `Kural ${identifiedNum} ` + transcribed + " " + finalQuery;
+                } else {
+                    finalQuery = transcribed + " " + finalQuery;
+                }
             } catch (err) { console.error("Vision Error:", err); }
         }
 
-        const { results: lexicalResults, searchTerms } = await this.search(finalQuery);
+        const { results: lexicalResults, searchTerms } = await this.search(finalQuery, !!imageBase64);
         const finalSources = lexicalResults;
 
         if (finalSources.length > 0) {

@@ -5,10 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 
 const TAMIL_KEYS = [
-   ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'],
-   ['க', 'ங', 'ச', 'ஞ', 'ட', 'ண', 'த', 'ந', 'ப', 'ம', 'ய', 'ர'],
-   ['ல', 'வ', 'ழ', 'ள', 'ற', 'ன', 'ஜ', 'ஷ', 'ஸ', 'ஹ', 'க்ஷ', 'ஸ்ரீ'],
-   ['ா', 'ி', 'ீ', 'ு', 'ூ', 'ெ', 'ே', 'ை', 'ொ', 'ோ', 'ௌ', '்', 'ஃ']
+   ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ'],
+   ['எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'],
+   ['க', 'ங', 'ச', 'ஞ', 'ட', 'ண'],
+   ['த', 'ந', 'ப', 'ம', 'ய', 'ர'],
+   ['ல', 'வ', 'ழ', 'ள', 'ற', 'ன'],
+   ['ஜ', 'ஷ', 'ஸ', 'ஹ', 'க்ஷ', 'ஸ்ரீ'],
+   ['ா', 'ி', 'ீ', 'ு', 'ூ', 'ெ'],
+   ['ே', 'ை', 'ொ', 'ோ', 'ௌ', '்', 'ஃ']
 ];
 
 const App = () => {
@@ -446,7 +450,7 @@ const App = () => {
                       
                       <div className="history-sections-stack">
                          <section className="h-section-card">
-                            <div className="h-section-img"> <img src="/thiruvalluvar.jpg" alt="Thiruvalluvar" /> </div>
+                            <div className="h-section-img"> <img src="thiruvalluvar.jpg" alt="Thiruvalluvar" /> </div>
                             <div className="h-section-text">
                                <h3>திருவள்ளுவர் பற்றி</h3>
                                <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் எந்த ஒரு குறிப்பிட்ட மதத்தையும் சாராதவர், எனவே திருக்குறள் "உலகப் பொதுமறை" என்று போற்றப்படுகிறது.</p>
@@ -464,11 +468,11 @@ const App = () => {
                                   <li><strong>எடை:</strong> சுமார் 7000 டன் கருங்கற்களால் ஆனது.</li>
                                </ul>
                             </div>
-                            <div className="h-section-img"> <img src="/statue.png" alt="Valluvar Statue" /> </div>
+                            <div className="h-section-img"> <img src="statue.png" alt="Valluvar Statue" /> </div>
                          </section>
 
                          <section className="h-section-card">
-                            <div className="h-section-img"> <img src="/manuscript.png" alt="Ancient Manuscript" /> </div>
+                            <div className="h-section-img"> <img src="manuscript.png" alt="Ancient Manuscript" /> </div>
                             <div className="h-section-text">
                                <h3>நூலின் அமைப்பு</h3>
                                <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது: அறத்துப்பால், பொருட்பால், மற்றும் காமத்துப்பால். 133 அதிகாரங்களில் தலா 10 குறள்கள் வீதம் 1330 குறள்கள் உள்ளன. இவை ஒவ்வொன்றும் ஈரடி வெண்பாக்களால் ஆனவை.</p>
@@ -480,7 +484,7 @@ const App = () => {
                                <h3>உலக அங்கீகாரம்</h3>
                                <p>லத்தீன், ஜெர்மன், பிரஞ்சு, ஆங்கிலம் உட்பட 100க்கும் மேற்பட்ட மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. மகாத்மா காந்தி போன்ற பல தலைவர்கள் திருக்குறளால் ஈர்க்கப்பட்டனர்.</p>
                             </div>
-                            <div className="h-section-img"> <img src="/translations.png" alt="Global Impact" /> </div>
+                            <div className="h-section-img"> <img src="translations.png" alt="Global Impact" /> </div>
                          </section>
                       </div>
                       
@@ -531,7 +535,7 @@ const App = () => {
 
           <nav className="mobile-bottom-nav">
              <button className={`m-nav-item ${activeTab === 'ask' ? 'active' : ''}`} onClick={() => setActiveTab('ask')}>
-                <Cpu /> <span>AI நிபுணர்</span>
+                <Cpu /> <span>நிபுணர்</span>
              </button>
              <button className={`m-nav-item ${activeTab === 'list' ? 'active' : ''}`} onClick={() => setActiveTab('list')}>
                 <BookOpen /> <span>நூலகம்</span>
