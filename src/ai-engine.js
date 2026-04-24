@@ -66,10 +66,24 @@ export class KuralAI {
             if (!isStartsWith && !isEndsWith) {
                 searchTerms.forEach(t => {
                     if (words.includes(t)) score += 5000;
-                    else if (words.some(w => w.startsWith(t.substring(0, 3)))) score += 3000; // Even shorter prefix match
+                    else if (words.some(w => w.startsWith(t.substring(0, 3)))) score += 3000;
                     if ((k.mv || "").toLowerCase().includes(t)) score += 500;
                 });
                 if (verseText.includes(cleanQuery)) score += 100000;
+
+                // Sequence Match Bonus (Perfect for fill-in-the-blanks)
+                if (searchTerms.length > 1) {
+                    let lastIdx = -1;
+                    let matchCount = 0;
+                    for (const term of searchTerms) {
+                        const idx = verseText.indexOf(term, lastIdx + 1);
+                        if (idx > lastIdx) {
+                            matchCount++;
+                            lastIdx = idx;
+                        }
+                    }
+                    if (matchCount >= searchTerms.length) score += 200000;
+                }
             }
 
             const numMatch = query.match(/\b(\d+)\b/);
