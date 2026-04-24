@@ -294,13 +294,13 @@ const App = () => {
                                              {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
                                                 <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
                                                    <div className="k-mini-info">
-                                                      <span className="k-mini-num">குறள் {s.Number}:</span>
-                                                      <div className="k-mini-lines">
-                                                         <p>{s.Line1}</p>
-                                                         <p>{s.Line2}</p>
-                                                      </div>
-                                                   </div>
-                                                   <ChevronRight size={20} className="k-mini-arrow" />
+                                                <div key={idx} className="kural-card-wrapper">
+                                                   <div className="kural-card-score">Score: {s.score?.toLocaleString()} | Match: {s.matchedUniqueWords || 0}</div>
+                                                   <KuralCard 
+                                                      kural={s} 
+                                                      highlight={m.searchTerms}
+                                                      onSelect={() => setSelectedKural(s)} 
+                                                   />
                                                 </div>
                                              ))}
                                              {m.sources.length > 5 && (

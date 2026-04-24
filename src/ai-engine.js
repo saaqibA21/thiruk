@@ -130,7 +130,7 @@ export class KuralAI {
                 }
             }
 
-            return { ...k, score };
+            return { ...k, score, matchedUniqueWords };
         })
         .filter(k => k.score > 0)
         .sort((a, b) => b.score - a.score);
