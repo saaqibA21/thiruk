@@ -63,12 +63,14 @@ export class KuralAI {
             const words = verseText.split(/\s+/);
 
             if (isStartsWith && structuralTarget) {
-                if (l1.startsWith(structuralTarget) || words[0].startsWith(structuralTarget)) score += 1000000;
+                const targetPrefix = structuralTarget.substring(0, 4);
+                if (l1.startsWith(targetPrefix) || words[0].startsWith(targetPrefix)) score += 1000000;
                 else return { ...k, score: 0 }; 
             }
             if (isEndsWith && structuralTarget) {
+                const targetPrefix = structuralTarget.substring(0, 4);
                 const lastWord = words[words.length - 1];
-                if (l2.endsWith(structuralTarget) || lastWord.endsWith(structuralTarget)) score += 1000000;
+                if (lastWord.includes(targetPrefix) || l2.endsWith(structuralTarget.substring(structuralTarget.length - 3))) score += 1000000;
                 else return { ...k, score: 0 };
             }
 
