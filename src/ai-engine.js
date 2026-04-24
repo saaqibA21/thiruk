@@ -43,7 +43,7 @@ export class KuralAI {
         // Clean target prefix (first 3-4 chars are usually enough for Tamil stems)
         const targetPrefix = structuralTarget.substring(0, 4);
 
-        const stopWords = ['விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'என்று', 'எண்று', 'சொல்லுடன்', 'தொடர்புடைய'].map(s => s.normalize('NFC'));
+        const stopWords = ['விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'என்று', 'எண்று', 'சொல்லுடன்', 'தொடர்புடைய', 'மீதி', 'காட்டு', 'மற்ற', 'இன்னும்', 'குறள்களையும்', 'காட்டவும்', 'தெரிவி'].map(s => s.normalize('NFC'));
         const searchTerms = allQueryWords.filter(t => !stopWords.some(sw => t === sw) && !startKeywords.includes(t) && !endKeywords.includes(t));
 
         const results = this.dataset.map(k => {
@@ -144,7 +144,8 @@ export class KuralAI {
             }
 
             try {
-                const context = finalSources.map(k => `Verse #${k.Number}: ${k.Line1} / ${k.Line2}\nTamil: ${k.mv}`).join('\n\n');
+                // Limit context to top 7 matches to prevent prompt overflow
+                const context = finalSources.slice(0, 7).map(k => `Verse #${k.Number}: ${k.Line1} / ${k.Line2}\nTamil: ${k.mv}`).join('\n\n');
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
