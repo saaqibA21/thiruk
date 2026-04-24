@@ -29,10 +29,13 @@ export class KuralAI {
         const gapQuery = query.toLowerCase().normalize('NFC').replace(/[-._…·]{2,}/g, '.*');
         let gapRegex = null;
         try { 
-            if (gapQuery.includes('.*')) {
-                // Escape special regex chars except our .*
-                const escaped = gapQuery.replace(/[.*+?^${}()|[\]\\]/g, (m) => m === '.*' ? '.*' : '\\' + m);
-                gapRegex = new RegExp(escaped); 
+            // Split by gaps, normalize, and STRIP NUMBERS (to ignore "25.")
+            const pieces = query.split(/[-._…·]{2,}/)
+                .map(p => normalize(p).replace(/\d+/g, '').trim())
+                .filter(p => p.length > 2); // Only keep meaningful pieces
+            if (pieces.length > 1) {
+                const escapedPieces = pieces.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+                gapRegex = new RegExp(escapedPieces.join('.*')); 
             }
         } catch(e) {}
         const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'சதொடங்கு'].map(s => s.normalize('NFC'));
