@@ -66,7 +66,7 @@ export class KuralAI {
             if (!isStartsWith && !isEndsWith) {
                 searchTerms.forEach(t => {
                     if (words.includes(t)) score += 5000;
-                    else if (words.some(w => w.startsWith(t.substring(0, 4)))) score += 2000;
+                    else if (words.some(w => w.startsWith(t.substring(0, 3)))) score += 3000; // Even shorter prefix match
                     if ((k.mv || "").toLowerCase().includes(t)) score += 500;
                 });
                 if (verseText.includes(cleanQuery)) score += 100000;
@@ -99,30 +99,26 @@ export class KuralAI {
                     model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
-                        content: `Analyze the image of a Thirukkural verse.
-                        1. Identify the actual Kural text in Tamil.
-                        2. If there is a Kural number mentioned (1-1330), identify it. 
-                        3. EXTREMELY IMPORTANT: Ignore question numbers (like 25., 1., Q1) which are part of a textbook test. Only identify the Kural's canonical number if present.
-                        Output format:
-                        TEXT: [transcribed Tamil text]
-                        NUM: [Kural number if found, otherwise NONE]`
+                        content: `Identify the Thirukkural from the image. 
+                        Ignore question numbers like "25." or "Q1:". 
+                        If you see a Kural number (1-1330), output: KURAL [number].
+                        Otherwise, output the transcribed Tamil text of the verse.
+                        Be extremely concise.`
                     }, {
                         role: "user",
                         content: [{ type: "image_url", image_url: { url: imageBase64 } }]
                     }],
-                    max_tokens: 150
+                    max_tokens: 100
                 });
                 
-                const visionText = visionResp.choices[0].message.content;
-                // Robust parsing for TEXT and NUM sections
-                const textMatch = visionText.match(/(?:TEXT|Text|text)[:*]*\s*(.*)/);
-                const numMatch = visionText.match(/(?:NUM|Num|num)[:*]*\s*(\d+)/);
+                let transcribed = visionResp.choices[0].message.content.trim();
+                const numMatch = transcribed.match(/KURAL\s*(\d+)/i);
                 
-                let transcribed = textMatch ? textMatch[1].trim().replace(/\*/g, '') : visionText.trim().replace(/\*/g, '');
-                const identifiedNum = numMatch ? parseInt(numMatch[1]) : null;
-                
-                if (identifiedNum && identifiedNum > 0 && identifiedNum <= 1330) {
-                    finalQuery = `Kural ${identifiedNum} ` + transcribed + " " + finalQuery;
+                if (numMatch) {
+                    const num = parseInt(numMatch[1]);
+                    if (num > 0 && num <= 1330) {
+                        finalQuery = `Kural ${num} ` + finalQuery;
+                    }
                 } else {
                     finalQuery = transcribed + " " + finalQuery;
                 }
@@ -130,7 +126,7 @@ export class KuralAI {
         }
 
         if (!finalQuery.trim() && imageBase64) {
-            finalQuery = "thirukkural"; 
+            finalQuery = "அன்பு"; // Fallback to "Love" - a very common theme
         }
 
         const { results: lexicalResults, searchTerms } = await this.search(finalQuery, !!imageBase64);
