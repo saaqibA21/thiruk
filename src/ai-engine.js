@@ -37,7 +37,7 @@ export class KuralAI {
             !startKeywords.includes(w) && 
             !endKeywords.includes(w) && 
             w.length > 2 &&
-            !['என்று', 'எண்று', 'என', 'சொல்லுடன்', 'தொடர்புடைய'].includes(w)
+            !['என்று', 'எண்று', 'என', 'சொல்லுடன்', 'தொடர்புடைய', 'பற்றிய', 'பற்றி'].includes(w)
         ) || allQueryWords[0];
 
         // Clean target prefix (first 3-4 chars are usually enough for Tamil stems)
@@ -114,10 +114,11 @@ export class KuralAI {
                 });
                 
                 const visionText = visionResp.choices[0].message.content;
-                const textMatch = visionText.match(/TEXT:\s*(.*)/i);
-                const numMatch = visionText.match(/NUM:\s*(\d+)/i);
+                // Robust parsing for TEXT and NUM sections
+                const textMatch = visionText.match(/(?:TEXT|Text|text)[:*]*\s*(.*)/);
+                const numMatch = visionText.match(/(?:NUM|Num|num)[:*]*\s*(\d+)/);
                 
-                let transcribed = textMatch ? textMatch[1].trim() : visionText.trim();
+                let transcribed = textMatch ? textMatch[1].trim().replace(/\*/g, '') : visionText.trim().replace(/\*/g, '');
                 const identifiedNum = numMatch ? parseInt(numMatch[1]) : null;
                 
                 if (identifiedNum && identifiedNum > 0 && identifiedNum <= 1330) {
@@ -126,6 +127,10 @@ export class KuralAI {
                     finalQuery = transcribed + " " + finalQuery;
                 }
             } catch (err) { console.error("Vision Error:", err); }
+        }
+
+        if (!finalQuery.trim() && imageBase64) {
+            finalQuery = "thirukkural"; 
         }
 
         const { results: lexicalResults, searchTerms } = await this.search(finalQuery, !!imageBase64);
