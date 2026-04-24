@@ -185,16 +185,17 @@ export class KuralAI {
             const questionWords = ['what', 'explain', 'why', 'how', 'meaning', 'விளக்கம்', 'பொருள்', 'ஏன்', 'எப்படி', 'என்ன'].map(s => s.normalize('NFC'));
             const isQuestion = question.includes('?') || questionWords.some(w => question.toLowerCase().includes(w));
             
-            if (!isStartsWith && !isEndsWith && !imageBase64) {
+            // Direct response path for simple searches and structural queries
+            if ((!isQuestion || isStartsWith || isEndsWith) && !imageBase64) {
                 const count = finalSources.length;
                 const intro = count > 0 
-                    ? `(v4.9.5) இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
-                    : "(v4.9.5) மன்னிக்கவும், இது குறித்த குறள்கள் என் தரவுத்தளத்தில் இல்லை.";
+                    ? `(v4.9.6) இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
+                    : "(v4.9.6) மன்னிக்கவும், இது குறித்த குறள்கள் என் தரவுத்தளத்தில் இல்லை.";
                 return { answer: intro, sources: finalSources };
             }
 
             try {
-                // Limit context to top 7 matches to prevent prompt overflow
+                // AI Insight path for questions and images
                 const context = finalSources.slice(0, 7).map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
@@ -206,7 +207,11 @@ export class KuralAI {
                 return { answer: response.choices[0].message.content.trim(), sources: finalSources };
             } catch (err) { 
                 console.error("AI Error:", err); 
-                return { answer: "மன்னிக்கவும், பதிலைத் தயார் செய்வதில் சிறு பிழை ஏற்பட்டுள்ளது.", sources: finalSources };
+                // Seamless fallback to lexical response on error
+                return { 
+                    answer: `(v4.9.6) இதோ நீங்கள் கேட்டது குறித்த ${finalSources.length} குறள்கள்:`, 
+                    sources: finalSources 
+                };
             }
         }
 
