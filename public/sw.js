@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kural-ai-master-v8';
+const CACHE_NAME = 'kural-ai-master-v11';
 const ASSETS = [
     './',
     './index.html',
