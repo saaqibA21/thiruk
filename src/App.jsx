@@ -54,7 +54,7 @@ const App = () => {
          if (initRef.current) return;
          initRef.current = true;
          try {
-            const res = await fetch('thirukkural.json');
+            const res = await fetch(`thirukkural.json?v=${Date.now()}`);
             const data = await res.json();
             setKuralData(data.kural);
             const engine = new KuralAI(data.kural);

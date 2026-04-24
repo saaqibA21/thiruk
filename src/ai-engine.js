@@ -186,8 +186,8 @@ export class KuralAI {
             if (!isStartsWith && !isEndsWith && !imageBase64) {
                 const count = finalSources.length;
                 const intro = count > 0 
-                    ? `(v4.9) இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
-                    : "(v4.9) மன்னிக்கவும், இது குறித்த குறள்கள் என் தரவுத்தளத்தில் இல்லை.";
+                    ? `(v4.9.5) இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
+                    : "(v4.9.5) மன்னிக்கவும், இது குறித்த குறள்கள் என் தரவுத்தளத்தில் இல்லை.";
                 return { answer: intro, sources: finalSources };
             }
 
