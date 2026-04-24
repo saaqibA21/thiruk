@@ -62,19 +62,24 @@ export class KuralAI {
 
             if (!isStartsWith && !isEndsWith) {
                 let matchedUniqueWords = 0;
+                let matchedPrefixes = 0;
                 searchTerms.forEach(t => {
+                    const wordWeight = t.length * 1000;
                     if (words.includes(t)) {
-                        score += 10000; // Boosted exact match
+                        score += 20000 + wordWeight; // Heavily weight exact matches
                         matchedUniqueWords++;
                     } else if (words.some(w => w.startsWith(t.substring(0, 3)))) {
-                        score += 3000;
+                        score += 5000 + (t.length * 500); // Significant prefix match weight
+                        matchedPrefixes++;
                     }
                     if (normalize(k.mv).includes(t)) score += 1000;
                 });
 
-                // Density Bonus: If multiple words from the query match this Kural
-                if (matchedUniqueWords >= 3) score += 300000;
-                else if (matchedUniqueWords >= 2) score += 100000;
+                // Semantic Density Bonus
+                const totalDensity = matchedUniqueWords + (matchedPrefixes * 0.5);
+                if (totalDensity >= 4) score += 1000000;
+                else if (totalDensity >= 2.5) score += 500000;
+                else if (totalDensity >= 1.5) score += 200000;
 
                 if (verseText.includes(cleanQuery)) score += 500000;
 
@@ -89,7 +94,8 @@ export class KuralAI {
                             lastIdx = idx;
                         }
                     }
-                    if (matchCount >= searchTerms.length) score += 500000;
+                    if (matchCount >= searchTerms.length) score += 1000000;
+                    else if (matchCount >= 2) score += 100000;
                 }
             }
 
@@ -167,11 +173,11 @@ export class KuralAI {
 
             try {
                 // Limit context to top 7 matches to prevent prompt overflow
-                const context = finalSources.slice(0, 7).map(k => `Verse #${k.Number}: ${k.Line1} / ${k.Line2}\nTamil: ${k.mv}`).join('\n\n');
+                const context = finalSources.slice(0, 7).map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a Thirukkural Expert. Provide a direct, concise answer or philosophical context in Tamil. IMPORTANT: Never repeat the Kural verse text or its number in your response, as they are already visible in cards below. Just provide the insight." },
+                        { role: "system", content: "You are a Thirukkural Scholar. Provide a brief, soulful insight in Tamil. STRICT RULE: Never repeat the Kural verse text or its number. Just provide the wisdom." },
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });
