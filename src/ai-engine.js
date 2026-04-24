@@ -21,7 +21,9 @@ export class KuralAI {
     async search(query, isImageSearch = false) {
         if (!query) return { results: [], searchTerms: [] };
 
-        const cleanQuery = query.toLowerCase().trim().normalize('NFC').replace(/[-._…·]{2,}/g, ' ');
+        const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
+        const cleanQuery = normalize(query);
+        const allQueryWords = cleanQuery.split(/\s+/);
         
         // Structural Logic
         const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'சதொடங்கு'].map(s => s.normalize('NFC'));
@@ -31,45 +33,50 @@ export class KuralAI {
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
 
         // Extract the target word for structural search
-        let structuralTarget = "";
-        const allQueryWords = cleanQuery.split(/\s+/);
-        structuralTarget = allQueryWords.find(w => 
+        const structuralTarget = allQueryWords.find(w => 
             !startKeywords.includes(w) && 
             !endKeywords.includes(w) && 
             w.length > 2 &&
             !['என்று', 'எண்று', 'என', 'சொல்லுடன்', 'தொடர்புடைய', 'பற்றிய', 'பற்றி'].includes(w)
         ) || allQueryWords[0];
 
-        // Clean target prefix (first 3-4 chars are usually enough for Tamil stems)
-        const targetPrefix = structuralTarget.substring(0, 4);
-
         const stopWords = ['விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'என்று', 'எண்று', 'சொல்லுடன்', 'தொடர்புடைய', 'மீதி', 'காட்டு', 'மற்ற', 'இன்னும்', 'குறள்களையும்', 'காட்டவும்', 'தெரிவி'].map(s => s.normalize('NFC'));
-        const searchTerms = allQueryWords.filter(t => !stopWords.some(sw => t === sw) && !startKeywords.includes(t) && !endKeywords.includes(t));
+        const searchTerms = allQueryWords.filter(t => !stopWords.some(sw => t === sw) && !startKeywords.includes(t) && !endKeywords.includes(t) && t.length > 1);
 
         const results = this.dataset.map(k => {
             let score = 0;
-            const l1 = (k.Line1 || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·]/g, '');
-            const l2 = (k.Line2 || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·]/g, '');
+            const l1 = normalize(k.Line1);
+            const l2 = normalize(k.Line2);
             const verseText = `${l1} ${l2}`;
-            const words = verseText.trim().split(/\s+/);
+            const words = verseText.split(/\s+/);
 
             if (isStartsWith && structuralTarget) {
-                if (l1.startsWith(structuralTarget) || words[0].startsWith(structuralTarget)) score += 100000;
+                if (l1.startsWith(structuralTarget) || words[0].startsWith(structuralTarget)) score += 1000000;
                 else return { ...k, score: 0 }; 
             }
             if (isEndsWith && structuralTarget) {
                 const lastWord = words[words.length - 1];
-                if (l2.endsWith(structuralTarget) || lastWord.endsWith(structuralTarget)) score += 100000;
+                if (l2.endsWith(structuralTarget) || lastWord.endsWith(structuralTarget)) score += 1000000;
                 else return { ...k, score: 0 };
             }
 
             if (!isStartsWith && !isEndsWith) {
+                let matchedUniqueWords = 0;
                 searchTerms.forEach(t => {
-                    if (words.includes(t)) score += 5000;
-                    else if (words.some(w => w.startsWith(t.substring(0, 3)))) score += 3000;
-                    if ((k.mv || "").toLowerCase().includes(t)) score += 500;
+                    if (words.includes(t)) {
+                        score += 10000; // Boosted exact match
+                        matchedUniqueWords++;
+                    } else if (words.some(w => w.startsWith(t.substring(0, 3)))) {
+                        score += 3000;
+                    }
+                    if (normalize(k.mv).includes(t)) score += 1000;
                 });
-                if (verseText.includes(cleanQuery)) score += 100000;
+
+                // Density Bonus: If multiple words from the query match this Kural
+                if (matchedUniqueWords >= 3) score += 300000;
+                else if (matchedUniqueWords >= 2) score += 100000;
+
+                if (verseText.includes(cleanQuery)) score += 500000;
 
                 // Sequence Match Bonus (Perfect for fill-in-the-blanks)
                 if (searchTerms.length > 1) {
@@ -82,7 +89,7 @@ export class KuralAI {
                             lastIdx = idx;
                         }
                     }
-                    if (matchCount >= searchTerms.length) score += 200000;
+                    if (matchCount >= searchTerms.length) score += 500000;
                 }
             }
 
