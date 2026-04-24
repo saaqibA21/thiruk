@@ -152,7 +152,7 @@ const App = () => {
       
       const userMsg = { 
          role: 'user', 
-         content: text || (selectedImage ? "இந்த படத்தின் விளக்கம் என்ன?" : ""), 
+         content: text || "", 
          image: selectedImage 
       };
       
