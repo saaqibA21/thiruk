@@ -26,10 +26,15 @@ export class KuralAI {
         const allQueryWords = cleanQuery.split(/\s+/);
         
         // Fill-in-the-blank Regex (Powerful for textbook queries)
-        // If the original query has gaps like "word1 ...... word2", create a regex: word1.*word2
         const gapQuery = query.toLowerCase().normalize('NFC').replace(/[-._…·]{2,}/g, '.*');
         let gapRegex = null;
-        try { if (gapQuery.includes('.*')) gapRegex = new RegExp(gapQuery.replace(/[.,!?;:"\-_]/g, '')); } catch(e) {}
+        try { 
+            if (gapQuery.includes('.*')) {
+                // Escape special regex chars except our .*
+                const escaped = gapQuery.replace(/[.*+?^${}()|[\]\\]/g, (m) => m === '.*' ? '.*' : '\\' + m);
+                gapRegex = new RegExp(escaped); 
+            }
+        } catch(e) {}
         const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'சதொடங்கு'].map(s => s.normalize('NFC'));
         const endKeywords = ['முடியும்', 'முடிகிற', 'ending', 'ends with', 'முடிவு', 'ஈறு'].map(s => s.normalize('NFC'));
 
@@ -125,7 +130,7 @@ export class KuralAI {
         .filter(k => k.score > 0)
         .sort((a, b) => b.score - a.score);
 
-        return { results: results.slice(0, 100), searchTerms };
+        return { results: results.slice(0, 100), searchTerms, isStartsWith, isEndsWith };
     }
 
     async ask(question, imageBase64 = null) {
@@ -168,7 +173,7 @@ export class KuralAI {
             finalQuery = "அன்பு"; // Fallback to "Love" - a very common theme
         }
 
-        const { results: lexicalResults, searchTerms } = await this.search(finalQuery, !!imageBase64);
+        const { results: lexicalResults, searchTerms, isStartsWith, isEndsWith } = await this.search(finalQuery, !!imageBase64);
         const finalSources = lexicalResults;
 
         if (finalSources.length > 0) {
