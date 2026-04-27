@@ -950,84 +950,104 @@ body,
   }
 
   /* Strictly hide desktop elements */
-  .header-nav-tabs,
-  .header-right-group {
-    display: none !important;
-  }
+  .desktop-only { display: none !important; }
+  .mobile-bottom-nav { display: none !important; }
 
   /* Compact Balanced Header */
   .main-header {
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
     border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 2000;
   }
 
   .header-container-inner {
     padding: 0 var(--mob-pad);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .header-left-group {
-    gap: 0.5rem;
-    width: 100%;
-    justify-content: space-between;
+    gap: 0.75rem;
+    display: flex;
+    align-items: center;
   }
 
   .app-title-group h1 {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 900;
+    color: var(--primary);
   }
 
   .app-title-group p {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--muted);
   }
 
   .srm-logo-top {
-    height: 32px;
+    height: 40px;
     width: auto;
   }
 
-  /* Professional Bottom Nav */
-  .mobile-bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 0.6rem 0 calc(0.6rem + env(safe-area-inset-bottom));
-    background: #ffffff;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: space-around;
-    z-index: 4000;
+  /* Mobile Dropdown Menu */
+  .mobile-menu-container {
+    position: relative;
   }
 
-  .m-nav-item {
-    flex: 1;
+  .mobile-menu-btn {
+    background: #f1f5f9;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    color: #94a3b8;
+    justify-content: center;
+    color: var(--primary);
+    cursor: pointer;
+  }
+
+  .mobile-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    padding: 0.5rem;
+    min-width: 180px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    z-index: 3000;
+  }
+
+  .mobile-dropdown-menu button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    border-radius: 0.75rem;
+    text-align: left;
     transition: 0.2s;
   }
 
-  .m-nav-item.active {
+  .mobile-dropdown-menu button:active {
+    background: #fff7ed;
     color: var(--primary);
-    transform: translateY(-2px);
-  }
-
-  .m-nav-item span {
-    font-size: 0.6rem;
-    font-weight: 800;
-    margin-top: 4px;
-  }
-
-  .m-nav-item svg {
-    width: 20px;
-    height: 20px;
-    stroke-width: 2.5;
   }
 
   /* Optimized Chat Flow */
   .content-container {
-    padding: 0 0 10rem;
+    padding: 0;
     margin: 0;
   }
 

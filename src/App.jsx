@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink } from 'lucide-react';
+import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 
@@ -32,6 +32,7 @@ const App = () => {
    const [aiEngine, setAiEngine] = useState(null);
    const [showKeyboard, setShowKeyboard] = useState(false);
    const [selectedImage, setSelectedImage] = useState(null);
+   const [showMobileMenu, setShowMobileMenu] = useState(false);
    const fileInputRef = useRef(null);
 
    const getInitialKey = () => {
@@ -249,18 +250,41 @@ const App = () => {
          <header className="main-header">
             <div className="header-container-inner">
                <div className="header-left-group">
-                  <div className="app-title-group">
-                     <h1 className="main-title">திருக்குறள் AI நிபுணர் <span className="version-tag">v4.9.9</span></h1>
-                     <p className="sub-title">SRM உயர்கல்வி நிறுவனம்</p>
-                  </div>
                   <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
+                  <div className="app-title-group">
+                     <h1 className="main-title">திருக்குறள் AI</h1>
+                     <p className="sub-title">SRM நிபுணர்</p>
+                  </div>
                </div>
+               
                <div className="header-right-group">
-                  <nav className="header-nav-tabs">
+                  {/* Desktop Nav */}
+                  <nav className="header-nav-tabs desktop-only">
                      <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>AI நிபுணர்</span> </button>
                      <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
                      <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
                   </nav>
+
+                  {/* Mobile Nav Button */}
+                  <div className="mobile-menu-container">
+                     <button className="mobile-menu-btn" onClick={() => setShowMobileMenu(!showMobileMenu)}>
+                        <Menu size={24} />
+                     </button>
+                     <AnimatePresence>
+                        {showMobileMenu && (
+                           <motion.div 
+                              initial={{ opacity: 0, y: -10 }} 
+                              animate={{ opacity: 1, y: 0 }} 
+                              exit={{ opacity: 0, y: -10 }} 
+                              className="mobile-dropdown-menu"
+                           >
+                              <button onClick={() => { setActiveTab('ask'); setShowMobileMenu(false); }}> <Cpu size={18} /> AI நிபுணர் </button>
+                              <button onClick={() => { setActiveTab('list'); setShowMobileMenu(false); }}> <BookOpen size={18} /> நூலகம் </button>
+                              <button onClick={() => { setActiveTab('history'); setShowMobileMenu(false); }}> <HistoryIcon size={18} /> வரலாறு </button>
+                           </motion.div>
+                        )}
+                     </AnimatePresence>
+                  </div>
                </div>
             </div>
          </header>
@@ -520,18 +544,6 @@ const App = () => {
                </div>
             )}
          </AnimatePresence>
-
-          <nav className="mobile-bottom-nav">
-             <button className={`m-nav-item ${activeTab === 'ask' ? 'active' : ''}`} onClick={() => setActiveTab('ask')}>
-                <Cpu /> <span>நிபுணர்</span>
-             </button>
-             <button className={`m-nav-item ${activeTab === 'list' ? 'active' : ''}`} onClick={() => setActiveTab('list')}>
-                <BookOpen /> <span>நூலகம்</span>
-             </button>
-             <button className={`m-nav-item ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>
-                <HistoryIcon /> <span>வரலாறு</span>
-             </button>
-          </nav>
        </div>
     );
  };
