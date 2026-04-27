@@ -956,11 +956,11 @@ body,
   /* Compact Balanced Header */
   .main-header {
     padding: 0.5rem 0;
-    margin: 2.5rem var(--mob-pad) 0.5rem;
+    margin: 3.5rem var(--mob-pad) 0.5rem;
     border: 1px solid var(--border);
     border-radius: 1.25rem;
     position: sticky;
-    top: 2.25rem;
+    top: 3.25rem;
     z-index: 2000;
     background: white;
     box-shadow: 0 8px 24px rgba(0,0,0,0.06);
