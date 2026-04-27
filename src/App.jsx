@@ -166,25 +166,7 @@ const App = () => {
       try {
          const result = await aiEngine.ask(currentText, currentImage);
          if (!result) throw new Error("No response from engine");
-         
-         let finalContent = result.answer;
-         let isInsight = false;
-         const firstSource = result.sources?.[0];
-         const isMeaningQuery = currentText.includes('பொருள்') || currentText.includes('விளக்கம்');
-         
-         if (isMeaningQuery && firstSource && (finalContent.includes('(v') || !finalContent)) {
-            finalContent = firstSource.mv || firstSource.sp || firstSource.mk || finalContent;
-            isInsight = true;
-         } else if (finalContent.length < 500 && !finalContent.includes('(v')) {
-            isInsight = true;
-         }
-
-         setMessages(prev => [...prev, { 
-            role: 'ai', 
-            content: finalContent || "இதோ உங்களுக்கான குறள்கள்:", 
-            sources: result.sources || [],
-            isInsight: isInsight
-         }]);
+         setMessages(prev => [...prev, { role: 'ai', content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", sources: result.sources || [] }]);
       } catch (error) {
          console.error("Chat Error:", error);
          setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பதிலைத் தேடுவதில் தொழில்நுட்பக் கோளாறு ஏற்பட்டுள்ளது. மீண்டும் ஒருமுறை முயற்சி செய்யுங்கள்.", sources: [] }]);
@@ -306,16 +288,7 @@ const App = () => {
                                           </div>
                                        )}
                                        {m.content && (
-                                          <div className="bubble-text">
-                                             {m.isInsight ? (
-                                                <div className="ai-insight-card">
-                                                   <div className="insight-badge"> <Sparkles size={12} fill="currentColor" /> நிபுணர் விளக்கம் </div>
-                                                   <div className="ai-insight-text">{m.content}</div>
-                                                </div>
-                                             ) : (
-                                                parseFormattedContent(m.content)
-                                             )}
-                                          </div>
+                                          <div className="bubble-text">{parseFormattedContent(m.content)}</div>
                                        )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
