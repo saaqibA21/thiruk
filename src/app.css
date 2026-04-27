@@ -955,16 +955,19 @@ body,
 
   /* Compact Balanced Header */
   .main-header {
-    padding: 1.25rem 0 0.75rem;
-    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 0;
+    margin: 1.25rem var(--mob-pad) 0;
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
     position: sticky;
-    top: 0;
+    top: 1rem;
     z-index: 2000;
     background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
   }
 
   .header-container-inner {
-    padding: 0 var(--mob-pad);
+    padding: 0 0.75rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
