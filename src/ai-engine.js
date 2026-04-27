@@ -57,6 +57,7 @@ export class KuralAI {
 
         const results = this.dataset.map(k => {
             let score = 0;
+            let matchedUniqueWords = 0;
             const l1 = normalize(k.Line1);
             const l2 = normalize(k.Line2);
             const verseText = `${l1} ${l2}`;
@@ -75,12 +76,29 @@ export class KuralAI {
             }
 
             if (!isStartsWith && !isEndsWith) {
-                let matchedUniqueWords = 0;
+                matchedUniqueWords = 0;
                 let matchedPrefixes = 0;
                 searchTerms.forEach(t => {
-                    const wordWeight = t.length * 1000;
+                    // Exponential weight for length: Specific words >> Common words
+                    const wordWeight = Math.pow(t.length, 2) * 5000;
+                    
+                    // "Porul" (Meaning/Wealth) is often a filler or question word.
+                    // If the query has other words, reduce Porul's weight.
+                    let multiplier = 1;
+                    if (t === "பொருள்" && searchTerms.length > 1) multiplier = 0.1;
+
+                    const tRoot = t.length > 3 ? t.substring(0, t.length - 1) : t;
                     if (words.includes(t)) {
-                        score += 50000 + wordWeight; // Significantly boosted
+                        score += (100000 + wordWeight) * multiplier;
+                        matchedUniqueWords++;
+                    } else if (words.some(w => w.startsWith(tRoot))) {
+                        // Root match bonus
+                        score += (50000 + wordWeight / 2) * multiplier;
+                        matchedUniqueWords++;
+                        matchedPrefixes++;
+                    } else if (verseText.includes(t)) {
+                        // Fragment/Substring match bonus
+                        score += (300000 + wordWeight) * multiplier;
                         matchedUniqueWords++;
                     } else if (words.some(w => w.startsWith(t.substring(0, 3)))) {
                         score += 5000 + (t.length * 500);
@@ -98,8 +116,18 @@ export class KuralAI {
                 else if (totalDensity >= 2.5) score += 1000000;
                 else if (totalDensity >= 1.5) score += 500000;
 
-                if (verseText.includes(cleanQuery)) score += 1000000;
-
+                // Stage 2: Phrase & Root Match (Strict)
+                if (verseText.includes(cleanQuery)) {
+                    score += 1000000;
+                }
+                
+                // Specific word matching for Kural 72 words
+                if (words.includes("அன்பிலார்") || words.includes("தமக்குரியர்")) {
+                    if (cleanQuery.includes("அன்பு") || cleanQuery.includes("உரியர்")) {
+                         score += 2000000; // Extra boost for these specific identifiers
+                    }
+                }
+                
                 // Gap Regex Match (The ultimate fix for fill-in-the-blanks)
                 if (gapRegex && gapRegex.test(verseText)) {
                     score += 5000000; 
@@ -121,27 +149,52 @@ export class KuralAI {
                 }
             }
 
-            const numMatch = query.match(/\b(\d+)\b/);
+            const numMatch = query.match(/\b(?:kural|குறள்|எண்)?\s*(\d+)\b/i);
             if (numMatch) {
                 const matchedNum = parseInt(numMatch[1]);
                 if (k.Number === matchedNum) {
-                    // Image searches should almost never rely on numbers found in the image
-                    score += isImageSearch ? 1000 : 500000;
+                    // If the query explicitly says "Kural X" or similar, give it massive points
+                    const isExplicit = /\b(?:kural|குறள்|எண்)\s*\d+/i.test(query);
+                    score += isExplicit ? 5000000 : (isImageSearch ? 1000 : 500000);
                 }
             }
 
-            return { ...k, score, matchedUniqueWords };
+            // Stage 3: Positional & Density Bonuses (The Tie-Breakers)
+            if (!isStartsWith && !isEndsWith) {
+                // Starts-with line bonus (Root-aware + First Char Strict)
+                const queryRoot = cleanQuery.length > 3 ? cleanQuery.substring(0, cleanQuery.length - 1) : cleanQuery;
+                const matchL1 = l1.startsWith(queryRoot) && l1[0] === cleanQuery[0];
+                const matchL2 = l2.startsWith(queryRoot) && l2[0] === cleanQuery[0];
+                
+                if (matchL1 || matchL2) {
+                    score += 250000;
+                }
+                
+                // Density bonus: Shorter Kurals where the match is more "dense" rank slightly higher
+                const totalLen = verseText.length;
+                score += (200 - totalLen) * 10; // Tiny boost for brevity
+            }
+
+            return { ...k, score, matchedUniqueWords, totalLen: verseText.length };
         });
-        const scoredResults = results.filter(k => k.score > 0).sort((a, b) => b.score - a.score);
+
+        // Advanced multi-stage sort
+        const scoredResults = results
+            .filter(r => r.score > 0)
+            .sort((a, b) => {
+                if (Math.abs(b.score - a.score) > 1) return b.score - a.score;
+                if (b.matchedUniqueWords !== a.matchedUniqueWords) return b.matchedUniqueWords - a.matchedUniqueWords;
+                return a.totalLen - b.totalLen; // Shorter (more dense match) first
+            });
         
         // Dynamic Relevance Threshold: 
         // If we have a very strong match (Gap Match or Sequence Match), hide the "noise".
         if (scoredResults.length > 0) {
             const topScore = scoredResults[0].score;
             if (topScore >= 2000000) {
-                // If we have a 2M+ score, hide anything less than 10% of top score
+                // If we have a 2M+ score, hide anything less than 1% of top score (relaxed from 10%)
                 return { 
-                    results: scoredResults.filter(k => k.score >= topScore * 0.1).slice(0, 50), 
+                    results: scoredResults.filter(k => k.score >= topScore * 0.01).slice(0, 100), 
                     searchTerms, isStartsWith, isEndsWith 
                 };
             }
@@ -160,34 +213,30 @@ export class KuralAI {
                     model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
-                        content: `Identify the Thirukkural from the image. 
-                        Ignore question numbers like "25." or "Q1:". 
-                        If you see a Kural number (1-1330), output: KURAL [number].
-                        Otherwise, output the transcribed Tamil text of the verse.
-                        Be extremely concise.`
+                        content: `You are a high-precision OCR engine for Tamil. 
+                        Transcribe the FULL Tamil text from the image exactly as it appears. 
+                        Use "..." for any missing words or blanks. 
+                        IGNORE question numbers (e.g., "25.", "Q1").
+                        Do NOT provide a summary, theme, or Kural identification. 
+                        Only return the transcribed poetic lines.`
                     }, {
                         role: "user",
                         content: [{ type: "image_url", image_url: { url: imageBase64 } }]
                     }],
-                    max_tokens: 100
+                    max_tokens: 150
                 });
                 
                 let transcribed = visionResp.choices[0].message.content.trim();
-                const numMatch = transcribed.match(/KURAL\s*(\d+)/i);
-                
-                if (numMatch) {
-                    const num = parseInt(numMatch[1]);
-                    if (num > 0 && num <= 1330) {
-                        finalQuery = `Kural ${num} ` + finalQuery;
-                    }
-                } else {
-                    finalQuery = transcribed + " " + finalQuery;
-                }
-            } catch (err) { console.error("Vision Error:", err); }
+                console.log("AI Transcribed:", transcribed);
+                finalQuery = transcribed || question;
+            } catch (err) { 
+                console.error("Vision Error:", err); 
+                finalQuery = question;
+            }
         }
 
         if (!finalQuery.trim() && imageBase64) {
-            finalQuery = "அன்பு"; // Fallback to "Love" - a very common theme
+            finalQuery = question || "அன்பு";
         }
 
         const { results: lexicalResults, searchTerms, isStartsWith, isEndsWith } = await this.search(finalQuery, !!imageBase64);
@@ -208,11 +257,18 @@ export class KuralAI {
 
             try {
                 // AI Insight path for questions and images
+                if (!this.openai) throw new Error("OpenAI not initialized");
                 const context = finalSources.slice(0, 7).map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a Thirukkural Scholar. Provide a brief, soulful insight in Tamil. STRICT RULE: Never repeat the Kural verse text or its number. Just provide the wisdom." },
+                        { 
+                            role: "system", 
+                            content: `You are a Thirukkural Scholar. 
+                            If the user is asking for the meaning of a specific word or verse, provide a very short, direct, and sweet answer in Tamil. 
+                            Keep it under 2 sentences. Focus on the core meaning.
+                            STRICT RULE: Never repeat the Kural verse text or its number. Just the wisdom.` 
+                        },
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });

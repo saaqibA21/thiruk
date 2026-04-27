@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera } from 'lucide-react';
+import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 
@@ -39,7 +39,6 @@ const App = () => {
          const envKey = import.meta.env.VITE_OPENAI_API_KEY;
          if (envKey && envKey.length > 20 && envKey.startsWith('sk-')) return envKey;
       } catch (e) {}
-      // Fallback to the provided key if env is not set
       return atob('c2stcHJvai1IR09OVnJuZlZkamZjdTB3Q1BHY3ptMTBsT09sTG8yRmtxUWNXV296Uk1UWXk2NUE5NFA4aEk5V1hQZzVpMzRUd0laUlBDcmprVDNCbGtkRkpVTmo0OEdkekpwLVA0b3E2Y2txNTdlTVBoTE1OeGxMT3dsYXVkSk55ZUk5ZjZHeFo5SzRxTUdNTlo3b0ZYZUZOVlFKUWhDeHdB');
    };
 
@@ -167,7 +166,25 @@ const App = () => {
       try {
          const result = await aiEngine.ask(currentText, currentImage);
          if (!result) throw new Error("No response from engine");
-         setMessages(prev => [...prev, { role: 'ai', content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", sources: result.sources || [] }]);
+         
+         let finalContent = result.answer;
+         let isInsight = false;
+         const firstSource = result.sources?.[0];
+         const isMeaningQuery = currentText.includes('பொருள்') || currentText.includes('விளக்கம்');
+         
+         if (isMeaningQuery && firstSource && (finalContent.includes('(v') || !finalContent)) {
+            finalContent = firstSource.mv || firstSource.sp || firstSource.mk || finalContent;
+            isInsight = true;
+         } else if (finalContent.length < 500 && !finalContent.includes('(v')) {
+            isInsight = true;
+         }
+
+         setMessages(prev => [...prev, { 
+            role: 'ai', 
+            content: finalContent || "இதோ உங்களுக்கான குறள்கள்:", 
+            sources: result.sources || [],
+            isInsight: isInsight
+         }]);
       } catch (error) {
          console.error("Chat Error:", error);
          setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பதிலைத் தேடுவதில் தொழில்நுட்பக் கோளாறு ஏற்பட்டுள்ளது. மீண்டும் ஒருமுறை முயற்சி செய்யுங்கள்.", sources: [] }]);
@@ -184,7 +201,6 @@ const App = () => {
       if (lines.length === 0) return null;
 
       return lines.map((line, idx) => {
-         // Match patterns like "குறள் 72:" or "குறள் எண் 72:" or "Kural 72:"
          const kuralMatch = line.match(/(?:குறள்|குறள் எண்|Kural)\s+(\d+)/i);
          if (kuralMatch) {
             const num = parseInt(kuralMatch[1]);
@@ -289,20 +305,30 @@ const App = () => {
                                              <img src={m.image} alt="Uploaded" style={{maxWidth: '100%', borderRadius: '10px'}} />
                                           </div>
                                        )}
+                                       {m.content && (
+                                          <div className="bubble-text">
+                                             {m.isInsight ? (
+                                                <div className="ai-insight-card">
+                                                   <div className="insight-badge"> <Sparkles size={12} fill="currentColor" /> நிபுணர் விளக்கம் </div>
+                                                   <div className="ai-insight-text">{m.content}</div>
+                                                </div>
+                                             ) : (
+                                                parseFormattedContent(m.content)
+                                             )}
+                                          </div>
+                                       )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
-                                             {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
-                                                <div key={idx} onClick={() => setSelectedKural(s)} className="kural-mini-card">
-                                                   <div className="k-mini-info">
-                                                <div key={idx} className="kural-card-wrapper">
-                                                   <div className="kural-card-score">Score: {s.score?.toLocaleString()} | Match: {s.matchedUniqueWords || 0}</div>
-                                                   <KuralCard 
-                                                      kural={s} 
-                                                      highlight={m.searchTerms}
-                                                      onSelect={() => setSelectedKural(s)} 
-                                                   />
-                                                </div>
-                                             ))}
+                                              {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
+                                                 <div key={idx} className="kural-card-wrapper">
+                                                    <div className="kural-card-score">Score: {s.score?.toLocaleString()} | Match: {s.matchedUniqueWords || 0}</div>
+                                                    <KuralCard 
+                                                       kural={s} 
+                                                       highlight={m.searchTerms}
+                                                       onSelect={() => setSelectedKural(s)} 
+                                                    />
+                                                 </div>
+                                              ))}
                                              {m.sources.length > 5 && (
                                                 <button 
                                                    className="show-more-kurals-btn"
@@ -316,9 +342,6 @@ const App = () => {
                                                 </button>
                                              )}
                                           </div>
-                                       )}
-                                       {m.content && (
-                                          <div className="bubble-text">{parseFormattedContent(m.content)}</div>
                                        )}
                                     </div>
                                  </div>
@@ -466,7 +489,7 @@ const App = () => {
                                   <li><strong>பீடம்:</strong> 38 அடி உயரம் (அறத்துப்பாலை குறிக்கிறது).</li>
                                   <li><strong>சிலை:</strong> 95 அடி உயரம் (பொருட்பால் மற்றும் இன்பத்துப்பாலை குறிக்கிறது).</li>
                                   <li><strong>எடை:</strong> சுமார் 7000 டன் கருங்கற்களால் ஆனது.</li>
-                               </ul>
+                                </ul>
                             </div>
                             <div className="h-section-img"> <img src="statue.png" alt="Valluvar Statue" /> </div>
                          </section>
@@ -488,20 +511,9 @@ const App = () => {
                          </section>
                       </div>
                       
-                      <div className="history-quote-block">
-                          <Quote size={48} className="q-icon" />
-                          <p className="q-text">"நான் படித்தவற்றில் மிகவும் உயர்ந்த அறம் சார்ந்த நூல் திருக்குறள். இது உலகிற்கே ஒரு பொதுவான வழிகாட்டி."</p>
-                          <p className="h-stat-lbl" style={{marginTop: '1.5rem'}}>- மகாத்மா காந்தி</p>
-                       </div>
-
-                       <div className="history-hero" style={{background: '#f8fafc', border: '1px solid #e2e8f0', marginTop: '4rem', padding: '4rem 2rem'}}>
-                          <h2 className="h-title">குமரி முனை சிலை - சில தகவல்கள்</h2>
-                          <div className="h-hero-stats">
-                             <div className="h-hero-stat-card"> <span className="h-stat-num">133</span> <span className="h-stat-lbl">அடி உயரம் (அதிகாரங்கள்)</span> </div>
-                             <div className="h-hero-stat-card"> <span className="h-stat-num">7000</span> <span className="h-stat-lbl">டன் எடை</span> </div>
-                             <div className="h-hero-stat-card"> <span className="h-stat-num">3</span> <span className="h-stat-lbl">பால்களை குறிக்கும் பீடம்</span> </div>
-                          </div>
-                          <p className="h-card-info" style={{marginTop: '3rem', maxWidth: '800px', margin: '3rem auto 0', lineHeight: '2'}}>கன்னியாகுமரியில் அமைந்துள்ள இந்த பிரம்மாண்ட சிலை, திருக்குறளின் 133 அதிகாரங்களை உணர்த்தும் வகையில் 133 அடி உயரத்தில் அமைக்கப்பட்டுள்ளது. சிலையில் உள்ள 10 விரல்கள் 10 குறள்களைக் குறிக்கின்றன. பீடம் 38 அடி உயரத்தில் (அறத்துப்பால்) அமைக்கப்பட்டுள்ளது குறிப்பிடத்தக்கது.</p>
+                      <div className="history-quote-v2">
+                          <p>"நான் படித்தவற்றில் மிகவும் உயர்ந்த அறம் சார்ந்த நூல் திருக்குறள். இது உலகிற்கே ஒரு பொதுவான வழிகாட்டி."</p>
+                          <span>- மகாத்மா காந்தி</span>
                        </div>
                   </motion.div>
                )}
@@ -513,20 +525,23 @@ const App = () => {
             {selectedKural && (
                <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
                   <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
-                     <header className="m-header"> <span className="m-badge">குறள் {selectedKural.Number}</span> <button onClick={() => setSelectedKural(null)}><X /></button> </header>
+                     <header className="m-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'2rem'}}> 
+                        <span className="m-badge">குறள் {selectedKural.Number}</span> 
+                        <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button> 
+                     </header>
                      {(() => {
                         const allWords = `${selectedKural.Line1} ${selectedKural.Line2}`.trim().split(/\s+/);
                         return (
-                           <div className="m-verse-box" style={{textAlign: 'center'}}>
+                           <div className="m-verse-box">
                               <h3>{allWords.slice(0, 4).join(' ')}</h3>
                               <h3>{allWords.slice(4).join(' ')}</h3>
                            </div>
                         );
                      })()}
-                     <div className="m-explanations-stack" style={{textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        {selectedKural.mv && <div className="e-block" style={{borderLeft: 'none', paddingLeft: 0}}> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
-                        {selectedKural.sp && <div className="e-block" style={{borderLeft: 'none', paddingLeft: 0}}> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
-                        {selectedKural.mk && <div className="e-block" style={{borderLeft: 'none', paddingLeft: 0}}> <h5>மு. கருணாநிதி உரை</h5> <p>{selectedKural.mk}</p> </div>}
+                     <div className="m-explanations-stack">
+                        {selectedKural.mv && <div className="e-block"> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
+                        {selectedKural.sp && <div className="e-block"> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
+                        {selectedKural.mk && <div className="e-block"> <h5>மு. கருணாநிதி உரை</h5> <p>{selectedKural.mk}</p> </div>}
                      </div>
                   </motion.div>
                </div>
@@ -547,5 +562,32 @@ const App = () => {
        </div>
     );
  };
+
+const KuralCard = ({ kural, highlight, onSelect }) => {
+   const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
+   
+   const highlightText = (text) => {
+      if (!highlight || highlight.length === 0) return text;
+      let highlighted = text;
+      highlight.forEach(term => {
+         const regex = new RegExp(`(${term})`, 'gi');
+         highlighted = highlighted.replace(regex, '<mark>$1</mark>');
+      });
+      return <span dangerouslySetInnerHTML={{ __html: highlighted }} />;
+   };
+
+   return (
+      <div className="kural-mini-card" onClick={onSelect}>
+         <div className="k-mini-info">
+            <div className="k-mini-num">குறள் எண்: {kural.Number}</div>
+            <div className="k-mini-lines">
+               <p>{highlightText(allWords.slice(0, 4).join(' '))}</p>
+               <p>{highlightText(allWords.slice(4).join(' '))}</p>
+            </div>
+         </div>
+         <ChevronRight className="k-mini-arrow" size={20} />
+      </div>
+   );
+};
 
 export default App;
