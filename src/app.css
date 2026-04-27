@@ -955,11 +955,12 @@ body,
 
   /* Compact Balanced Header */
   .main-header {
-    padding: 0.75rem 0;
+    padding: 1.25rem 0 0.75rem;
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 2000;
+    background: white;
   }
 
   .header-container-inner {
@@ -1052,7 +1053,7 @@ body,
   }
 
   .chat-view {
-    height: calc(100vh - 160px);
+    height: calc(100vh - 180px);
     padding: 1rem var(--mob-pad);
   }
 
@@ -1071,13 +1072,13 @@ body,
 
   /* Elegant Input Area */
   .chat-input-sticky-area {
-    padding: 0.6rem var(--mob-pad);
+    padding: 0.75rem var(--mob-pad) calc(0.75rem + env(safe-area-inset-bottom));
     background: white;
     position: fixed;
-    bottom: calc(3.8rem + env(safe-area-inset-bottom));
+    bottom: 0;
     left: 0;
     right: 0;
-    border-top: none;
+    border-top: 1px solid #f1f5f9;
     box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.02);
   }
 
