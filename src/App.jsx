@@ -163,7 +163,6 @@ const App = () => {
       setQuery('');
       setSelectedImage(null);
       setLoading(true);
-      
       try {
          const result = await aiEngine.ask(currentText, currentImage);
          if (!result) throw new Error("No response from engine");

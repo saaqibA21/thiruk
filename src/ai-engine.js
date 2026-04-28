@@ -187,20 +187,19 @@ export class KuralAI {
                 return a.totalLen - b.totalLen; // Shorter (more dense match) first
             });
         
-        // Dynamic Relevance Threshold: 
-        // If we have a very strong match (Gap Match or Sequence Match), hide the "noise".
+        // Dynamic Relevance Threshold
+        const limit = isImageSearch ? 1 : 100;
         if (scoredResults.length > 0) {
             const topScore = scoredResults[0].score;
             if (topScore >= 2000000) {
-                // If we have a 2M+ score, hide anything less than 1% of top score (relaxed from 10%)
                 return { 
-                    results: scoredResults.filter(k => k.score >= topScore * 0.01).slice(0, 100), 
+                    results: scoredResults.filter(k => k.score >= topScore * 0.01).slice(0, limit), 
                     searchTerms, isStartsWith, isEndsWith 
                 };
             }
         }
 
-        return { results: scoredResults.slice(0, 100), searchTerms, isStartsWith, isEndsWith };
+        return { results: scoredResults.slice(0, limit), searchTerms, isStartsWith, isEndsWith };
     }
 
     async ask(question, imageBase64 = null) {
@@ -249,9 +248,9 @@ export class KuralAI {
             // Direct response path for simple searches and structural queries
             if ((!isQuestion || isStartsWith || isEndsWith) && !imageBase64) {
                 const count = finalSources.length;
-                const intro = count > 0 
-                    ? `(v4.9.9) இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
-                    : "(v4.9.9) மன்னிக்கவும், இது குறித்த குறள்கள் என் தரவுத்தளத்தில் இல்லை.";
+                const intro = count > 1 
+                    ? `இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
+                    : `இது குறித்து ஒரு குறள் கண்டறியப்பட்டுள்ளது:`;
                 return { answer: intro, sources: finalSources };
             }
 
@@ -276,8 +275,11 @@ export class KuralAI {
             } catch (err) { 
                 console.error("AI Error:", err); 
                 // Seamless fallback to lexical response on error
+                const intro = finalSources.length > 1 
+                    ? `இதோ நீங்கள் கேட்டது குறித்த ${finalSources.length} குறள்கள்:`
+                    : `இதோ நீங்கள் கேட்ட குறள்:`;
                 return { 
-                    answer: `(v4.9.6) இதோ நீங்கள் கேட்டது குறித்த ${finalSources.length} குறள்கள்:`, 
+                    answer: intro, 
                     sources: finalSources 
                 };
             }
