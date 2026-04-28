@@ -7,6 +7,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5174,
-    strictPort: true
+    strictPort: true,
+    proxy: {
+      '/api-openai': {
+        target: 'https://api.openai.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-openai/, '')
+      }
+    }
   }
 })

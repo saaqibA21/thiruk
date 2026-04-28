@@ -13,7 +13,16 @@ export class KuralAI {
     async init(apiKey) {
         const cleanKey = apiKey?.trim();
         if (cleanKey && cleanKey.startsWith('sk-')) {
-            this.openai = new OpenAI({ apiKey: cleanKey, dangerouslyAllowBrowser: true });
+            const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+            // Use hardcoded local URL for proxy stability
+            const baseURL = isLocal ? 'http://localhost:5174/api-openai/v1' : 'https://api.openai.com/v1';
+            
+            console.log("[Engine] Initializing OpenAI with baseURL:", baseURL);
+            this.openai = new OpenAI({ 
+                apiKey: cleanKey, 
+                dangerouslyAllowBrowser: true,
+                baseURL
+            });
         }
         if (window.onNeuralProgress) window.onNeuralProgress(100);
     }
@@ -205,7 +214,8 @@ export class KuralAI {
         return { results: scoredResults.slice(0, limit), searchTerms, isStartsWith, isEndsWith };
     }
 
-    async ask(question, imageBase64 = null) {
+    async ask(question, imageBase64 = null, isDirect = false) {
+        console.log("[Engine] Ask triggered. Direct Mode:", isDirect);
         let finalQuery = question.trim().toLowerCase();
         const isValidKey = this.openai && this.openai.apiKey && this.openai.apiKey.startsWith('sk-');
 
@@ -244,12 +254,12 @@ export class KuralAI {
         const { results: lexicalResults, searchTerms, isStartsWith, isEndsWith } = await this.search(finalQuery, !!imageBase64);
         const finalSources = lexicalResults;
 
-        if (finalSources.length > 0) {
+        if (finalSources.length > 0 || (isDirect && isValidKey)) {
             const questionWords = ['what', 'explain', 'why', 'how', 'meaning', 'விளக்கம்', 'பொருள்', 'ஏன்', 'எப்படி', 'என்ன'].map(s => s.normalize('NFC'));
             const isQuestion = question.includes('?') || questionWords.some(w => question.toLowerCase().includes(w));
             
             // Direct response path for simple searches and structural queries
-            if ((!isQuestion || isStartsWith || isEndsWith) && !imageBase64) {
+            if (!isDirect && (!isQuestion || isStartsWith || isEndsWith) && !imageBase64 && finalSources.length > 0) {
                 const count = finalSources.length;
                 const intro = count > 1 
                     ? `இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன. இதோ உங்களுக்காக:` 
@@ -258,26 +268,38 @@ export class KuralAI {
             }
 
             try {
-                // AI Insight path for questions and images
+                // AI Insight path for questions, images, and Direct Mode
                 if (!this.openai) throw new Error("OpenAI not initialized");
-                const context = finalSources.slice(0, 7).map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
+                
+                let context = "No direct Kural matches found in local database.";
+                if (finalSources.length > 0) {
+                    context = finalSources.slice(0, 5).map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
+                }
+
                 const response = await this.openai.chat.completions.create({
                     model: "gpt-4o-mini",
                     messages: [
                         { 
                             role: "system", 
-                            content: `You are a Thirukkural Scholar. 
-                            If the user is asking for the meaning of a specific word or verse, provide a very short, direct, and sweet answer in Tamil. 
-                            Keep it under 2 sentences. Focus on the core meaning.
-                            STRICT RULE: Never repeat the Kural verse text or its number. Just the wisdom.` 
+                            content: isDirect 
+                                ? "You are a Thirukkural Scholar. Provide a detailed and wise answer to the user's message in Tamil. Use the provided Kurals if they are relevant, otherwise answer based on your deep knowledge of Thirukkural. Do not repeat the Kural text unless necessary for explanation."
+                                : "You are a Thirukkural Scholar. Provide a very short, direct, and sweet answer in Tamil (under 2 sentences). Focus on core meaning. Never repeat the Kural verse text or its number." 
                         },
                         { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
                     ]
                 });
-                return { answer: response.choices[0].message.content.trim(), sources: finalSources };
+                // In direct mode, we might want fewer sources to focus on the answer
+                const displaySources = isDirect ? finalSources.slice(0, 3) : finalSources;
+                return { answer: response.choices[0].message.content.trim(), sources: displaySources };
             } catch (err) { 
                 console.error("AI Error:", err); 
-                // Seamless fallback to lexical response on error
+                if (isDirect) {
+                    return { 
+                        answer: "மன்னிக்கவும், நேரடி AI சேவையில் தொழில்நுட்பக் கோளாறு (Authentication/CORS) ஏற்பட்டுள்ளது. தயவுசெய்து உங்கள் API சாவியைச் சரிபார்க்கவும் அல்லது சிறிது நேரம் கழித்து முயற்சிக்கவும்.", 
+                        sources: [] 
+                    };
+                }
+                // Seamless fallback to lexical response on error in normal mode
                 const intro = finalSources.length > 1 
                     ? `இதோ நீங்கள் கேட்டது குறித்த ${finalSources.length} குறள்கள்:`
                     : `இதோ நீங்கள் கேட்ட குறள்:`;

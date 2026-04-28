@@ -25,7 +25,7 @@ const ExternalResources = () => (
          </a>
          <a href="https://www.tamilvu.org/library/nationalized/pdf/59-puliyurkesigan/013.thirukuralputhiyaurai.pdf" target="_blank" rel="noopener noreferrer" className="resource-link">
             <ExternalLink size={18} />
-            <span>Tamil Virtual Academy - Puliyur Kesigan (PDF)</span>
+            <span>Tamil Virtual Academy - (PDF)</span>
          </a>
          <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noopener noreferrer" className="resource-link">
             <ExternalLink size={18} />
@@ -57,13 +57,14 @@ const App = () => {
    const [showKeyboard, setShowKeyboard] = useState(false);
    const [selectedImage, setSelectedImage] = useState(null);
    const [showMobileMenu, setShowMobileMenu] = useState(false);
+   const [directAI, setDirectAI] = useState(false);
    const fileInputRef = useRef(null);
 
    const getInitialKey = () => {
       try {
          const envKey = import.meta.env.VITE_OPENAI_API_KEY;
          if (envKey && envKey.length > 20 && envKey.startsWith('sk-')) return envKey;
-      } catch (e) {}
+      } catch (e) { }
       return atob('c2stcHJvai1IR09OVnJuZlZkamZjdTB3Q1BHY3ptMTBsT09sTG8yRmtxUWNXV296Uk1UWXk2NUE5NFA4aEk5V1hQZzVpMzRUd0laUlBDcmprVDNCbGtkRkpVTmo0OEdkekpwLVA0b3E2Y2txNTdlTVBoTE1OeGxMT3dsYXVkSk55ZUk5ZjZHeFo5SzRxTUdNTlo3b0ZYZUZOVlFKUWhDeHdB');
    };
 
@@ -100,7 +101,7 @@ const App = () => {
       const hasEnglish = /[a-z]/i.test(query);
       const endsWithSentenceBoundary = /[.!?;]$/.test(query);
       const endsWithWordBoundary = /[\s,]$/.test(query);
-      
+
       if (!hasEnglish || (!endsWithSentenceBoundary && !endsWithWordBoundary)) {
          return;
       }
@@ -113,7 +114,7 @@ const App = () => {
          setIsTranslating(true);
          try {
             let translatedValue = "";
-            
+
             if (endsWithSentenceBoundary) {
                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(query)}`;
                const res = await fetch(url);
@@ -127,11 +128,11 @@ const App = () => {
             } else {
                const match = query.match(/(\b[a-zA-Z\s']+\b)([\s,]$)$/);
                if (!match) return;
-               
+
                const segmentToTranslate = match[1];
                const boundary = match[2];
                const startIndex = match.index;
-               
+
                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(segmentToTranslate)}`;
                const res = await fetch(url);
                const data = await res.json();
@@ -173,22 +174,22 @@ const App = () => {
          setMessages(prev => [...prev, { role: 'ai', content: 'நிபுணர் தரவுத்தளம் இன்னும் தயாராகவில்லை. தயவுசெய்து சிறிது நேரம் காத்திருக்கவும்...', sources: [] }]);
          return;
       }
-      
-      const userMsg = { 
-         role: 'user', 
-         content: text || "", 
-         image: selectedImage 
+
+      const userMsg = {
+         role: 'user',
+         content: text || "",
+         image: selectedImage
       };
-      
+
       setMessages(prev => [...prev, userMsg]);
       const currentText = text || userMsg.content;
       const currentImage = selectedImage;
-      
+
       setQuery('');
       setSelectedImage(null);
       setLoading(true);
       try {
-         const result = await aiEngine.ask(currentText, currentImage);
+         const result = await aiEngine.ask(currentText, currentImage, directAI);
          if (!result) throw new Error("No response from engine");
          setMessages(prev => [...prev, { role: 'ai', content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", sources: result.sources || [] }]);
       } catch (error) {
@@ -279,8 +280,21 @@ const App = () => {
                      <p className="sub-title">SRM நிபுணர்</p>
                   </div>
                </div>
-               
+
                <div className="header-right-group">
+                  <div className="direct-ai-header-control">
+                     <span className="toggle-label desktop-only">{directAI ? 'Direct AI' : 'Search AI'}</span>
+                     <button 
+                        className={`ai-switch ${directAI ? 'on' : 'off'}`}
+                        onClick={() => setDirectAI(!directAI)}
+                     >
+                        <div className="switch-track">
+                           <div className="switch-thumb">
+                              {directAI ? <Sparkles size={12} /> : <Search size={12} />}
+                           </div>
+                        </div>
+                     </button>
+                  </div>
                   {/* Desktop Nav */}
                   <nav className="header-nav-tabs desktop-only">
                      <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>AI நிபுணர்</span> </button>
@@ -295,10 +309,10 @@ const App = () => {
                      </button>
                      <AnimatePresence>
                         {showMobileMenu && (
-                           <motion.div 
-                              initial={{ opacity: 0, y: -10 }} 
-                              animate={{ opacity: 1, y: 0 }} 
-                              exit={{ opacity: 0, y: -10 }} 
+                           <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
                               className="mobile-dropdown-menu"
                            >
                               <button onClick={() => { setActiveTab('ask'); setShowMobileMenu(false); }}> <Cpu size={18} /> AI நிபுணர் </button>
@@ -331,7 +345,7 @@ const App = () => {
                                        <div className="bubble-meta">{m.role === 'user' ? 'நீங்கள்' : 'நிபுணர்'}</div>
                                        {m.image && (
                                           <div className="chat-bubble-image">
-                                             <img src={m.image} alt="Uploaded" style={{maxWidth: '100%', borderRadius: '10px'}} />
+                                             <img src={m.image} alt="Uploaded" style={{ maxWidth: '100%', borderRadius: '10px' }} />
                                           </div>
                                        )}
                                        {m.content && (
@@ -339,22 +353,23 @@ const App = () => {
                                        )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
-                                              {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
-                                                 <div key={idx} className="kural-card-wrapper">
+                                             {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
+                                                <div key={idx} className="kural-card-wrapper">
 
-                                                    <KuralCard 
-                                                       kural={s} 
-                                                       highlight={m.searchTerms}
-                                                       onSelect={() => setSelectedKural(s)} 
-                                                    />
-                                                 </div>
-                                              ))}
+                                                   <KuralCard
+                                                      kural={s}
+                                                      highlight={m.searchTerms}
+                                                      onSelect={() => setSelectedKural(s)}
+                                                   />
+                                                </div>
+                                             ))}
                                              {m.sources.length > 5 && (
-                                                <button 
+                                                <button
                                                    className="show-more-kurals-btn"
                                                    onClick={() => {
                                                       const newMessages = [...messages];
-                                                      newMessages[i].showMore = !newMessages[i].showMore;
+                                                      const msgIdx = messages.findIndex(msg => msg === m);
+                                                      newMessages[msgIdx].showMore = !newMessages[msgIdx].showMore;
                                                       setMessages(newMessages);
                                                    }}
                                                 >
@@ -370,14 +385,14 @@ const App = () => {
                               <div ref={chatEndRef} style={{ height: '1px' }} />
                            </div>
                         </div>
-                        
+
                         <div className="chat-input-sticky-area">
                            <div className="chat-input-container-inner">
                               <AnimatePresence>
                                  {selectedImage && (
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="image-preview-container" style={{position: 'absolute', bottom: '100%', left: 0, marginBottom: '1rem', background: 'white', padding: '0.5rem', borderRadius: '1rem', border: '1px solid #ddd'}}>
-                                       <img src={selectedImage} alt="Preview" style={{height: '60px', borderRadius: '8px'}} />
-                                       <button onClick={() => setSelectedImage(null)} style={{position: 'absolute', top: -10, right: -10, background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer'}}>×</button>
+                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="image-preview-container" style={{ position: 'absolute', bottom: '100%', left: 0, marginBottom: '1rem', background: 'white', padding: '0.5rem', borderRadius: '1rem', border: '1px solid #ddd' }}>
+                                       <img src={selectedImage} alt="Preview" style={{ height: '60px', borderRadius: '8px' }} />
+                                       <button onClick={() => setSelectedImage(null)} style={{ position: 'absolute', top: -10, right: -10, background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer' }}>×</button>
                                     </motion.div>
                                  )}
                               </AnimatePresence>
@@ -405,9 +420,9 @@ const App = () => {
                                  <button className="kb-toggle-v2" onClick={() => fileInputRef.current?.click()}>
                                     <Camera size={20} />
                                  </button>
-                                 <input 
-                                    type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" 
-                                    onChange={handleImageUpload} 
+                                 <input
+                                    type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*"
+                                    onChange={handleImageUpload}
                                  />
                                  <input
                                     placeholder="எதையும் கேளுங்கள்..."
@@ -429,20 +444,20 @@ const App = () => {
                         <div className="paal-cards-container">
                            <h2 className="library-main-title">திருக்குறள் நூலகம்</h2>
                            <div className="paal-cards">
-                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}> 
+                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}>
                                  <span className="orn-bl"></span> <span className="orn-br"></span>
-                                 <h3>அறத்துப்பால்</h3> 
-                                 <p>38 அதிகாரங்கள்</p> 
+                                 <h3>அறத்துப்பால்</h3>
+                                 <p>38 அதிகாரங்கள்</p>
                               </div>
-                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}> 
+                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}>
                                  <span className="orn-bl"></span> <span className="orn-br"></span>
-                                 <h3>பொருட்பால்</h3> 
-                                 <p>70 அதிகாரங்கள்</p> 
+                                 <h3>பொருட்பால்</h3>
+                                 <p>70 அதிகாரங்கள்</p>
                               </div>
-                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}> 
+                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}>
                                  <span className="orn-bl"></span> <span className="orn-br"></span>
-                                 <h3>இன்பத்துப்பால்</h3> 
-                                 <p>25 அதிகாரங்கள்</p> 
+                                 <h3>இன்பத்துப்பால்</h3>
+                                 <p>25 அதிகாரங்கள்</p>
                               </div>
                            </div>
                         </div>
@@ -480,77 +495,77 @@ const App = () => {
 
                ) : (
                   <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                      <div className="history-hero-v2">
-                         <div className="h-hero-content">
-                            <h2 className="h-title-big">திருக்குறள் வரலாறு</h2>
-                            <p className="h-subtitle-gold">உலகப் பொதுமறை - ஏழே சீர்களில் வாழ்வியல் தத்துவம்</p>
-                            <div className="h-hero-grid">
-                               <div className="h-stat-item"> <strong>133</strong> <span>அதிகாரங்கள்</span> </div>
-                               <div className="h-stat-item"> <strong>1330</strong> <span>குறள்கள்</span> </div>
-                               <div className="h-stat-item"> <strong>3</strong> <span>பால்கள்</span> </div>
-                               <div className="h-stat-item"> <strong>2000+</strong> <span>ஆண்டுகள்</span> </div>
-                            </div>
-                         </div>
-                      </div>
-                      
-                      <div className="history-sections-stack">
-                         <section className="h-section-card">
-                            <div className="h-section-img"> <img src="thiruvalluvar.jpg" alt="Thiruvalluvar" /> </div>
-                            <div className="h-section-text">
-                               <h3>திருவள்ளுவர் பற்றி</h3>
-                               <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் எந்த ஒரு குறிப்பிட்ட மதத்தையும் சாராதவர், எனவே திருக்குறள் "உலகப் பொதுமறை" என்று போற்றப்படுகிறது.</p>
-                            </div>
-                         </section>
+                     <div className="history-hero-v2">
+                        <div className="h-hero-content">
+                           <h2 className="h-title-big">திருக்குறள் வரலாறு</h2>
+                           <p className="h-subtitle-gold">உலகப் பொதுமறை - ஏழே சீர்களில் வாழ்வியல் தத்துவம்</p>
+                           <div className="h-hero-grid">
+                              <div className="h-stat-item"> <strong>133</strong> <span>அதிகாரங்கள்</span> </div>
+                              <div className="h-stat-item"> <strong>1330</strong> <span>குறள்கள்</span> </div>
+                              <div className="h-stat-item"> <strong>3</strong> <span>பால்கள்</span> </div>
+                              <div className="h-stat-item"> <strong>2000+</strong> <span>ஆண்டுகள்</span> </div>
+                           </div>
+                        </div>
+                     </div>
 
-                         <section className="h-section-card statue-focus">
-                            <div className="h-section-text">
-                               <h3>கன்னியாகுமரி திருவள்ளுவர் சிலை</h3>
-                               <p><strong>அமைவிடம்:</strong> இந்தியாவின் தென்கோடி முனையான கன்னியாகுமரியில், மூன்று கடல்கள் சங்கமிக்கும் இடத்திற்கு அருகே கடல் நடுவே அமைந்துள்ள பிரம்மாண்டமான சிலை.</p>
-                               <ul className="statue-details">
-                                  <li><strong>உயரம்:</strong> 133 அடி (133 அதிகாரங்களை உணர்த்துகிறது).</li>
-                                  <li><strong>பீடம்:</strong> 38 அடி உயரம் (அறத்துப்பாலை குறிக்கிறது).</li>
-                                  <li><strong>சிலை:</strong> 95 அடி உயரம் (பொருட்பால் மற்றும் இன்பத்துப்பாலை குறிக்கிறது).</li>
-                                  <li><strong>எடை:</strong> சுமார் 7000 டன் கருங்கற்களால் ஆனது.</li>
-                                </ul>
-                            </div>
-                            <div className="h-section-img"> <img src="statue.png" alt="Valluvar Statue" /> </div>
-                         </section>
+                     <div className="history-sections-stack">
+                        <section className="h-section-card">
+                           <div className="h-section-img"> <img src="thiruvalluvar.jpg" alt="Thiruvalluvar" /> </div>
+                           <div className="h-section-text">
+                              <h3>திருவள்ளுவர் பற்றி</h3>
+                              <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் எந்த ஒரு குறிப்பிட்ட மதத்தையும் சாராதவர், எனவே திருக்குறள் "உலகப் பொதுமறை" என்று போற்றப்படுகிறது.</p>
+                           </div>
+                        </section>
 
-                         <section className="h-section-card">
-                            <div className="h-section-img"> <img src="manuscript.png" alt="Ancient Manuscript" /> </div>
-                            <div className="h-section-text">
-                               <h3>நூலின் அமைப்பு</h3>
-                               <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது: அறத்துப்பால், பொருட்பால், மற்றும் காமத்துப்பால். 133 அதிகாரங்களில் தலா 10 குறள்கள் வீதம் 1330 குறள்கள் உள்ளன. இவை ஒவ்வொன்றும் ஈரடி வெண்பாக்களால் ஆனவை.</p>
-                            </div>
-                         </section>
+                        <section className="h-section-card statue-focus">
+                           <div className="h-section-text">
+                              <h3>கன்னியாகுமரி திருவள்ளுவர் சிலை</h3>
+                              <p><strong>அமைவிடம்:</strong> இந்தியாவின் தென்கோடி முனையான கன்னியாகுமரியில், மூன்று கடல்கள் சங்கமிக்கும் இடத்திற்கு அருகே கடல் நடுவே அமைந்துள்ள பிரம்மாண்டமான சிலை.</p>
+                              <ul className="statue-details">
+                                 <li><strong>உயரம்:</strong> 133 அடி (133 அதிகாரங்களை உணர்த்துகிறது).</li>
+                                 <li><strong>பீடம்:</strong> 38 அடி உயரம் (அறத்துப்பாலை குறிக்கிறது).</li>
+                                 <li><strong>சிலை:</strong> 95 அடி உயரம் (பொருட்பால் மற்றும் இன்பத்துப்பாலை குறிக்கிறது).</li>
+                                 <li><strong>எடை:</strong> சுமார் 7000 டன் கருங்கற்களால் ஆனது.</li>
+                              </ul>
+                           </div>
+                           <div className="h-section-img"> <img src="statue.png" alt="Valluvar Statue" /> </div>
+                        </section>
 
-                         <section className="h-section-card reversed">
-                            <div className="h-section-text">
-                               <h3>உலக அங்கீகாரம்</h3>
-                               <p>லத்தீன், ஜெர்மன், பிரஞ்சு, ஆங்கிலம் உட்பட 100க்கும் மேற்பட்ட மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. மகாத்மா காந்தி போன்ற பல தலைவர்கள் திருக்குறளால் ஈர்க்கப்பட்டனர்.</p>
-                            </div>
-                            <div className="h-section-img"> <img src="translations.png" alt="Global Impact" /> </div>
-                         </section>
-                      </div>
-                      
-                      <div className="history-quote-v2">
-                          <p>"நான் படித்தவற்றில் மிகவும் உயர்ந்த அறம் சார்ந்த நூல் திருக்குறள். இது உலகிற்கே ஒரு பொதுவான வழிகாட்டி."</p>
-                          <span>- மகாத்மா காந்தி</span>
-                       </div>
-                       <ExternalResources />
+                        <section className="h-section-card">
+                           <div className="h-section-img"> <img src="manuscript.png" alt="Ancient Manuscript" /> </div>
+                           <div className="h-section-text">
+                              <h3>நூலின் அமைப்பு</h3>
+                              <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது: அறத்துப்பால், பொருட்பால், மற்றும் காமத்துப்பால். 133 அதிகாரங்களில் தலா 10 குறள்கள் வீதம் 1330 குறள்கள் உள்ளன. இவை ஒவ்வொன்றும் ஈரடி வெண்பாக்களால் ஆனவை.</p>
+                           </div>
+                        </section>
+
+                        <section className="h-section-card reversed">
+                           <div className="h-section-text">
+                              <h3>உலக அங்கீகாரம்</h3>
+                              <p>லத்தீன், ஜெர்மன், பிரஞ்சு, ஆங்கிலம் உட்பட 100க்கும் மேற்பட்ட மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. மகாத்மா காந்தி போன்ற பல தலைவர்கள் திருக்குறளால் ஈர்க்கப்பட்டனர்.</p>
+                           </div>
+                           <div className="h-section-img"> <img src="translations.png" alt="Global Impact" /> </div>
+                        </section>
+                     </div>
+
+                     <div className="history-quote-v2">
+                        <p>"நான் படித்தவற்றில் மிகவும் உயர்ந்த அறம் சார்ந்த நூல் திருக்குறள். இது உலகிற்கே ஒரு பொதுவான வழிகாட்டி."</p>
+                        <span>- மகாத்மா காந்தி</span>
+                     </div>
+                     <ExternalResources />
                   </motion.div>
                )}
             </AnimatePresence>
-            
+
          </main>
 
          <AnimatePresence>
             {selectedKural && (
                <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
                   <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
-                     <header className="m-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'2rem'}}> 
-                        <span className="m-badge">குறள் {selectedKural.Number}</span> 
-                        <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button> 
+                     <header className="m-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                        <span className="m-badge">குறள் {selectedKural.Number}</span>
+                        <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button>
                      </header>
                      {(() => {
                         const allWords = `${selectedKural.Line1} ${selectedKural.Line2}`.trim().split(/\s+/);
@@ -570,13 +585,13 @@ const App = () => {
                </div>
             )}
          </AnimatePresence>
-       </div>
-    );
- };
+      </div>
+   );
+};
 
 const KuralCard = ({ kural, highlight, onSelect }) => {
    const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
-   
+
    const highlightText = (text) => {
       if (!highlight || highlight.length === 0) return text;
       let highlighted = text;
