@@ -181,7 +181,7 @@ export class KuralAI {
                 
                 // Density bonus: Shorter Kurals where the match is more "dense" rank slightly higher
                 const totalLen = verseText.length;
-                score += (200 - totalLen) * 10; // Tiny boost for brevity
+                if (score > 0) score += (200 - totalLen) * 10; // Tiny boost for brevity
             }
 
             return { ...k, score, matchedUniqueWords, totalLen: verseText.length };
