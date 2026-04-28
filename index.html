@@ -8,10 +8,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Noto+Sans+Tamil:wght@100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-  <script type="module" crossorigin src="/thiruk/assets/index-DN-AW6m0.js"></script>
-  <link rel="stylesheet" crossorigin href="/thiruk/assets/index-DoDPdwgO.css">
+  <script>
+    // Nuclear Cache Buster: Unregister all service workers and clear caches
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+    // Also clear all caches for good measure
+    if (window.caches) {
+      caches.keys().then(function(names) {
+        for (let name of names) caches.delete(name);
+      });
+    }
+  </script>
+  <script type="module" crossorigin src="/thiruk/assets/index-Dxcpv5dG.js"></script>
+  <link rel="stylesheet" crossorigin href="/thiruk/assets/index-CVqEXMJ1.css">
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root"></div>
 </body>
 </html>
