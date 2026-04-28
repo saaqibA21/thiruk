@@ -188,7 +188,10 @@ export class KuralAI {
             });
         
         // Dynamic Relevance Threshold
-        const limit = isImageSearch ? 1 : 100;
+        const isNumeric = /^\d+$/.test(cleanQuery);
+        const hasKuralNum = /\b(?:kural|குறள்|எண்)\b/i.test(cleanQuery) && /\d+/.test(cleanQuery);
+        const limit = (isImageSearch || isNumeric || hasKuralNum) ? 1 : 100;
+        
         if (scoredResults.length > 0) {
             const topScore = scoredResults[0].score;
             if (topScore >= 2000000) {
