@@ -35,6 +35,10 @@ const ExternalResources = () => (
             <ExternalLink size={18} />
             <span>Tamil Valarchi Thurai - Thirukkural (PDF)</span>
          </a>
+         <a href="https://www.tnpscjob.com/last-10-years-tnpsc-question-papers-with-answers-pdf/" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <ExternalLink size={18} />
+            <span>TNPSC Job - Previous Year Q&A (PDF)</span>
+         </a>
       </div>
    </div>
 );
@@ -188,14 +192,31 @@ const App = () => {
       setQuery('');
       setSelectedImage(null);
       setLoading(true);
+      if (currentImage) setIsTranslating(true);
       try {
          const result = await aiEngine.ask(currentText, currentImage, directAI);
          if (!result) throw new Error("No response from engine");
+
+         // If engine transcribed text from an image, update the last user message to show it
+         if (result.transcribed) {
+            setMessages(prev => {
+               const newMsgs = [...prev];
+               const lastIdx = newMsgs.length - 1;
+               if (newMsgs[lastIdx] && newMsgs[lastIdx].role === 'user') {
+                  newMsgs[lastIdx].content = result.transcribed;
+               }
+               return newMsgs;
+            });
+         }
+
          setMessages(prev => [...prev, { role: 'ai', content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", sources: result.sources || [] }]);
       } catch (error) {
          console.error("Chat Error:", error);
          setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பதிலைத் தேடுவதில் தொழில்நுட்பக் கோளாறு ஏற்பட்டுள்ளது. மீண்டும் ஒருமுறை முயற்சி செய்யுங்கள்.", sources: [] }]);
-      } finally { setLoading(false); }
+      } finally {
+         setLoading(false);
+         setIsTranslating(false);
+      }
    };
 
    const handleKeyClick = (char) => {
@@ -284,7 +305,7 @@ const App = () => {
                <div className="header-right-group">
                   <div className="direct-ai-header-control">
                      <span className="toggle-label desktop-only">{directAI ? 'Direct AI' : 'Search AI'}</span>
-                     <button 
+                     <button
                         className={`ai-switch ${directAI ? 'on' : 'off'}`}
                         onClick={() => setDirectAI(!directAI)}
                      >

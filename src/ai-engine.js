@@ -35,18 +35,26 @@ export class KuralAI {
         const allQueryWords = cleanQuery.split(/\s+/);
         
         // Fill-in-the-blank Regex (Powerful for textbook queries)
-        const gapQuery = query.toLowerCase().normalize('NFC').replace(/[-._…·]{2,}/g, '.*');
         let gapRegex = null;
         try { 
-            // Split by gaps, normalize, and STRIP NUMBERS (to ignore "25.")
             const pieces = query.split(/[-._…·]{2,}/)
                 .map(p => normalize(p).replace(/\d+/g, '').trim())
-                .filter(p => p.length > 2); // Only keep meaningful pieces
+                .filter(p => p.length > 1);
             if (pieces.length > 1) {
                 const escapedPieces = pieces.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
                 gapRegex = new RegExp(escapedPieces.join('.*')); 
             }
         } catch(e) {}
+
+        // Chapter/Adhikaram Match (New specific logic)
+        const chapMatch = query.match(/\b(?:chapter|adhikaram|அதிகாரம்|அத்தியாயம்|ஹாப்டர்)\s*(\d+)\b/i);
+        let chapterRange = null;
+        if (chapMatch) {
+            const chapNum = parseInt(chapMatch[1]);
+            if (chapNum >= 1 && chapNum <= 133) {
+                chapterRange = { start: (chapNum - 1) * 10 + 1, end: chapNum * 10, num: chapNum };
+            }
+        }
         const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'சதொடங்கு'].map(s => s.normalize('NFC'));
         const endKeywords = ['முடியும்', 'முடிகிற', 'ending', 'ends with', 'முடிவு', 'ஈறு'].map(s => s.normalize('NFC'));
 
@@ -158,14 +166,16 @@ export class KuralAI {
                 }
             }
 
-            const numMatch = query.match(/\b(?:kural|குறள்|எண்)?\s*(\d+)\b/i);
-            if (numMatch) {
-                const matchedNum = parseInt(numMatch[1]);
-                if (k.Number === matchedNum) {
-                    // If the query explicitly says "Kural X" or similar, give it massive points
-                    const isExplicit = /\b(?:kural|குறள்|எண்)\s*\d+/i.test(query);
-                    score += isExplicit ? 5000000 : (isImageSearch ? 1000 : 500000);
-                }
+            if (chapterRange && k.Number >= chapterRange.start && k.Number <= chapterRange.end) {
+                score += 20000000; // Ultimate priority for specific chapter
+            }
+
+            const numMatch = query.match(/\b(?:kural|குறள்|எண்)\s*(\d+)\b/i);
+            const standaloneNum = !isImageSearch ? query.match(/^\s*(\d+)\s*$/) : null;
+            const targetNum = numMatch ? parseInt(numMatch[1]) : (standaloneNum ? parseInt(standaloneNum[1]) : null);
+            
+            if (targetNum && k.Number === targetNum) {
+                score += 10000000; 
             }
 
             // Stage 3: Positional & Density Bonuses (The Tie-Breakers)
@@ -199,19 +209,15 @@ export class KuralAI {
         // Dynamic Relevance Threshold
         const isNumeric = /^\d+$/.test(cleanQuery);
         const hasKuralNum = /\b(?:kural|குறள்|எண்)\b/i.test(cleanQuery) && /\d+/.test(cleanQuery);
-        const limit = (isImageSearch || isNumeric || hasKuralNum) ? 1 : 100;
-        
+        const limit = (isImageSearch || isNumeric || hasKuralNum) ? 1 : (chapterRange ? 10 : 100);
+        console.log(`[Search] Query: "${query}" | Found: ${scoredResults.length}`);
         if (scoredResults.length > 0) {
-            const topScore = scoredResults[0].score;
-            if (topScore >= 2000000) {
-                return { 
-                    results: scoredResults.filter(k => k.score >= topScore * 0.01).slice(0, limit), 
-                    searchTerms, isStartsWith, isEndsWith 
-                };
-            }
+            console.log(`[Search] Top Match: Kural #${scoredResults[0].Number} (Score: ${scoredResults[0].score})`);
         }
-
-        return { results: scoredResults.slice(0, limit), searchTerms, isStartsWith, isEndsWith };
+        
+        // In Direct AI mode, we usually want fewer but more relevant sources
+        const finalLimit = (isImageSearch || isNumeric || hasKuralNum) ? 1 : limit;
+        return { results: scoredResults.slice(0, finalLimit), searchTerms, isStartsWith, isEndsWith };
     }
 
     async ask(question, imageBase64 = null, isDirect = false) {
@@ -281,16 +287,32 @@ export class KuralAI {
                     messages: [
                         { 
                             role: "system", 
-                            content: isDirect 
-                                ? "You are a Thirukkural Scholar. Provide a detailed and wise answer to the user's message in Tamil. Use the provided Kurals if they are relevant, otherwise answer based on your deep knowledge of Thirukkural. Do not repeat the Kural text unless necessary for explanation."
-                                : "You are a Thirukkural Scholar. Provide a very short, direct, and sweet answer in Tamil (under 2 sentences). Focus on core meaning. Never repeat the Kural verse text or its number." 
+                            content: `You are a Thirukkural Scholar. 
+                            Fact Sheet:
+                            - Total Kurals: 1330.
+                            - Total Chapters (Adhikarams): 133.
+                            - Each Chapter has exactly 10 Kurals.
+                            - Chapter 1: 1-10, Chapter 12: 111-120, etc.
+                            - Chapter 1-38: Aram (Virtue), 39-108: Porul (Wealth/Politics), 109-133: Inbam (Love).
+                            
+                            Instructions:
+                            - Answer ONLY in Tamil.
+                            - You are a STRICT Thirukkural Scholar. 
+                            - Do NOT answer general knowledge questions, recipes (like Maggi), or anything unrelated to Thirukkural.
+                            - If a user asks a non-Kural question, politely refuse and say you are dedicated to spreading the wisdom of Thirukkural.
+                            - Be wise and accurate. 
+                            - If the user asks for a specific Chapter, refer to the Kurals provided in the context.
+                            - Do not hallucinate Chapter titles if they are not in the context.`
                         },
-                        { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` }
+                        { role: "user", content: `Context (Relevant Kurals):\n${context}\n\nUser Query: ${finalQuery}` }
                     ]
                 });
-                // In direct mode, we might want fewer sources to focus on the answer
                 const displaySources = isDirect ? finalSources.slice(0, 3) : finalSources;
-                return { answer: response.choices[0].message.content.trim(), sources: displaySources };
+                return { 
+                    answer: response.choices[0].message.content.trim(), 
+                    sources: displaySources,
+                    transcribed: imageBase64 ? finalQuery : null 
+                };
             } catch (err) { 
                 console.error("AI Error:", err); 
                 if (isDirect) {
