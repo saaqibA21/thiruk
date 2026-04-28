@@ -15,6 +15,30 @@ const TAMIL_KEYS = [
    ['ே', 'ை', 'ொ', 'ோ', 'ௌ', '்', 'ஃ']
 ];
 
+const ExternalResources = () => (
+   <div className="external-resources-section">
+      <h3>கூடுதல் ஆதாரங்கள் (External Resources)</h3>
+      <div className="resources-grid">
+         <a href="https://library.bjp.org/jspui/bitstream/123456789/1495/1/Thirukkural.pdf" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <ExternalLink size={18} />
+            <span>BJP Library - Thirukkural (PDF)</span>
+         </a>
+         <a href="https://www.tamilvu.org/library/nationalized/pdf/59-puliyurkesigan/013.thirukuralputhiyaurai.pdf" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <ExternalLink size={18} />
+            <span>Tamil Virtual Academy - Puliyur Kesigan (PDF)</span>
+         </a>
+         <a href="https://ta.wikipedia.org/wiki/%E0%AE%A4%E0%AE%BF%E0%AE%B0%E0%AF%81%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%81%E0%AE%B1%E0%AE%B3%E0%AF%8D" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <ExternalLink size={18} />
+            <span>Wikipedia - திருக்குறள்</span>
+         </a>
+         <a href="https://tamilvalarchithurai.tn.gov.in/wp-content/uploads/2019/03/Thirukural-2-converted-1.pdf" target="_blank" rel="noopener noreferrer" className="resource-link">
+            <ExternalLink size={18} />
+            <span>Tamil Valarchi Thurai - Thirukkural (PDF)</span>
+         </a>
+      </div>
+   </div>
+);
+
 const App = () => {
    const [activeTab, setActiveTab] = useState('ask');
    const [selectedPaal, setSelectedPaal] = useState(null);
@@ -451,7 +475,9 @@ const App = () => {
                            </div>
                         </div>
                      )}
+                     <ExternalResources />
                   </motion.div>
+
                ) : (
                   <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                       <div className="history-hero-v2">
@@ -511,6 +537,7 @@ const App = () => {
                           <p>"நான் படித்தவற்றில் மிகவும் உயர்ந்த அறம் சார்ந்த நூல் திருக்குறள். இது உலகிற்கே ஒரு பொதுவான வழிகாட்டி."</p>
                           <span>- மகாத்மா காந்தி</span>
                        </div>
+                       <ExternalResources />
                   </motion.div>
                )}
             </AnimatePresence>
