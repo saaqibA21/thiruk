@@ -317,7 +317,7 @@ const App = () => {
                                           <div className="kural-source-cards">
                                               {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
                                                  <div key={idx} className="kural-card-wrapper">
-                                                    <div className="kural-card-score">Score: {s.score?.toLocaleString()} | Match: {s.matchedUniqueWords || 0}</div>
+
                                                     <KuralCard 
                                                        kural={s} 
                                                        highlight={m.searchTerms}
