@@ -217,7 +217,7 @@ const App = () => {
       }
    };
 
-   const dropRef = useRef({ handleGlobalDrop, activeTab });
+   const dropRef = useRef({});
    
    useEffect(() => {
       dropRef.current = { handleGlobalDrop, activeTab };
