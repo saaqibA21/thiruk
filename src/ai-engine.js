@@ -254,7 +254,10 @@ export class KuralAI {
         }
 
         if (!finalQuery.trim() && imageBase64) {
-            finalQuery = question || "அன்பு";
+            return {
+                answer: "மன்னிக்கவும், படத்திலிருந்து உரையை வாசிக்க முடியவில்லை. படம் தெளிவாக உள்ளதா எனச் சரிபார்க்கவும் அல்லது இணையத் தொடர்பு சரியாக உள்ளதா என உறுதிப்படுத்தவும்.",
+                sources: []
+            };
         }
 
         const { results: lexicalResults, searchTerms, isStartsWith, isEndsWith } = await this.search(finalQuery, !!imageBase64);
