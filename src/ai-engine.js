@@ -326,7 +326,9 @@ export class KuralAI {
                 let displaySources = isDirect ? finalSources.slice(0, 3) : finalSources;
                 
                 if (answerText.includes('[HIDE_SOURCES]')) {
-                    displaySources = [];
+                    if (isDirect) {
+                        displaySources = [];
+                    }
                     answerText = answerText.replace('[HIDE_SOURCES]', '').trim();
                 }
 
