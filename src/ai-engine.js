@@ -105,19 +105,26 @@ export class KuralAI {
                     if (t === "பொருள்" && searchTerms.length > 1) multiplier = 0.1;
 
                     const tRoot = t.length > 3 ? t.substring(0, t.length - 1) : t;
-                    if (words.includes(t)) {
+                    
+                    const sanitize = (str) => str.replace(/[ணனந]/g, 'ன').replace(/[ளலழ]/g, 'ல').replace(/[றர]/g, 'ர');
+                    const sT = sanitize(t);
+                    const sTRoot = sanitize(tRoot);
+                    const sWords = words.map(w => sanitize(w));
+                    const sVerseText = sanitize(verseText);
+
+                    if (sWords.includes(sT)) {
                         score += (100000 + wordWeight) * multiplier;
                         matchedUniqueWords++;
-                    } else if (words.some(w => w.startsWith(tRoot))) {
+                    } else if (sWords.some(w => w.startsWith(sTRoot))) {
                         // Root match bonus
                         score += (50000 + wordWeight / 2) * multiplier;
                         matchedUniqueWords++;
                         matchedPrefixes++;
-                    } else if (verseText.includes(t)) {
+                    } else if (sVerseText.includes(sT)) {
                         // Fragment/Substring match bonus
                         score += (300000 + wordWeight) * multiplier;
                         matchedUniqueWords++;
-                    } else if (words.some(w => w.startsWith(t.substring(0, 3)))) {
+                    } else if (t.length >= 4 && sWords.some(w => w.startsWith(sanitize(t.substring(0, 4))))) {
                         score += 5000 + (t.length * 500);
                         matchedPrefixes++;
                     }
