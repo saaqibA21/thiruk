@@ -218,31 +218,36 @@ const App = () => {
    };
 
    useEffect(() => {
-      // Unconditional preventDefault to guarantee the browser never opens the file
-      const preventDefaultBehavior = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
+      const isFileDrag = (e) => {
+         const types = e.dataTransfer.types;
+         if (!types) return false;
+         const typeArray = Array.from(types);
+         return typeArray.some(t => t.toLowerCase() === 'files' || t.toLowerCase() === 'application/x-moz-file');
       };
 
       const onDragOver = (e) => {
-         preventDefaultBehavior(e);
-         // Setting dropEffect to copy tells the browser we accept the drop
-         if (e.dataTransfer) {
+         e.preventDefault();
+         e.stopPropagation();
+         if (activeTab === 'ask' && isFileDrag(e)) {
             e.dataTransfer.dropEffect = 'copy';
+         } else {
+            e.dataTransfer.dropEffect = 'none';
          }
       };
 
       const onDragEnter = (e) => {
-         preventDefaultBehavior(e);
-         if (activeTab === 'ask') {
+         e.preventDefault();
+         e.stopPropagation();
+         if (activeTab === 'ask' && isFileDrag(e)) {
             dragCounter.current++;
             setIsDragging(true);
          }
       };
 
       const onDragLeave = (e) => {
-         preventDefaultBehavior(e);
-         if (activeTab === 'ask') {
+         e.preventDefault();
+         e.stopPropagation();
+         if (activeTab === 'ask' && isFileDrag(e)) {
             dragCounter.current--;
             if (dragCounter.current <= 0) {
                dragCounter.current = 0;
@@ -252,26 +257,27 @@ const App = () => {
       };
 
       const onDrop = (e) => {
-         preventDefaultBehavior(e);
+         e.preventDefault();
+         e.stopPropagation();
+         setIsDragging(false);
+         dragCounter.current = 0;
          if (activeTab === 'ask') {
-            setIsDragging(false);
-            dragCounter.current = 0;
             handleGlobalDrop(e);
          }
       };
 
-      // Attaching to window unconditionally
-      window.addEventListener('dragenter', onDragEnter, false);
-      window.addEventListener('dragover', onDragOver, false);
-      window.addEventListener('dragleave', onDragLeave, false);
-      window.addEventListener('drop', onDrop, false);
+      // Use document level and capturing phase for maximum override
+      document.addEventListener('dragenter', onDragEnter, true);
+      document.addEventListener('dragover', onDragOver, true);
+      document.addEventListener('dragleave', onDragLeave, true);
+      document.addEventListener('drop', onDrop, true);
 
       return () => {
          dragCounter.current = 0;
-         window.removeEventListener('dragenter', onDragEnter, false);
-         window.removeEventListener('dragover', onDragOver, false);
-         window.removeEventListener('dragleave', onDragLeave, false);
-         window.removeEventListener('drop', onDrop, false);
+         document.removeEventListener('dragenter', onDragEnter, true);
+         document.removeEventListener('dragover', onDragOver, true);
+         document.removeEventListener('dragleave', onDragLeave, true);
+         document.removeEventListener('drop', onDrop, true);
       };
    }, [activeTab]);
 
@@ -485,6 +491,22 @@ const App = () => {
                     animate={{ opacity: 1 }} 
                     exit={{ opacity: 0 }}
                   >
+                      <AnimatePresence>
+                        {isDragging && (
+                           <motion.div 
+                              initial={{ opacity: 0 }} 
+                              animate={{ opacity: 1 }} 
+                              exit={{ opacity: 0 }}
+                              className="global-drag-overlay"
+                           >
+                              <div className="drop-zone-box">
+                                 <ImageIcon size={64} color="var(--primary)" />
+                                 <h2>படத்தை இங்கே விடவும்</h2>
+                                 <p>Drop your image here to analyze it with AI</p>
+                              </div>
+                           </motion.div>
+                        )}
+                     </AnimatePresence>
                      <div className="chat-view">
                         <div className="chat-window">
                            <div className="chat-messages-scroll-area">
@@ -495,6 +517,21 @@ const App = () => {
                                  </div>
                               )}
                               <UsageInstructions />
+                              <AnimatePresence>
+                                 {isDragging && (
+                                    <motion.div 
+                                       initial={{ opacity: 0, scale: 0.95 }} 
+                                       animate={{ opacity: 1, scale: 1 }} 
+                                       exit={{ opacity: 0, scale: 0.95 }}
+                                       className="drag-drop-overlay"
+                                    >
+                                       <div className="drop-zone-content">
+                                          <ImageIcon size={48} />
+                                          <p>படத்தை இங்கே விடவும் (Drop image here)</p>
+                                       </div>
+                                    </motion.div>
+                                 )}
+                              </AnimatePresence>
                               {messages.map((m, i) => (
                                  <div key={i} className={`chat-bubble-container ${m.role}`}>
                                     <div className="chat-bubble">
@@ -740,22 +777,6 @@ const App = () => {
                      </div>
                   </motion.div>
                </div>
-            )}
-         </AnimatePresence>
-         <AnimatePresence>
-            {isDragging && (
-               <motion.div 
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
-                  exit={{ opacity: 0 }}
-                  className="global-drag-overlay"
-               >
-                  <div className="drop-zone-box">
-                     <ImageIcon size={64} color="var(--primary)" />
-                     <h2>படத்தை இங்கே விடவும்</h2>
-                     <p>Drop your image here to analyze it with AI</p>
-                  </div>
-               </motion.div>
             )}
          </AnimatePresence>
       </div>
