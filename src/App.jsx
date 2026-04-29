@@ -186,12 +186,23 @@ const App = () => {
    const dragCounter = useRef(0);
 
    const processImageFile = (file) => {
-      if (file && file.type.startsWith('image/')) {
+      if (!file) return;
+      if (file.type && file.type.startsWith('image/')) {
          const reader = new FileReader();
          reader.onloadend = () => {
             setSelectedImage(reader.result);
          };
          reader.readAsDataURL(file);
+      } else {
+         // Fallback for files without type (sometimes happens on some OS/Browsers)
+         const isImg = /\.(jpe?g|png|gif|webp|bmp)$/i.test(file.name);
+         if (isImg) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+               setSelectedImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+         }
       }
    };
 
@@ -214,16 +225,16 @@ const App = () => {
       const handleGlobalDragEnter = (e) => {
          e.preventDefault();
          e.stopPropagation();
+         if (activeTab !== 'ask') return;
          dragCounter.current++;
-         if (activeTab === 'ask') {
-            setIsDragging(true);
-         }
+         setIsDragging(true);
       };
 
       const handleGlobalDragOver = (e) => {
          e.preventDefault();
          e.stopPropagation();
          if (activeTab === 'ask') {
+            e.dataTransfer.dropEffect = 'copy';
             setIsDragging(true);
          }
       };
@@ -231,6 +242,7 @@ const App = () => {
       const handleGlobalDragLeave = (e) => {
          e.preventDefault();
          e.stopPropagation();
+         if (activeTab !== 'ask') return;
          dragCounter.current--;
          if (dragCounter.current <= 0) {
             dragCounter.current = 0;
@@ -248,6 +260,17 @@ const App = () => {
             const files = e.dataTransfer.files;
             if (files && files.length > 0) {
                processImageFile(files[0]);
+            } else {
+               // Fallback for items
+               const items = e.dataTransfer.items;
+               if (items && items.length > 0) {
+                  for (let i = 0; i < items.length; i++) {
+                     if (items[i].kind === 'file') {
+                        processImageFile(items[i].getAsFile());
+                        break;
+                     }
+                  }
+               }
             }
          }
       };
