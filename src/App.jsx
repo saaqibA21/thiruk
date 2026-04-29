@@ -690,7 +690,6 @@ const App = () => {
                            </div>
                         </div>
                      )}
-                     <ExternalResources />
                   </motion.div>
 
                ) : (

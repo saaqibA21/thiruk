@@ -1600,3 +1600,58 @@ body,
   background-color: #ffedd5;
   color: #9a3412;
 }
+
+/* Library View Refinements */
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem 0;
+}
+
+.chapter-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-family: inherit;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.chapter-tile:hover {
+  background: #f9fafb;
+  border-color: #f3e5ab;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.chapter-tile span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 50%;
+  font-size: 0.8rem;
+}
+
+.library-main-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  color: #111827;
+}
+
+.paal-cards-container {
+  padding: 1rem 0;
+}
+
