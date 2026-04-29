@@ -83,6 +83,7 @@ const App = () => {
    const [selectedImage, setSelectedImage] = useState(null);
    const [showMobileMenu, setShowMobileMenu] = useState(false);
    const [directAI, setDirectAI] = useState(false);
+   const [isDragging, setIsDragging] = useState(false);
    const fileInputRef = useRef(null);
 
    const getInitialKey = () => {
@@ -182,14 +183,64 @@ const App = () => {
 
    const ATHIGARAMS = ["கடவுள் வாழ்த்து", "வான் சிறப்பு", "நீத்தார் பெருமை", "அறன் வலியுறுத்தல்", "இல்வாழ்க்கை", "வாழ்க்கைத் துணைநலம்", "மக்கட்பேறு", "அன்புடைமை", "விருந்தோம்பல்", "இனியவை கூறல்", "செய்ந்நன்றியறிதல்", "நடுவுநிலைமை", "அடக்கமுடைமை", "ஒழுக்கமுடைமை", "பிறனில் விழையாமை", "பொறையுடைமை", "அழுக்காறாமை", "வெஃகாமை", "புறங்கூறாமை", "பயனில சொல்லாமை", "தீவினையச்சம்", "ஒப்புரவறிதல்", "ஈகை", "புகழ்", "அருளுடைமை", "புலால் மறுத்தல்", "தவம்", "கூடாஒழுக்கம்", "கள்ளாமை", "வாய்மை", "வெகுளாமை", "இன்னா செய்யாமை", "கொல்லாமை", "நிலையாமை", "துறவு", "மெய்யணர்தல்", "அவாவறுத்தல்", "ஊழ்", "இறைமாட்சி", "கல்வி", "கல்லாமை", "கேள்வி", "அறிவுடைமை", "குற்றங்கடிதல்", "பெரியாரைத் துணைக்கோடல்", "சிற்றினம் சேராமை", "தெரிந்துசெயல்வகை", "வலியறிதல்", "காலமறிதல்", "இடனறிதல்", "தெரிந்துதெளிதல்", "தெரிந்துவினையாடல்", "சுற்றந்தழால்", "பொச்சாவாமை", "செங்கோன்மை", "கொடுங்கோன்மை", "வெருவந்த செய்யாமை", "கண்ணோட்டம்", "ஒற்றாடல்", "ஊக்கமுடைமை", "மடியின்மை", "ஆள்வினையுடைமை", "இடுக்கண் அழியாமை", "அமைச்சு", "சொல்வன்மை", "வினைத்தூய்மை", "வினைத்திட்பம்", "வினைசெயல்வகை", "தூது", "மன்னரைச் சேர்ந்தொழுதல்", "குறிப்பறிதல்", "அவையறிதல்", "அவையஞ்சாமை", "நாடு", "அரண்", "பொருள்செயல்வகை", "படைமாட்சி", "படைச்செருக்கு", "நட்பு", "நட்பாராய்தல்", "பழைமை", "தீய நட்பு", "கூடா நட்பு", "பேதைமை", "புல்லறிவாண்மை", "இகல்", "பகைமாட்சி", "பகைத்திறந்தெரிதல்", "உட்பகை", "பெரியாரைப் பிழையாமை", "பெண்வழிச் சேறல்", "வரைவின் மகளிர்", "கள்ளுண்ணாமை", "சூது", "மருந்து", "குடிமை", "மானம்பருமை", "சான்றாண்மை", "பண்புடைமை", "நன்றியில் செல்வம்", "நாணுடைமை", "குடிசெயல்வகை", "உழவு", "நல்குரவு", "இரவு", "இரவச்சம்", "கயமை", "தகையணங்குறுத்தல்", "குறிப்பறிதல்", "புணர்ச்சி மகிழ்தல்", "நலம்புனைந்துரைத்தல்", "காதல் சிறப்புரைத்தல்", "நாணுத்துறவுரைத்தல்", "அலரறிவுறுத்தல்", "பிரிவாற்றாமை", "படர்மெலிந்திரங்கல்", "கண்விதுப்பழிதல்", "பசப்புறு பருவரல்", "தனிப்படர் மிகுதி", "நினைந்தவர் புலம்பல்", "கனவுநிலை உரைத்தல்", "பொழுதுகண்டு இரங்கல்", "உறுப்புநலன் அழிதல்", "நெஞ்சொடு கிளத்தல்", "நிறையழிதல்", "அவர்வயின் விதும்பல்", "குறிப்பறிவுறுத்தல்", "புணர்ச்சி விதும்பல்", "நெஞ்சொடு புலத்தல்", "புலவி", "புலவி நுணுக்கம்", "ஊடலுவகை"];
 
-   const handleImageUpload = (e) => {
-      const file = e.target.files[0];
-      if (file) {
+   const dragCounter = useRef(0);
+
+   const processImageFile = (file) => {
+      if (file && file.type.startsWith('image/')) {
          const reader = new FileReader();
          reader.onloadend = () => {
             setSelectedImage(reader.result);
          };
          reader.readAsDataURL(file);
+      }
+   };
+
+   const handleImageUpload = (e) => {
+      const file = e.target.files[0];
+      processImageFile(file);
+   };
+
+   const handlePaste = (e) => {
+      const items = e.clipboardData.items;
+      for (let i = 0; i < items.length; i++) {
+         if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            processImageFile(blob);
+         }
+      }
+   };
+
+   const handleDragEnter = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter.current++;
+      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+         setIsDragging(true);
+      }
+   };
+
+   const handleDragOver = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+   };
+
+   const handleDragLeave = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter.current--;
+      if (dragCounter.current === 0) {
+         setIsDragging(false);
+      }
+   };
+
+   const handleDrop = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      dragCounter.current = 0;
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+         processImageFile(files[0]);
       }
    };
 
@@ -370,8 +421,33 @@ const App = () => {
 
          <main className="content-container">
             <AnimatePresence mode="wait">
-               {activeTab === 'ask' ? (
-                  <motion.div key="ask" className="chat-view-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                {activeTab === 'ask' ? (
+                  <motion.div 
+                    key="ask" 
+                    className={`chat-view-container ${isDragging ? 'drag-over' : ''}`} 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }}
+                    onDragEnter={handleDragEnter}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                     <AnimatePresence>
+                        {isDragging && (
+                           <motion.div 
+                              initial={{ opacity: 0, scale: 0.95 }} 
+                              animate={{ opacity: 1, scale: 1 }} 
+                              exit={{ opacity: 0, scale: 0.95 }}
+                              className="drag-drop-overlay"
+                           >
+                              <div className="drop-zone-content">
+                                 <ImageIcon size={48} />
+                                 <p>படத்தை இங்கே விடவும் (Drop image here)</p>
+                              </div>
+                           </motion.div>
+                        )}
+                     </AnimatePresence>
                      <div className="chat-view">
                         <div className="chat-window">
                            <div className="chat-messages-scroll-area">
@@ -382,6 +458,21 @@ const App = () => {
                                  </div>
                               )}
                               <UsageInstructions />
+                              <AnimatePresence>
+                                 {isDragging && (
+                                    <motion.div 
+                                       initial={{ opacity: 0, scale: 0.95 }} 
+                                       animate={{ opacity: 1, scale: 1 }} 
+                                       exit={{ opacity: 0, scale: 0.95 }}
+                                       className="drag-drop-overlay"
+                                    >
+                                       <div className="drop-zone-content">
+                                          <ImageIcon size={48} />
+                                          <p>படத்தை இங்கே விடவும் (Drop image here)</p>
+                                       </div>
+                                    </motion.div>
+                                 )}
+                              </AnimatePresence>
                               {messages.map((m, i) => (
                                  <div key={i} className={`chat-bubble-container ${m.role}`}>
                                     <div className="chat-bubble">
@@ -472,6 +563,7 @@ const App = () => {
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
+                                    onPaste={handlePaste}
                                  />
                                  <button onClick={() => handleAsk(query)} disabled={loading || !aiEngine} className="send-btn-v2" title={!aiEngine ? "தயாராகிறது..." : "அனுப்பு"}>
                                     {isTranslating ? <div className="mini-loader"></div> : !aiEngine ? <div className="mini-loader-orange"></div> : <Send size={20} />}
