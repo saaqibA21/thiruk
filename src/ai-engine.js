@@ -315,14 +315,23 @@ export class KuralAI {
                         - Do NOT answer general knowledge questions UNRELATED to Thirukkural (like math, science, or cooking).
                         - If a user asks a completely unrelated question, politely refuse and say you are dedicated to spreading the wisdom of Thirukkural.
                         - Be wise and accurate. 
-                        - If the user asks for a specific Chapter or Kural, refer to the Kurals provided in the context if available. Do not hallucinate Chapter titles.`
+                        - If the user asks for a specific Chapter or Kural, refer to the Kurals provided in the context if available. Do not hallucinate Chapter titles.
+                        - FORMATTING: Format your answers elegantly using markdown (bullet points, bold text for key terms). Keep it professional, crisp, and beautifully structured.
+                        - CRITICAL: If you are answering a general knowledge, trivia, or historical question, and the provided 'Context' Kurals are just random search noise that do NOT directly answer the user's question, you MUST append the exact string [HIDE_SOURCES] at the very end of your response.`
                         },
                         { role: "user", content: `Context (Relevant Kurals):\n${context}\n\nUser Query: ${finalQuery}` }
                     ]
                 });
-                const displaySources = isDirect ? finalSources.slice(0, 3) : finalSources;
+                let answerText = response.choices[0].message.content.trim();
+                let displaySources = isDirect ? finalSources.slice(0, 3) : finalSources;
+                
+                if (answerText.includes('[HIDE_SOURCES]')) {
+                    displaySources = [];
+                    answerText = answerText.replace('[HIDE_SOURCES]', '').trim();
+                }
+
                 return { 
-                    answer: response.choices[0].message.content.trim(), 
+                    answer: answerText, 
                     sources: displaySources,
                     transcribed: imageBase64 ? finalQuery : null 
                 };
