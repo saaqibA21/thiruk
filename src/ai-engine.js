@@ -317,7 +317,7 @@ export class KuralAI {
                         - Be wise and accurate. 
                         - If the user asks for a specific Chapter or Kural, refer to the Kurals provided in the context if available. Do not hallucinate Chapter titles.
                         - FORMATTING: Format your answers elegantly using markdown (bullet points, bold text for key terms). Keep it professional, crisp, and beautifully structured.
-                        - CRITICAL: If you are answering a general knowledge, trivia, or historical question, and the provided 'Context' Kurals are just random search noise that do NOT directly answer the user's question, you MUST append the exact string [HIDE_SOURCES] at the very end of your response.`
+                        - CRITICAL: If the user is asking a general knowledge, trivia, statistical, or historical question (e.g. "What flowers are in Thirukkural?", "Who translated it?"), you MUST append the exact string [HIDE_SOURCES] at the very end of your response. ONLY omit this tag if the user explicitly asks for a specific Kural or you are explaining a specific Kural.`
                         },
                         { role: "user", content: `Context (Relevant Kurals):\n${context}\n\nUser Query: ${finalQuery}` }
                     ]
