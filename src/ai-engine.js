@@ -295,8 +295,15 @@ export class KuralAI {
                             - Total Kurals: 1330.
                             - Total Chapters (Adhikarams): 133.
                             - Each Chapter has exactly 10 Kurals.
-                            - Chapter 1: 1-10, Chapter 12: 111-120, etc.
                             - Chapter 1-38: Aram (Virtue), 39-108: Porul (Wealth/Politics), 109-133: Inbam (Love).
+                            - Total Iyals (Sections): 9
+                            - First printed year: 1812
+                            - Original name of Thirukkural: முப்பால் (Muppal)
+                            - Thiruvalluvar birth year: கிமு 31 (31 BC)
+                            - First English translator: ஜி.யு போப் (G.U. Pope)
+                            - Starts and ends with: Starts with 'அ' and ends with 'ன'
+                            - Total letters in Thirukkural: 42194
+                            - Flowers mentioned: அனிச்சம் (Anicham) and குவளை (Kuvalai)
                             
                             Instructions:
                         - Answer ONLY in Tamil (பதில்கள் அனைத்தும் முழுமையாக தமிழில் மட்டுமே இருக்க வேண்டும்).
