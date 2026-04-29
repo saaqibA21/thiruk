@@ -222,71 +222,36 @@ const App = () => {
    };
 
    useEffect(() => {
-      const handleGlobalDragEnter = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
-         if (activeTab !== 'ask') return;
-         dragCounter.current++;
-         setIsDragging(true);
-      };
-
-      const handleGlobalDragOver = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
-         if (activeTab === 'ask') {
-            e.dataTransfer.dropEffect = 'copy';
+      const handleWindowDragEnter = (e) => {
+         if (activeTab === 'ask' && e.dataTransfer.types.includes('Files')) {
             setIsDragging(true);
          }
       };
+      
+      window.addEventListener('dragenter', handleWindowDragEnter);
+      return () => window.removeEventListener('dragenter', handleWindowDragEnter);
+   }, [activeTab]);
 
-      const handleGlobalDragLeave = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
-         if (activeTab !== 'ask') return;
-         dragCounter.current--;
-         if (dragCounter.current <= 0) {
-            dragCounter.current = 0;
-            setIsDragging(false);
-         }
-      };
-
-      const handleGlobalDrop = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
-         setIsDragging(false);
-         dragCounter.current = 0;
-         
-         if (activeTab === 'ask') {
-            const files = e.dataTransfer.files;
-            if (files && files.length > 0) {
-               processImageFile(files[0]);
-            } else {
-               // Fallback for items
-               const items = e.dataTransfer.items;
-               if (items && items.length > 0) {
-                  for (let i = 0; i < items.length; i++) {
-                     if (items[i].kind === 'file') {
-                        processImageFile(items[i].getAsFile());
-                        break;
-                     }
-                  }
+   const handleGlobalDrop = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+         processImageFile(files[0]);
+      } else {
+         const items = e.dataTransfer.items;
+         if (items) {
+            for (let i = 0; i < items.length; i++) {
+               if (items[i].kind === 'file') {
+                  processImageFile(items[i].getAsFile());
+                  break;
                }
             }
          }
-      };
-
-      window.addEventListener('dragenter', handleGlobalDragEnter);
-      window.addEventListener('dragover', handleGlobalDragOver);
-      window.addEventListener('dragleave', handleGlobalDragLeave);
-      window.addEventListener('drop', handleGlobalDrop);
-
-      return () => {
-         window.removeEventListener('dragenter', handleGlobalDragEnter);
-         window.removeEventListener('dragover', handleGlobalDragOver);
-         window.removeEventListener('dragleave', handleGlobalDragLeave);
-         window.removeEventListener('drop', handleGlobalDrop);
-      };
-   }, [activeTab]);
+      }
+   };
 
    const handleAsk = async (text) => {
       if (!text.trim() && !selectedImage) return;
@@ -473,17 +438,21 @@ const App = () => {
                     animate={{ opacity: 1 }} 
                     exit={{ opacity: 0 }}
                   >
-                     <AnimatePresence>
+                      <AnimatePresence>
                         {isDragging && (
                            <motion.div 
-                              initial={{ opacity: 0, scale: 0.95 }} 
-                              animate={{ opacity: 1, scale: 1 }} 
-                              exit={{ opacity: 0, scale: 0.95 }}
-                              className="drag-drop-overlay"
+                              initial={{ opacity: 0 }} 
+                              animate={{ opacity: 1 }} 
+                              exit={{ opacity: 0 }}
+                              className="global-drag-overlay"
+                              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                              onDragLeave={() => setIsDragging(false)}
+                              onDrop={handleGlobalDrop}
                            >
-                              <div className="drop-zone-content">
-                                 <ImageIcon size={48} />
-                                 <p>படத்தை இங்கே விடவும் (Drop image here)</p>
+                              <div className="drop-zone-box">
+                                 <ImageIcon size={64} color="var(--primary)" />
+                                 <h2>படத்தை இங்கே விடவும்</h2>
+                                 <p>Drop your image here to analyze it with AI</p>
                               </div>
                            </motion.div>
                         )}
