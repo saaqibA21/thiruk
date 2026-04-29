@@ -217,6 +217,12 @@ const App = () => {
       }
    };
 
+   const dropRef = useRef({ handleGlobalDrop, activeTab });
+   
+   useEffect(() => {
+      dropRef.current = { handleGlobalDrop, activeTab };
+   });
+
    useEffect(() => {
       const isFileDrag = (e) => {
          const types = e.dataTransfer.types;
@@ -228,7 +234,7 @@ const App = () => {
       const onDragOver = (e) => {
          e.preventDefault();
          e.stopPropagation();
-         if (activeTab === 'ask' && isFileDrag(e)) {
+         if (dropRef.current.activeTab === 'ask' && isFileDrag(e)) {
             e.dataTransfer.dropEffect = 'copy';
          } else {
             e.dataTransfer.dropEffect = 'none';
@@ -238,7 +244,7 @@ const App = () => {
       const onDragEnter = (e) => {
          e.preventDefault();
          e.stopPropagation();
-         if (activeTab === 'ask' && isFileDrag(e)) {
+         if (dropRef.current.activeTab === 'ask' && isFileDrag(e)) {
             dragCounter.current++;
             setIsDragging(true);
          }
@@ -247,7 +253,7 @@ const App = () => {
       const onDragLeave = (e) => {
          e.preventDefault();
          e.stopPropagation();
-         if (activeTab === 'ask' && isFileDrag(e)) {
+         if (dropRef.current.activeTab === 'ask' && isFileDrag(e)) {
             dragCounter.current--;
             if (dragCounter.current <= 0) {
                dragCounter.current = 0;
@@ -261,8 +267,8 @@ const App = () => {
          e.stopPropagation();
          setIsDragging(false);
          dragCounter.current = 0;
-         if (activeTab === 'ask') {
-            handleGlobalDrop(e);
+         if (dropRef.current.activeTab === 'ask') {
+            dropRef.current.handleGlobalDrop(e);
          }
       };
 
@@ -279,7 +285,7 @@ const App = () => {
          document.removeEventListener('dragleave', onDragLeave, true);
          document.removeEventListener('drop', onDrop, true);
       };
-   }, [activeTab]);
+   }, []); // Empty dependency array ensures we only bind once, dropRef handles stale state
 
    const handleGlobalDrop = (e) => {
       e.preventDefault();
