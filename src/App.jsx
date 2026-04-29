@@ -218,20 +218,68 @@ const App = () => {
    };
 
    useEffect(() => {
-      const handleWindowDragEnter = (e) => {
-         if (activeTab === 'ask' && e.dataTransfer.types.includes('Files')) {
+      // Unconditional preventDefault to guarantee the browser never opens the file
+      const preventDefaultBehavior = (e) => {
+         e.preventDefault();
+         e.stopPropagation();
+      };
+
+      const onDragOver = (e) => {
+         preventDefaultBehavior(e);
+         // Setting dropEffect to copy tells the browser we accept the drop
+         if (e.dataTransfer) {
+            e.dataTransfer.dropEffect = 'copy';
+         }
+      };
+
+      const onDragEnter = (e) => {
+         preventDefaultBehavior(e);
+         if (activeTab === 'ask') {
+            dragCounter.current++;
             setIsDragging(true);
          }
       };
-      
-      window.addEventListener('dragenter', handleWindowDragEnter);
-      return () => window.removeEventListener('dragenter', handleWindowDragEnter);
+
+      const onDragLeave = (e) => {
+         preventDefaultBehavior(e);
+         if (activeTab === 'ask') {
+            dragCounter.current--;
+            if (dragCounter.current <= 0) {
+               dragCounter.current = 0;
+               setIsDragging(false);
+            }
+         }
+      };
+
+      const onDrop = (e) => {
+         preventDefaultBehavior(e);
+         if (activeTab === 'ask') {
+            setIsDragging(false);
+            dragCounter.current = 0;
+            handleGlobalDrop(e);
+         }
+      };
+
+      // Attaching to window unconditionally
+      window.addEventListener('dragenter', onDragEnter, false);
+      window.addEventListener('dragover', onDragOver, false);
+      window.addEventListener('dragleave', onDragLeave, false);
+      window.addEventListener('drop', onDrop, false);
+
+      return () => {
+         dragCounter.current = 0;
+         window.removeEventListener('dragenter', onDragEnter, false);
+         window.removeEventListener('dragover', onDragOver, false);
+         window.removeEventListener('dragleave', onDragLeave, false);
+         window.removeEventListener('drop', onDrop, false);
+      };
    }, [activeTab]);
 
    const handleGlobalDrop = (e) => {
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(false);
+      dragCounter.current = 0;
       
       const files = e.dataTransfer.files;
       if (files && files.length > 0) {
@@ -437,25 +485,6 @@ const App = () => {
                     animate={{ opacity: 1 }} 
                     exit={{ opacity: 0 }}
                   >
-                      <AnimatePresence>
-                        {isDragging && (
-                           <motion.div 
-                              initial={{ opacity: 0 }} 
-                              animate={{ opacity: 1 }} 
-                              exit={{ opacity: 0 }}
-                              className="global-drag-overlay"
-                              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                              onDragLeave={() => setIsDragging(false)}
-                              onDrop={handleGlobalDrop}
-                           >
-                              <div className="drop-zone-box">
-                                 <ImageIcon size={64} color="var(--primary)" />
-                                 <h2>படத்தை இங்கே விடவும்</h2>
-                                 <p>Drop your image here to analyze it with AI</p>
-                              </div>
-                           </motion.div>
-                        )}
-                     </AnimatePresence>
                      <div className="chat-view">
                         <div className="chat-window">
                            <div className="chat-messages-scroll-area">
@@ -466,21 +495,6 @@ const App = () => {
                                  </div>
                               )}
                               <UsageInstructions />
-                              <AnimatePresence>
-                                 {isDragging && (
-                                    <motion.div 
-                                       initial={{ opacity: 0, scale: 0.95 }} 
-                                       animate={{ opacity: 1, scale: 1 }} 
-                                       exit={{ opacity: 0, scale: 0.95 }}
-                                       className="drag-drop-overlay"
-                                    >
-                                       <div className="drop-zone-content">
-                                          <ImageIcon size={48} />
-                                          <p>படத்தை இங்கே விடவும் (Drop image here)</p>
-                                       </div>
-                                    </motion.div>
-                                 )}
-                              </AnimatePresence>
                               {messages.map((m, i) => (
                                  <div key={i} className={`chat-bubble-container ${m.role}`}>
                                     <div className="chat-bubble">
@@ -726,6 +740,22 @@ const App = () => {
                      </div>
                   </motion.div>
                </div>
+            )}
+         </AnimatePresence>
+         <AnimatePresence>
+            {isDragging && (
+               <motion.div 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
+                  exit={{ opacity: 0 }}
+                  className="global-drag-overlay"
+               >
+                  <div className="drop-zone-box">
+                     <ImageIcon size={64} color="var(--primary)" />
+                     <h2>படத்தை இங்கே விடவும்</h2>
+                     <p>Drop your image here to analyze it with AI</p>
+                  </div>
+               </motion.div>
             )}
          </AnimatePresence>
       </div>
