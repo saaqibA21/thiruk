@@ -43,6 +43,27 @@ const ExternalResources = () => (
    </div>
 );
 
+const UsageInstructions = () => (
+   <div className="chat-usage-instructions">
+      <div className="instruction-header"> <Info size={16} /> பயன்பாட்டு வழிமுறைகள் (Usage Tips) </div>
+      <div className="instruction-list">
+         <div className="instruction-item">
+            <Zap size={16} className="instruction-bullet" />
+            <span>ஆங்கிலத்தில் தட்டச்சு செய்து 'Space' அழுத்தினால் அது தானாகவே தமிழில் மாறும்.</span>
+         </div>
+         <div className="instruction-item">
+            <MessageSquare size={16} className="instruction-bullet" />
+            <span>கேள்விகளைத் தெளிவாகவும் பிழையின்றியும் கேட்கவும் (Be specific to avoid errors).</span>
+         </div>
+         <div className="instruction-item">
+            <Sparkles size={16} className="instruction-bullet" />
+            <span>கடினமான கேள்விகள் அல்லது படங்களை ஆய்வு செய்ய மட்டும் 'Direct AI' முறையைப் பயன்படுத்தவும்.</span>
+         </div>
+      </div>
+   </div>
+);
+
+
 const App = () => {
    const [activeTab, setActiveTab] = useState('ask');
    const [selectedPaal, setSelectedPaal] = useState(null);
@@ -360,6 +381,7 @@ const App = () => {
                                     <div className="p-track"> <div className="p-fill" style={{ width: `${initProgress}%` }}></div> </div>
                                  </div>
                               )}
+                              <UsageInstructions />
                               {messages.map((m, i) => (
                                  <div key={i} className={`chat-bubble-container ${m.role}`}>
                                     <div className="chat-bubble">

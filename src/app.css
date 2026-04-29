@@ -1407,3 +1407,44 @@ body,
     display: none;
   }
 }
+.chat-usage-instructions {
+  background: #fffaf0;
+  border: 1px solid #feebc8;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+  color: #7b341e;
+  box-shadow: 0 4px 20px rgba(154, 52, 18, 0.04);
+}
+
+.instruction-header {
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.instruction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.instruction-item {
+  display: flex;
+  gap: 12px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.instruction-bullet {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
