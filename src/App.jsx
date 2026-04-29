@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink, Menu } from 'lucide-react';
+import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 
@@ -735,7 +735,19 @@ const App = () => {
                            <div className="h-section-img"> <img src="manuscript.png" alt="Ancient Manuscript" /> </div>
                            <div className="h-section-text">
                               <h3>நூலின் அமைப்பு</h3>
-                              <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது: அறத்துப்பால், பொருட்பால், மற்றும் காமத்துப்பால். 133 அதிகாரங்களில் தலா 10 குறள்கள் வீதம் 1330 குறள்கள் உள்ளன. இவை ஒவ்வொன்றும் ஈரடி வெண்பாக்களால் ஆனவை.</p>
+                              <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது. கீழே உள்ளவற்றைக் கிளிக் செய்து விரிவாக வாசிக்கலாம்:</p>
+                              <div className="history-paal-navigation">
+                                 <button className="h-paal-btn aram" onClick={() => { setActiveTab('list'); setSelectedPaal('அறத்துப்பால்'); window.scrollTo(0, 0); }}>
+                                    <BookOpen size={16} /> அறத்துப்பால் (38)
+                                 </button>
+                                 <button className="h-paal-btn porul" onClick={() => { setActiveTab('list'); setSelectedPaal('பொருட்பால்'); window.scrollTo(0, 0); }}>
+                                    <Briefcase size={16} /> பொருட்பால் (70)
+                                 </button>
+                                 <button className="h-paal-btn inbam" onClick={() => { setActiveTab('list'); setSelectedPaal('காமத்துப்பால்'); window.scrollTo(0, 0); }}>
+                                    <Heart size={16} /> இன்பத்துப்பால் (25)
+                                 </button>
+                              </div>
+                              <p style={{marginTop: '1rem', fontSize: '0.9rem', color: 'rgba(0,0,0,0.6)'}}>133 அதிகாரங்கள் மற்றும் 1330 ஈரடி வெண்பாக்களால் ஆனவை.</p>
                            </div>
                         </section>
 

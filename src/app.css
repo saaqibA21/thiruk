@@ -1559,3 +1559,44 @@ body,
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* History Paal Navigation */
+.history-paal-navigation {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.h-paal-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.h-paal-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.h-paal-btn.aram {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.h-paal-btn.porul {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.h-paal-btn.inbam {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
