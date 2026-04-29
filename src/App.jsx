@@ -210,39 +210,60 @@ const App = () => {
       }
    };
 
-   const handleDragEnter = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dragCounter.current++;
-      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-         setIsDragging(true);
-      }
-   };
+   useEffect(() => {
+      const handleGlobalDragEnter = (e) => {
+         e.preventDefault();
+         e.stopPropagation();
+         dragCounter.current++;
+         if (activeTab === 'ask') {
+            setIsDragging(true);
+         }
+      };
 
-   const handleDragOver = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-   };
+      const handleGlobalDragOver = (e) => {
+         e.preventDefault();
+         e.stopPropagation();
+         if (activeTab === 'ask') {
+            setIsDragging(true);
+         }
+      };
 
-   const handleDragLeave = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dragCounter.current--;
-      if (dragCounter.current === 0) {
+      const handleGlobalDragLeave = (e) => {
+         e.preventDefault();
+         e.stopPropagation();
+         dragCounter.current--;
+         if (dragCounter.current <= 0) {
+            dragCounter.current = 0;
+            setIsDragging(false);
+         }
+      };
+
+      const handleGlobalDrop = (e) => {
+         e.preventDefault();
+         e.stopPropagation();
          setIsDragging(false);
-      }
-   };
+         dragCounter.current = 0;
+         
+         if (activeTab === 'ask') {
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+               processImageFile(files[0]);
+            }
+         }
+      };
 
-   const handleDrop = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-      dragCounter.current = 0;
-      const files = e.dataTransfer.files;
-      if (files && files.length > 0) {
-         processImageFile(files[0]);
-      }
-   };
+      window.addEventListener('dragenter', handleGlobalDragEnter);
+      window.addEventListener('dragover', handleGlobalDragOver);
+      window.addEventListener('dragleave', handleGlobalDragLeave);
+      window.addEventListener('drop', handleGlobalDrop);
+
+      return () => {
+         window.removeEventListener('dragenter', handleGlobalDragEnter);
+         window.removeEventListener('dragover', handleGlobalDragOver);
+         window.removeEventListener('dragleave', handleGlobalDragLeave);
+         window.removeEventListener('drop', handleGlobalDrop);
+      };
+   }, [activeTab]);
 
    const handleAsk = async (text) => {
       if (!text.trim() && !selectedImage) return;
@@ -428,10 +449,6 @@ const App = () => {
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }} 
                     exit={{ opacity: 0 }}
-                    onDragEnter={handleDragEnter}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
                   >
                      <AnimatePresence>
                         {isDragging && (
