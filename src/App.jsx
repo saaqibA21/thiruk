@@ -185,24 +185,20 @@ const App = () => {
 
    const dragCounter = useRef(0);
 
-   const processImageFile = (file) => {
+   const processImageFile = (file, autoSend = false) => {
       if (!file) return;
-      if (file.type && file.type.startsWith('image/')) {
+      const isImg = (file.type && file.type.startsWith('image/')) || /\.(jpe?g|png|gif|webp|bmp)$/i.test(file.name);
+      
+      if (isImg) {
          const reader = new FileReader();
          reader.onloadend = () => {
-            setSelectedImage(reader.result);
+            if (autoSend) {
+               handleAsk("", reader.result);
+            } else {
+               setSelectedImage(reader.result);
+            }
          };
          reader.readAsDataURL(file);
-      } else {
-         // Fallback for files without type (sometimes happens on some OS/Browsers)
-         const isImg = /\.(jpe?g|png|gif|webp|bmp)$/i.test(file.name);
-         if (isImg) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-               setSelectedImage(reader.result);
-            };
-            reader.readAsDataURL(file);
-         }
       }
    };
 
@@ -239,13 +235,13 @@ const App = () => {
       
       const files = e.dataTransfer.files;
       if (files && files.length > 0) {
-         processImageFile(files[0]);
+         processImageFile(files[0], true);
       } else {
          const items = e.dataTransfer.items;
          if (items) {
             for (let i = 0; i < items.length; i++) {
                if (items[i].kind === 'file') {
-                  processImageFile(items[i].getAsFile());
+                  processImageFile(items[i].getAsFile(), true);
                   break;
                }
             }
@@ -253,8 +249,9 @@ const App = () => {
       }
    };
 
-   const handleAsk = async (text) => {
-      if (!text.trim() && !selectedImage) return;
+   const handleAsk = async (text, imageOverride = null) => {
+      const currentImage = imageOverride || selectedImage;
+      if (!text.trim() && !currentImage) return;
       if (!aiEngine) {
          setMessages(prev => [...prev, { role: 'ai', content: 'நிபுணர் தரவுத்தளம் இன்னும் தயாராகவில்லை. தயவுசெய்து சிறிது நேரம் காத்திருக்கவும்...', sources: [] }]);
          return;
@@ -263,15 +260,17 @@ const App = () => {
       const userMsg = {
          role: 'user',
          content: text || "",
-         image: selectedImage
+         image: currentImage
       };
 
       setMessages(prev => [...prev, userMsg]);
       const currentText = text || userMsg.content;
-      const currentImage = selectedImage;
 
-      setQuery('');
-      setSelectedImage(null);
+      if (!imageOverride) {
+         setQuery('');
+         setSelectedImage(null);
+      }
+      
       setLoading(true);
       if (currentImage) setIsTranslating(true);
       try {
