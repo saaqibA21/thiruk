@@ -321,13 +321,14 @@ export class KuralAI {
                              - FIRST PRINTED: 1812 (Tanjore).
                              - FIRST NAME: "Muppaal" (முப்பால்).
                              - CHAPTERS (STRUCTURE): 
-                               * **First Chapter:** "கடவுள் வாழ்த்து" (Ch 1).
-                               * **Last Chapter:** "ஊடலுவகை" (Ch 133).
-                               * **116-ஆம் அதிகாரம்:** **பிரிவு ஆற்றாமை** (Pirivu Atramai) - *Do not say 'Karpiyal', as Karpiyal is the Iyal.*
+                               * **115-ஆம் அதிகாரம்:** **அலர் அறிவுறுத்தல்** (Ch 115 - Last of Kalaviyal).
+                               * **116-ஆம் அதிகாரம்:** **பிரிவு ஆற்றாமை** (Ch 116 - First of Karpiyal).
                                * **Aram (1-38):** Starts with "கடவுள் வாழ்த்து", Ends with "ஊழ்" (Ch 38).
                                * **Porul (39-108):** Starts with "இறைமாட்சி" (Ch 39), Ends with "கயமை" (Ch 108).
-                               * **Inbam (109-133):** Starts with "தகையணங்குறுத்தல்" (Ch 109), Ends with "ஊடலுவகை" (Ch 133).
-                             - IYAL vs ADHIKARAM: NEVER use Iyal names (e.g., பாயிரவியல், இல்லறவியல், அரசியல், கற்பியல்) as Adhikaram names. They are groupings of 7 to 25 chapters.
+                               * **Inbam (109-133):**
+                                 - **களவியல் (Kalaviyal):** Ch 109 to 115.
+                                 - **கற்பியல் (Karpiyal):** Ch 116 to 133.
+                             - IYAL vs ADHIKARAM: NEVER use Iyal names (e.g., பாயிரவியல், அரசியல், கற்பியல்) as Adhikaram names. An Adhikaram has 10 Kurals; an Iyal has many Adhikarams.
                              - BASIC RULE: EVERY Adhikaram has exactly 10 Kurals.
                             
                              ### RULES:
