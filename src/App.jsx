@@ -337,17 +337,17 @@ const App = () => {
          const result = await aiEngine.ask(currentText, currentImage, directAI);
          if (!result) throw new Error("No response from engine");
 
-         // If engine transcribed text from an image, update the last user message to show it
-         if (result.transcribed) {
-            setMessages(prev => {
-               const newMsgs = [...prev];
-               const lastIdx = newMsgs.length - 1;
-               if (newMsgs[lastIdx] && newMsgs[lastIdx].role === 'user') {
-                  newMsgs[lastIdx].content = result.transcribed;
-               }
-               return newMsgs;
-            });
-         }
+         // If engine transcribed text from an image, we keep it in the backend but don't clutter the UI
+         // if (result.transcribed) {
+         //    setMessages(prev => {
+         //       const newMsgs = [...prev];
+         //       const lastIdx = newMsgs.length - 1;
+         //       if (newMsgs[lastIdx] && newMsgs[lastIdx].role === 'user') {
+         //          newMsgs[lastIdx].content = result.transcribed;
+         //       }
+         //       return newMsgs;
+         //    });
+         // }
 
          setMessages(prev => [...prev, { role: 'ai', content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", sources: result.sources || [] }]);
       } catch (error) {

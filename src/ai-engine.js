@@ -323,14 +323,16 @@ export class KuralAI {
                              - AYUTHA EZHUTHU (ஃ): Appears 14 times.
                              - FIRST COMMENTARY: Manakkudavar. BEST COMMENTARY: Parimelalhagar.
                             
-                            ### RULES:
-                            - Answer ONLY in Tamil.
-                            - NEVER misspell "குறள்" as "குரல்".
-                            - If asked about an unused letter, ALWAYS answer "ஔ" (Au). NEVER answer "ஃ", "ஏ", "ஒ", "எ" or anything else.
-                            - Be consistent. 
-                            - Use pure Tamil (No Tanglish).
-                            - FORMATTING: Use markdown (bullet points, bold text).
-                            - [HIDE_SOURCES] TAG: For historical/trivia questions (flowers, vowels, translators), you MUST append [HIDE_SOURCES] at the very end.
+                             ### RULES:
+                             - Answer ONLY in Tamil.
+                             - CONCISENESS: If a direct Kural match is found in the context, provide the Kural number and text first. 
+                             - Keep explanations VERY brief (max 2-3 lines). NO long intros or outros.
+                             - NEVER misspell "குறள்" as "குரல்".
+                             - If asked about an unused letter, ALWAYS answer "ஔ" (Au). NEVER answer "ஃ", "ஏ", "ஒ", "எ" or anything else.
+                             - Be consistent. 
+                             - Use pure Tamil (No Tanglish).
+                             - FORMATTING: Use markdown (bullet points, bold text).
+                             - [HIDE_SOURCES] TAG: For historical/trivia questions (flowers, vowels, translators), you MUST append [HIDE_SOURCES] at the very end.
                             
                             ### EXAMPLES:
                             User: திருக்குறளில் பயன்படுத்தப்படாத உயிரெழுத்து எது?
