@@ -326,8 +326,13 @@ export class KuralAI {
                                * **Aram (1-38):** Starts with "கடவுள் வாழ்த்து", Ends with "ஊழ்" (Ch 38).
                                * **Porul (39-108):** Starts with "இறைமாட்சி" (Ch 39), Ends with "கயமை" (Ch 108).
                                * **Inbam (109-133):**
-                                 - **களவியல் (Kalaviyal):** Ch 109 to 115.
-                                 - **கற்பியல் (Karpiyal):** Ch 116 to 133.
+                                 - **Ch 109:** **தகையணங்குறுத்தல்** (Thakaiyananguruthal).
+                                 - **Ch 110:** குறிப்பறிதல்.
+                                 - **Ch 115:** அலர் அறிவுறுத்தல்.
+                                 - **Ch 116:** பிரிவு ஆற்றாமை.
+                                 - **Ch 119:** **பசப்புறு பருவரல்** (Pasappuru Paruvaral) - *NEVER confuse with Ch 109.*
+                                 - **Ch 133:** ஊடலுவகை.
+                                 - **Section Ranges:** களவியல் (109-115), கற்பியல் (116-133).
                              - IYAL vs ADHIKARAM: NEVER use Iyal names (e.g., பாயிரவியல், அரசியல், கற்பியல்) as Adhikaram names. An Adhikaram has 10 Kurals; an Iyal has many Adhikarams.
                              - BASIC RULE: EVERY Adhikaram has exactly 10 Kurals.
                             
