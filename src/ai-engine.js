@@ -16,7 +16,7 @@ export class KuralAI {
         if (cleanKey && cleanKey.startsWith('sk-')) {
             const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
             // Use hardcoded local URL for proxy stability
-            const baseURL = isLocal ? 'http://localhost:5174/api-openai/v1' : 'https://api.openai.com/v1';
+            const baseURL = isLocal ? '/api-openai/v1' : 'https://api.openai.com/v1';
             
             console.log("[Engine] Initializing OpenAI with baseURL:", baseURL);
             this.openai = new OpenAI({ 
