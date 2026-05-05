@@ -443,19 +443,38 @@ const App = () => {
                </div>
 
                <div className="header-right-group">
-                  <div className="direct-ai-header-control">
-                     <span className="toggle-label desktop-only">{directAI ? 'Direct AI' : 'Search AI'}</span>
-                     <button
-                        className={`ai-switch ${directAI ? 'on' : 'off'}`}
-                        onClick={() => setDirectAI(!directAI)}
-                     >
-                        <div className="switch-track">
-                           <div className="switch-thumb">
-                              {directAI ? <Sparkles size={12} /> : <Search size={12} />}
-                           </div>
-                        </div>
-                     </button>
-                  </div>
+                   <div className="direct-ai-header-control">
+                      <button 
+                         className="export-logs-btn" 
+                         onClick={() => aiEngine?.exportHistory()} 
+                         title="Export AI Logs as JSON"
+                         style={{ 
+                            background: 'rgba(0,0,0,0.05)', 
+                            border: '1px solid rgba(0,0,0,0.1)', 
+                            borderRadius: '8px', 
+                            padding: '6px', 
+                            marginRight: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--primary)'
+                         }}
+                      >
+                         <Database size={16} />
+                      </button>
+                      <span className="toggle-label desktop-only">{directAI ? 'Direct AI' : 'Search AI'}</span>
+                      <button
+                         className={`ai-switch ${directAI ? 'on' : 'off'}`}
+                         onClick={() => setDirectAI(!directAI)}
+                      >
+                         <div className="switch-track">
+                            <div className="switch-thumb">
+                               {directAI ? <Sparkles size={12} /> : <Search size={12} />}
+                            </div>
+                         </div>
+                      </button>
+                   </div>
                   {/* Desktop Nav */}
                   <nav className="header-nav-tabs desktop-only">
                      <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>AI நிபுணர்</span> </button>

@@ -13,6 +13,7 @@ app/build/
 .vscode/
 
 # Environment/Secrets (CRITICAL)
+.env
 *.local
 local.properties
 android.keystore

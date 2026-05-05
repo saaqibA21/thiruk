@@ -8,6 +8,7 @@ export class KuralAI {
     constructor(dataset) {
         this.dataset = dataset;
         this.openai = null;
+        this.aiHistory = []; // Track AI interactions for JSON export
     }
 
     async init(apiKey) {
@@ -239,7 +240,6 @@ export class KuralAI {
         if (imageBase64 && isValidKey) {
             try {
                 const visionResp = await this.openai.chat.completions.create({
-                    model: "gpt-4o-mini",
                     messages: [{
                         role: "system",
                         content: `You are a high-precision OCR engine for Tamil. 
@@ -252,7 +252,8 @@ export class KuralAI {
                         role: "user",
                         content: [{ type: "image_url", image_url: { url: imageBase64 } }]
                     }],
-                    max_tokens: 150
+                    max_tokens: 150,
+                    temperature: 0 // Ensure consistent OCR results
                 });
                 
                 let transcribed = visionResp.choices[0].message.content.trim();
@@ -297,7 +298,6 @@ export class KuralAI {
                 }
 
                 const response = await this.openai.chat.completions.create({
-                    model: "gpt-4o-mini",
                     messages: [
                         { 
                             role: "system", 
@@ -326,7 +326,8 @@ export class KuralAI {
                             Expert: திருக்குறளில் பயன்படுத்தப்படாத ஒரே உயிரெழுத்து **"ஔ" (Au)** ஆகும். திருக்குறளின் 1330 குறட்பாக்களிலும், 42,194 எழுத்துகளிலும் "ஔ" என்ற எழுத்து ஓரிடத்தில் கூட இடம்பெறவில்லை. [HIDE_SOURCES]`
                         },
                         { role: "user", content: `Context (Relevant Kurals):\n${context}\n\nUser Query: ${finalQuery}` }
-                    ]
+                    ],
+                    temperature: 0 // Force deterministic/consistent responses
                 });
                 let answerText = response.choices[0].message.content.trim();
                 let displaySources = isDirect ? finalSources.slice(0, 3) : finalSources;
@@ -337,6 +338,15 @@ export class KuralAI {
                     }
                     answerText = answerText.replace('[HIDE_SOURCES]', '').trim();
                 }
+
+                // Store in history
+                this.aiHistory.push({
+                    timestamp: new Date().toISOString(),
+                    query: finalQuery,
+                    answer: answerText,
+                    sourceCount: displaySources.length,
+                    mode: isDirect ? "Direct AI" : "Search AI"
+                });
 
                 return { 
                     answer: answerText, 
@@ -371,4 +381,17 @@ export class KuralAI {
     }
 
     async refineQuery(query) { return query; }
+
+    exportHistory() {
+        const dataStr = JSON.stringify(this.aiHistory, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportFileDefaultName = `thirukkural_ai_logs_${new Date().getTime()}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        console.log("[Engine] Exported history JSON.");
+    }
 }
