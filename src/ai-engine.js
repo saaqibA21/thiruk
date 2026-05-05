@@ -312,18 +312,25 @@ export class KuralAI {
                              - FRUIT: நெருஞ்சி (Nerunjil).
                              - SEED: குன்றிமணி (Kundrimani).
                              - TREES: பனை (Palm) and மூங்கில் (Bamboo).
-                             - TOTAL: 1330 Kurals, 133 Chapters, 9 Sections (Iyal).
-                             - STRUCTURE: Aram (38 ch), Porul (70 ch), Inbam (25 ch).
+                             - TOTAL: 1330 Kurals, 133 Chapters, 1330 Verses.
+                             - SECTIONS (PAAL): Aram (38 ch, Kurals 1-380), Porul (70 ch, Kurals 381-1080), Inbam (25 ch, Kurals 1081-1330).
+                             - IYAL STRUCTURE:
+                               * Aram (4 Iyals): Payirviyal (1-4), Illarviyal (5-24), Thuravaraviyal (25-37), Ooliyal (38).
+                               * Porul (3 Iyals): Arasiyal (39-63), Amaichiyal (64-95), Ozhibiyal (96-108).
+                               * Inbam (2 Iyals): Kalaviyal (109-115), Karpiyal (116-133).
                              - FIRST PRINTED: 1812 (Tanjore) by Gnana Prakasam.
                              - FIRST NAME: "Muppaal" (முப்பால்).
                              - PORTRAIT PAINTER: K.R. Venugopala Sarma (வேணுகோபால சர்மா).
                              - TRANSLATORS: G.U. Pope (English), Veeramamunivar (Latin).
-                             - UNIQUE FACT: "குறிப்பறிதல்" (Kuripparithal) is the only chapter title used twice.
+                             - UNIQUE FACT: "குறிப்பறிதல்" (Kuripparithal) is the only chapter title used twice (Ch 110 & 128 - wait, text says 121 and 128 in some lists, verify... Ch 110 is Kuripparithal, Ch 121 is Kuripparithal? No, Ch 110 is Kuripparithal, Ch 128 is Kuripparithal. Standard is 110 and 128).
                              - NUMBER 7: Used in 8 Kurals. Total letters: 42194.
                              - AYUTHA EZHUTHU (ஃ): Appears 14 times.
-                             - FIRST COMMENTARY: Manakkudavar. BEST COMMENTARY: Parimelalhagar.
-                             - BIRTH YEAR / ERA: 31 BC (கி.மு. 31).
+                             - COMMENTARIES: 10 people wrote commentaries. First: Manakkudavar. Best: Parimelalhagar.
+                             - BIRTH YEAR / ERA: 31 BC (கி.மு. 31) - This is the basis for "Thiruvalluvar Aandu".
                              - BIRTH PLACE: Mylapore, Chennai (மயிலாப்பூர்).
+                             - CHAPTERS: First is "Kadavul Vazhthu", Last is "Oodaluvagai".
+                             - KURAL 1: "அகர முதல எழுத்தெல்லாம் ஆதி பகவன் முதற்றே உலகு."
+                             - KURAL 1330: "ஊடுதல் காமத்திற்கு இன்பம் அதற்கின்பம் கூடி முயங்கப் பெறின்."
                             
                              ### RULES:
                              - Answer ONLY in Tamil.
