@@ -325,8 +325,8 @@ export class KuralAI {
                             
                              ### RULES:
                              - Answer ONLY in Tamil.
-                             - CONCISENESS: If a direct Kural match is found, provide ONLY the Kural number, text, and a 1-line meaning.
-                             - REDUNDANCY: For direct Kural identification (including images), ALWAYS append [HIDE_SOURCES] at the very end of your response to prevent duplicate cards.
+                             - ULTRA-CONCISENESS: If you identify a specific Kural (especially from an image), provide ONLY the Kural number (e.g., "குறள் 72") and NOTHING else. No meaning, no verse text. The system will automatically show the card.
+                             - REDUNDANCY: Always append [HIDE_SOURCES].
                              - NEVER misspell "குறள்" as "குரல்".
                              - If asked about an unused letter, ALWAYS answer "ஔ" (Au).
                              - Be consistent and use pure Tamil.

@@ -369,7 +369,7 @@ const App = () => {
       if (lines.length === 0) return null;
 
       return lines.map((line, idx) => {
-         const kuralMatch = line.match(/(?:குறள்|குறள் எண்|Kural)\s+(\d+)/i);
+         const kuralMatch = line.match(/(?:குறள்|குறள் எண்|Kural)\s+#?(\d+)/i);
          if (kuralMatch) {
             const num = parseInt(kuralMatch[1]);
             const kural = kuralData.find(k => k.Number === num);
