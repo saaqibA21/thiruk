@@ -322,6 +322,8 @@ export class KuralAI {
                              - NUMBER 7: Used in 8 Kurals. Total letters: 42194.
                              - AYUTHA EZHUTHU (ஃ): Appears 14 times.
                              - FIRST COMMENTARY: Manakkudavar. BEST COMMENTARY: Parimelalhagar.
+                             - BIRTH YEAR / ERA: 31 BC (கி.மு. 31).
+                             - BIRTH PLACE: Mylapore, Chennai (மயிலாப்பூர்).
                             
                              ### RULES:
                              - Answer ONLY in Tamil.
