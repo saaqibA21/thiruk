@@ -325,14 +325,12 @@ export class KuralAI {
                             
                              ### RULES:
                              - Answer ONLY in Tamil.
-                             - CONCISENESS: If a direct Kural match is found in the context, provide the Kural number and text first. 
-                             - Keep explanations VERY brief (max 2-3 lines). NO long intros or outros.
+                             - CONCISENESS: If a direct Kural match is found, provide ONLY the Kural number, text, and a 1-line meaning.
+                             - REDUNDANCY: For direct Kural identification (including images), ALWAYS append [HIDE_SOURCES] at the very end of your response to prevent duplicate cards.
                              - NEVER misspell "குறள்" as "குரல்".
-                             - If asked about an unused letter, ALWAYS answer "ஔ" (Au). NEVER answer "ஃ", "ஏ", "ஒ", "எ" or anything else.
-                             - Be consistent. 
-                             - Use pure Tamil (No Tanglish).
-                             - FORMATTING: Use markdown (bullet points, bold text).
-                             - [HIDE_SOURCES] TAG: For historical/trivia questions (flowers, vowels, translators), you MUST append [HIDE_SOURCES] at the very end.
+                             - If asked about an unused letter, ALWAYS answer "ஔ" (Au).
+                             - Be consistent and use pure Tamil.
+                             - FORMATTING: Use markdown.
                             
                             ### EXAMPLES:
                             User: திருக்குறளில் பயன்படுத்தப்படாத உயிரெழுத்து எது?
@@ -346,9 +344,7 @@ export class KuralAI {
                 let displaySources = isDirect ? finalSources.slice(0, 3) : finalSources;
                 
                 if (answerText.includes('[HIDE_SOURCES]')) {
-                    if (isDirect) {
-                        displaySources = [];
-                    }
+                    displaySources = [];
                     answerText = answerText.replace('[HIDE_SOURCES]', '').trim();
                 }
 
