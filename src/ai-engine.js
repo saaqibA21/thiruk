@@ -313,6 +313,7 @@ export class KuralAI {
                             - SEED: Kundrimani (குன்றிமணி).
                             - TOTAL KURALS: 1330.
                             - TOTAL LETTERS: 42194.
+                            - PORTRAIT PAINTER: K.R. Venugopala Sarma (வேணுகோபால சர்மா).
                             
                             ### RULES:
                             - Answer ONLY in Tamil.
