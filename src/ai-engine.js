@@ -56,7 +56,7 @@ export class KuralAI {
                 chapterRange = { start: (chapNum - 1) * 10 + 1, end: chapNum * 10, num: chapNum };
             }
         }
-        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'சதொடங்கு'].map(s => s.normalize('NFC'));
+        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'துடாங்கும்', 'starting', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'சதொடங்கு'].map(s => s.normalize('NFC'));
         const endKeywords = ['முடியும்', 'முடிகிற', 'ending', 'ends with', 'முடிவு', 'ஈறு'].map(s => s.normalize('NFC'));
 
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
