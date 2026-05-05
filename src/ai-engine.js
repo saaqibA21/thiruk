@@ -320,8 +320,12 @@ export class KuralAI {
                              - COMMENTARIES: 10 people. Best: **பரிமேலழகர்** (Parimelalhagar).
                              - FIRST PRINTED: 1812 (Tanjore).
                              - FIRST NAME: "Muppaal" (முப்பால்).
-                             - BIRTH YEAR: 31 BC.
-                             - CHAPTERS: First is "கடவுள் வாழ்த்து", Last is "ஊடலுவகை".
+                             - CHAPTERS (STRUCTURE): 
+                               * **First Chapter:** "கடவுள் வாழ்த்து" (Kadavul Vazhthu - Ch 1).
+                               * **Last Chapter:** "ஊடலுவகை" (Oodaluvagai - Ch 133).
+                               * **Aram (1-38):** Starts with "கடவுள் வாழ்த்து", Ends with "ஊழ்".
+                               * **Porul (39-108):** Starts with "**இறைமாட்சி**" (Iraimatchi), Ends with "**கயமை**" (Kayamai).
+                               * **Inbam (109-133):** Starts with "**தகையணங்குறுத்தல்**" (Thakaiyananguruthal), Ends with "ஊடலுவகை".
                              - BASIC RULE: EVERY Adhikaram has exactly 10 Kurals.
                             
                              ### RULES:
