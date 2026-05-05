@@ -350,14 +350,22 @@ export class KuralAI {
                     answerText = answerText.replace('[HIDE_SOURCES]', '').trim();
                 }
 
-                // Store in history
-                this.aiHistory.push({
+                // Store in history (Local)
+                const logEntry = {
                     timestamp: new Date().toISOString(),
                     query: finalQuery,
                     answer: answerText,
                     sourceCount: displaySources.length,
                     mode: isDirect ? "Direct AI" : "Search AI"
-                });
+                };
+                this.aiHistory.push(logEntry);
+
+                // Send to backend for persistent storage
+                fetch('/api/log', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(logEntry)
+                }).catch(err => console.error("[Engine] Backend log failed:", err));
 
                 return { 
                     answer: answerText, 

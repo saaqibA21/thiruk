@@ -13,6 +13,10 @@ export default defineConfig({
         target: 'https://api.openai.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-openai/, '')
+      },
+      '/api/log': {
+        target: 'http://localhost:5175',
+        changeOrigin: true
       }
     }
   }
