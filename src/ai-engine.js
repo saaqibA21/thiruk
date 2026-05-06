@@ -25,14 +25,15 @@ export class KuralAI {
         const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
         const cleanQuery = normalize(query);
         
-        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start'];
-        const endKeywords = ['முடியும்', 'ending', 'ends'];
+        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்'];
+        const endKeywords = ['முடியும்', 'ending', 'ends', 'முடிவு'];
         
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
         
         const allWords = cleanQuery.split(/\s+/);
-        const searchTerms = allWords.filter(t => !startKeywords.includes(t) && !endKeywords.includes(t) && t.length > 1);
+        const ignoreWords = [...startKeywords, ...endKeywords, 'குறள்', 'திருக்குறள்', 'என்று', 'என'];
+        const searchTerms = allWords.filter(t => !ignoreWords.includes(t) && t.length > 1);
         const target = searchTerms[0] || allWords[0];
 
         const scoredResults = this.dataset.map(k => {
@@ -43,7 +44,7 @@ export class KuralAI {
             const words = v.split(/\s+/);
 
             if (isStartsWith && target) {
-                const targetRoot = target.length > 2 ? target.substring(0, target.length - 1) : target;
+                const targetRoot = target.length > 2 ? target.substring(0, 3) : target;
                 if (l1.startsWith(target) || words[0].startsWith(target) || l1.startsWith(targetRoot) || words[0].startsWith(targetRoot)) {
                     score += 1000000;
                 }
@@ -69,30 +70,26 @@ export class KuralAI {
         const isValidKey = this.openai && this.openai.apiKey?.startsWith('sk-');
         if (!isValidKey) return { answer: "API Key invalid.", sources: [] };
 
+        const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
+        const cleanQ = normalize(question);
+        
         let finalSources = [];
         const questionWords = ['என்ன', 'ஏன்', 'எப்படி', 'விளக்கம்', 'explain', 'what', 'why', 'how', '?', 'சொல்', 'கூறு'];
-        const isQuestion = questionWords.some(w => question.toLowerCase().includes(w));
+        const isQuestion = questionWords.some(w => cleanQ.includes(w));
+
+        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்'];
+        const endKeywords = ['முடியும்', 'ending', 'ends', 'முடிவு'];
+        const isStructural = startKeywords.some(kw => cleanQ.includes(kw)) || endKeywords.some(kw => cleanQ.includes(kw));
 
         if (!isDirect) {
             const { results } = await this.search(question, !!imageBase64);
             finalSources = results;
 
-            // CRITICAL: Skip AI for simple searches or structural queries
-            // If it's not a question and we have a high-confidence match, return it immediately
-            const hasHighConfidence = finalSources.length > 0 && finalSources[0].score > 1000000;
-            if (!isQuestion && !imageBase64 && hasHighConfidence) {
-                return { 
-                    answer: finalSources.length > 1 ? `இதோ நீங்கள் கேட்டது குறித்த ${finalSources.length} குறள்கள்:` : `இதோ நீங்கள் கேட்ட குறள்:`, 
-                    sources: finalSources 
-                };
-            }
-            
-            // For structural queries (starts with/ends with), always skip AI unless it's an explicit question
-            const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start'];
-            const endKeywords = ['முடியும்', 'ending', 'ends'];
-            const isStructural = startKeywords.some(kw => question.includes(kw)) || endKeywords.some(kw => question.includes(kw));
-            if (isStructural && finalSources.length > 0 && !imageBase64 && !isQuestion) {
-                return { answer: `இதோ நீங்கள் கேட்டது குறித்த ${finalSources.length} குறள்கள் கண்டறியப்பட்டுள்ளன:`, sources: finalSources };
+            // ABSOLUTE BYPASS: Structural queries or clear searches NEVER use AI unless it's a descriptive question
+            if ((isStructural || (!isQuestion && finalSources.length > 0)) && !imageBase64) {
+                const count = finalSources.length;
+                const intro = count > 1 ? `இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன:` : `இதோ நீங்கள் கேட்ட குறள்:`;
+                return { answer: intro, sources: finalSources };
             }
         }
 
