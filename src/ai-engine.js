@@ -24,21 +24,42 @@ export class KuralAI {
         if (!query) return { results: [], searchTerms: [] };
         const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
         const cleanQuery = normalize(query);
-        const searchTerms = cleanQuery.split(/\s+/).filter(t => t.length > 1);
+        
+        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start'];
+        const endKeywords = ['முடியும்', 'ending', 'ends'];
+        
+        const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
+        const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
+        
+        const allWords = cleanQuery.split(/\s+/);
+        const searchTerms = allWords.filter(t => !startKeywords.includes(t) && !endKeywords.includes(t) && t.length > 1);
+        const target = searchTerms[0] || allWords[0];
 
         const scoredResults = this.dataset.map(k => {
             let score = 0;
-            const v = normalize(`${k.Line1} ${k.Line2}`);
-            searchTerms.forEach(t => {
-                if (v.includes(t)) score += 1000;
-                if (v.startsWith(t)) score += 5000;
-            });
+            const l1 = normalize(k.Line1);
+            const l2 = normalize(k.Line2);
+            const v = `${l1} ${l2}`;
+            const words = v.split(/\s+/);
+
+            if (isStartsWith && target) {
+                if (l1.startsWith(target) || words[0].startsWith(target)) score += 1000000;
+            } else if (isEndsWith && target) {
+                if (l2.endsWith(target) || words[words.length-1].endsWith(target)) score += 1000000;
+            } else {
+                searchTerms.forEach(t => {
+                    if (words.includes(t)) score += 5000;
+                    else if (v.includes(t)) score += 1000;
+                });
+            }
+
             const numMatch = query.match(/\d+/);
-            if (numMatch && k.Number === parseInt(numMatch[0])) score += 100000;
+            if (numMatch && k.Number === parseInt(numMatch[0])) score += 2000000;
+            
             return { ...k, score };
         }).filter(r => r.score > 0).sort((a, b) => b.score - a.score);
 
-        return { results: scoredResults.slice(0, 5), searchTerms };
+        return { results: scoredResults.slice(0, isImageSearch ? 1 : 5), searchTerms };
     }
 
     async ask(question, imageBase64 = null, isDirect = false) {
