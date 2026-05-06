@@ -115,14 +115,15 @@ export class KuralAI {
         const questionWords = ['என்ன', 'ஏன்', 'எப்படி', 'விளக்கம்', 'explain', 'what', 'why', 'how', '?', 'சொல்', 'கூறு'];
         const isQuestion = questionWords.some(w => queryForSearch.includes(w));
 
-        if (!isDirect) {
+        // CRITICAL: Even in Direct Mode, we MUST use local data for images to prevent hallucinations
+        if (!isDirect || imageBase64) {
             const { results } = await this.search(queryForSearch, !!imageBase64);
             finalSources = results;
 
             const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்'];
             const isStructural = startKeywords.some(kw => queryForSearch.includes(kw));
 
-            if ((isStructural || (!isQuestion && finalSources.length > 0)) && !imageBase64) {
+            if (!isDirect && (isStructural || (!isQuestion && finalSources.length > 0)) && !imageBase64) {
                 const count = finalSources.length;
                 return { answer: count > 1 ? `இதோ நீங்கள் கேட்டது குறித்த ${count} குறள்கள்:` : `இதோ நீங்கள் கேட்ட குறள்:`, sources: finalSources };
             }
