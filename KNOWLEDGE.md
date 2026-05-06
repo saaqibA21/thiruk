@@ -27,6 +27,7 @@ The UI follows a "Museum Aesthetics" theme:
 - **Glassmorphism**: Subtle blur effects on mobile navigation for modern depth.
 
 ## Accuracy Standards (Direct API Intelligence)
+- **Model Intelligence**: Upgraded to **GPT-4o** for superior reasoning, linguistic accuracy, and advanced vision capabilities.
 - **Flexible Intelligence**: The engine now relies primarily on OpenAI's pre-trained expertise to provide more natural and comprehensive scholarly insights.
 - **Contextual Search**: Local Kural data is provided to the AI as context, but it is free to use its global knowledge to enhance answers.
 - **Linguistic Fluidity**: Removed rigid constraints to allow for more descriptive and professional Tamil explanations.
