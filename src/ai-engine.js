@@ -43,7 +43,10 @@ export class KuralAI {
             const words = v.split(/\s+/);
 
             if (isStartsWith && target) {
-                if (l1.startsWith(target) || words[0].startsWith(target)) score += 1000000;
+                const targetRoot = target.length > 2 ? target.substring(0, target.length - 1) : target;
+                if (l1.startsWith(target) || words[0].startsWith(target) || l1.startsWith(targetRoot) || words[0].startsWith(targetRoot)) {
+                    score += 1000000;
+                }
             } else if (isEndsWith && target) {
                 if (l2.endsWith(target) || words[words.length-1].endsWith(target)) score += 1000000;
             } else {
@@ -70,10 +73,21 @@ export class KuralAI {
         let finalSources = [];
 
         // Bypass local data if isDirect is true
+        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start'];
+        const endKeywords = ['முடியும்', 'ending', 'ends'];
+        const isStartsWith = startKeywords.some(kw => question.includes(kw));
+        const isEndsWith = endKeywords.some(kw => question.includes(kw));
+
         if (!isDirect) {
             const { results } = await this.search(question, !!imageBase64);
             finalSources = results;
             context = finalSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
+
+            // FAST RESPONSE SHORTCUT: For structural queries, return sources immediately
+            if ((isStartsWith || isEndsWith) && finalSources.length > 0 && !imageBase64) {
+                const intro = `இது குறித்து ${finalSources.length} குறள்கள் கண்டறியப்பட்டுள்ளன:`;
+                return { answer: intro, sources: finalSources };
+            }
         }
 
         try {
