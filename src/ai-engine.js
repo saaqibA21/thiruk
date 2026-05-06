@@ -103,13 +103,13 @@ export class KuralAI {
                     4. ANSWER: Provide a concise, professional answer in Tamil.
                     
                     ### MASTER KNOWLEDGE BASE (ABSOLUTE TRUTH):
-                    1. STRUCTURE: 1,330 Kurals, 133 Chapters. 9 Iyals: Aram (4), Porul (7), Inbam (2). 'ஃ' used 14 times. 'குறிப்பறிதல்' title used twice.
-                    2. LETTERS: Only 37/247 Tamil letters used. 'னி' most used (1705). 'ஔ' NEVER used. Starts 'அ', ends 'ன'.
-                    3. NUMBERS: '9' NEVER used. '7' occurs 8 times. '70 Crore' once.
+                    1. STRUCTURE: 1,330 Kurals (Kural Venba), 133 Chapters. 9 Iyals: Aram (4), Porul (7), Inbam (2). 'ஃ' used 14 times. 'குறிப்பறிதல்' title used twice.
+                    2. LETTERS: Only 37/247 Tamil letters used. 'னி' most used (1705). 'ளீ' and 'ங' used ONLY ONCE. 'ஔ' NEVER used. Starts 'அ', ends 'ன'. Total: 42,194.
+                    3. NUMBERS: '9' NEVER used. '7' occurs 8 times. '70 Crore' once. 'Crore' occurs 7 times.
                     4. NATURE: Flowers (Anicham, Kuvalai), Trees (Palm, Bamboo), Fruit (Nerunjil), Seed (Kundrimani).
                     5. BIOGRAPHY: Parents (Adi, Bagavan), Wife (Vasuki). Born: Mylapore (31 BC). Artist: Venuvarmma.
-                    6. HISTORY: 1812 (Tanjore, Nanaprakasam). 10 Commentators: Manakkudavar (1st), Parimelazhagar (Best/Last), and others (Dharumar, Kalingar, etc.).
-                    7. TRANSLATIONS: 107 languages. G.U. Pope (Eng), Veeramamunivar (Lat), Kittu Sironmani (Vak boli).
+                    6. HISTORY: 1812 (Tanjore, Nanaprakasam). 10 Commentators: Manakkudavar (1st), Parimelazhagar (Best).
+                    7. TRANSLATIONS: 107 languages. G.U. Pope (Eng, studied for 40 years), Veeramamunivar (Lat), Kittu Sironmani (Vak boli).
                     8. ABSENT: 'Tamil' and 'God' (inside verses) NEVER used.
                     9. STATUE: Kanyakumari 133ft statue opened in Jan 2000.
                     10. PRAISE: Thiruvalluva Maalai. Quotes by Avvaiyar, Bharathiyar, Bharathidasan.
