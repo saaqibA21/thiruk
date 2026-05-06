@@ -239,13 +239,21 @@ export class KuralAI {
             const words = verseText.split(/\s+/);
 
             if (isStartsWith && structuralTarget) {
-                const targetPrefix = structuralTarget.substring(0, Math.max(5, structuralTarget.length));
-                const fullMatch = l1.startsWith(structuralTarget) || words[0].startsWith(structuralTarget);
-                const prefixMatch = l1.startsWith(targetPrefix) || words[0].startsWith(targetPrefix);
+                const cleanTarget = structuralTarget.trim();
+                const firstWord = words[0];
+                
+                const fullMatch = l1.startsWith(cleanTarget) || firstWord.startsWith(cleanTarget);
                 
                 if (fullMatch) score += 5000000;
-                else if (prefixMatch) score += 1000000;
-                else return { ...k, score: 0 }; 
+                else {
+                    // Fallback to a shorter prefix match if full match fails (for partial typing)
+                    const targetPrefix = cleanTarget.substring(0, Math.max(3, Math.floor(cleanTarget.length / 2)));
+                    if (l1.startsWith(targetPrefix) || firstWord.startsWith(targetPrefix)) {
+                        score += 1000000;
+                    } else {
+                        return { ...k, score: 0 };
+                    }
+                }
             }
             if (isEndsWith && structuralTarget) {
                 const targetEnd = structuralTarget.substring(Math.max(0, structuralTarget.length - 3));

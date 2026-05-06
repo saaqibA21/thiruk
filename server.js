@@ -21,7 +21,7 @@ if (!fs.existsSync(LOG_FILE)) {
 
 app.post('/api/log', (appRequest, appResponse) => {
     try {
-        const { query, answer, timestamp, mode } = appRequest.body;
+        const { query, answer, timestamp, mode, sourceCount } = appRequest.body;
         
         const logData = JSON.parse(fs.readFileSync(LOG_FILE, 'utf8'));
         logData.push({
@@ -29,7 +29,8 @@ app.post('/api/log', (appRequest, appResponse) => {
             timestamp: timestamp || new Date().toISOString(),
             query,
             answer,
-            mode
+            mode,
+            sourceCount: sourceCount || 0
         });
         
         fs.writeFileSync(LOG_FILE, JSON.stringify(logData, null, 2));
