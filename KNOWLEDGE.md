@@ -38,5 +38,10 @@ To maintain the highest level of factual integrity, the AI is trained on key lin
 - **The Missing Nine**: All primary numbers appear except for "Nine" (Onbathu).
 - **The Silent Vowel**: The letter "Au" (ஔ) is completely absent from the work.
 
+## Literary Praise (Thiruvalluva Maalai)
+The platform is synchronized with historical literary appraisals:
+- **Thiruvalluva Maalai**: A monumental collection of 55 verses by 53 poets dedicated solely to praising the Kural.
+- **Scholarly Endorsements**: Includes historical citations from *Manimekalai* ("Deiva Pulavan") and Avvaiyar's famous atomic-analogy quote.
+
 ---
 *Created on: 2026-04-14*

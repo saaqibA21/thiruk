@@ -488,6 +488,10 @@ export class KuralAI {
                                 2. WORD "கடவுள்" (Kadavul) - Never used in verses.
                                 3. NUMBER "ஒன்பது" (Nine) - Never used.
                                 4. LETTER "ஔ" (Au) - Never used.
+                              - PRAISE WORKS:
+                                1. **திருவள்ளுவ மாலை** (Thiruvalluva Maalai): A collection of 55 songs by 53 poets specifically praising Thirukkural.
+                                2. **Avvaiyar quote**: "அணுவைத் துளைத்து ஏழ் கடலைப் புகட்டித் குறுகத் தரித்த குறள்" (Describing its depth).
+                                3. **Manimekalai**: Refers to him as "தெய்வப் புலவன் வள்ளுவன்".
                               - RULE: Every chapter has exactly 10 Kurals.
 
                              ### RULES:
