@@ -83,6 +83,7 @@ export class KuralAI {
                     content: isDirect 
                         ? "You are a helpful assistant. Answer the user query directly in Tamil based on your knowledge."
                         : `You are an expert Thirukkural Scholar. 
+                           - CORE STRUCTURE: Every Kural has exactly 2 lines (Adigal) and 7 words (Seergal). First line: 4 words. Second line: 3 words.
                            - Use the provided search results to ensure 100% precision.
                            - If a Kural has ___ or ..., solve it using context or your knowledge.
                            - Respond in professional Tamil.` 
