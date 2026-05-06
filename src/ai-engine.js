@@ -69,28 +69,35 @@ export class KuralAI {
         const isValidKey = this.openai && this.openai.apiKey?.startsWith('sk-');
         if (!isValidKey) return { answer: "API Key invalid.", sources: [] };
 
-        let context = "";
         let finalSources = [];
-
-        // Bypass local data if isDirect is true
-        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start'];
-        const endKeywords = ['முடியும்', 'ending', 'ends'];
-        const isStartsWith = startKeywords.some(kw => question.includes(kw));
-        const isEndsWith = endKeywords.some(kw => question.includes(kw));
+        const questionWords = ['என்ன', 'ஏன்', 'எப்படி', 'விளக்கம்', 'explain', 'what', 'why', 'how', '?', 'சொல்', 'கூறு'];
+        const isQuestion = questionWords.some(w => question.toLowerCase().includes(w));
 
         if (!isDirect) {
             const { results } = await this.search(question, !!imageBase64);
             finalSources = results;
-            context = finalSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
 
-            // FAST RESPONSE SHORTCUT: For structural queries, return sources immediately
-            if ((isStartsWith || isEndsWith) && finalSources.length > 0 && !imageBase64) {
-                const intro = `இது குறித்து ${finalSources.length} குறள்கள் கண்டறியப்பட்டுள்ளன:`;
-                return { answer: intro, sources: finalSources };
+            // CRITICAL: Skip AI for simple searches or structural queries
+            // If it's not a question and we have a high-confidence match, return it immediately
+            const hasHighConfidence = finalSources.length > 0 && finalSources[0].score > 1000000;
+            if (!isQuestion && !imageBase64 && hasHighConfidence) {
+                return { 
+                    answer: finalSources.length > 1 ? `இதோ நீங்கள் கேட்டது குறித்த ${finalSources.length} குறள்கள்:` : `இதோ நீங்கள் கேட்ட குறள்:`, 
+                    sources: finalSources 
+                };
+            }
+            
+            // For structural queries (starts with/ends with), always skip AI unless it's an explicit question
+            const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start'];
+            const endKeywords = ['முடியும்', 'ending', 'ends'];
+            const isStructural = startKeywords.some(kw => question.includes(kw)) || endKeywords.some(kw => question.includes(kw));
+            if (isStructural && finalSources.length > 0 && !imageBase64 && !isQuestion) {
+                return { answer: `இதோ நீங்கள் கேட்டது குறித்த ${finalSources.length} குறள்கள் கண்டறியப்பட்டுள்ளன:`, sources: finalSources };
             }
         }
 
         try {
+            const context = finalSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
             const messages = [
                 { 
                     role: "system", 
@@ -105,23 +112,15 @@ export class KuralAI {
                     6. HISTORY: First Printed: 1812 (Tanjore) by Nanaprakasam. First Commentator: Manakkudavar. Best Commentator: Parimelazhagar.
                     7. TRANSLATIONS: 107 languages. G.U. Pope (English), Veeramamunivar (Latin), Kittu Sironmani (Narikkuravar/Vak boli).
                     8. ABSENT: 'Tamil' and 'God' (inside verses) are NEVER used.
-                    9. PRAISE: Thiruvalluva Maalai. Quotations by Avvaiyar, Bharathiyar, Bharathidasan.
                     
                     ### RULES:
                     - A Kural has exactly 2 lines and 7 words. Line 1: 4 words. Line 2: 3 words.
-                    - ALWAYS respond in professional Tamil.
-                    
-                    ${isDirect 
-                        ? "Answer the query directly in Tamil based on the Master Knowledge Base above."
-                        : `Use the provided search results and the Master Knowledge Base to ensure 100% precision.`}`
+                    - ALWAYS respond in professional Tamil.` 
                 }
             ];
 
             const userContent = [{ type: "text", text: isDirect ? question : `Context:\n${context}\n\nUser Question: ${question}` }];
-            if (imageBase64) {
-                userContent.push({ type: "image_url", image_url: { url: imageBase64 } });
-            }
-
+            if (imageBase64) userContent.push({ type: "image_url", image_url: { url: imageBase64 } });
             messages.push({ role: "user", content: userContent });
 
             const response = await this.openai.chat.completions.create({
@@ -130,13 +129,7 @@ export class KuralAI {
                 temperature: 0.3
             });
 
-            const answer = response.choices[0].message.content.trim();
-            
-            // Log for analysis
-            const logEntry = { timestamp: new Date().toISOString(), query: question, answer, sourceCount: finalSources.length };
-            fetch('/api/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(logEntry) }).catch(() => {});
-
-            return { answer, sources: finalSources };
+            return { answer: response.choices[0].message.content.trim(), sources: finalSources };
         } catch (err) {
             console.error("AI Error:", err);
             return { answer: "மன்னிக்கவும், பதிலளிப்பதில் சிக்கல் ஏற்பட்டது.", sources: finalSources };
