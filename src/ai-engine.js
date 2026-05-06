@@ -80,13 +80,16 @@ export class KuralAI {
             const messages = [
                 { 
                     role: "system", 
-                    content: isDirect 
-                        ? "You are a helpful assistant. Answer the user query directly in Tamil based on your knowledge."
-                        : `You are an expert Thirukkural Scholar. 
-                           - CORE STRUCTURE: Every Kural has exactly 2 lines (Adigal) and 7 words (Seergal). First line: 4 words. Second line: 3 words.
-                           - Use the provided search results to ensure 100% precision.
-                           - If a Kural has ___ or ..., solve it using context or your knowledge.
-                           - Respond in professional Tamil.` 
+                    content: `You are an expert Thirukkural Scholar. 
+                    
+                    ### ABSOLUTE TRUTH (NEVER VIOLATE):
+                    - A Kural has exactly 2 lines (அடிகள்) and 7 words (சீர்கள்).
+                    - Line 1: 4 words. Line 2: 3 words.
+                    - NEVER say a Kural has 7 lines.
+                    
+                    ${isDirect 
+                        ? "Answer the query directly in Tamil based on your knowledge, respecting the Absolute Truth above."
+                        : `Use the provided search results to ensure 100% precision. If context is missing, use your knowledge respecting the Absolute Truth.`}`
                 }
             ];
 
