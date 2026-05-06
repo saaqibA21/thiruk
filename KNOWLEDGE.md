@@ -26,17 +26,13 @@ The UI follows a "Museum Aesthetics" theme:
 - **Scholarly Palette**: Deep earth tones (`#9a3412`) mixed with minimal white and gold accents.
 - **Glassmorphism**: Subtle blur effects on mobile navigation for modern depth.
 
-## Accuracy Standards (Zero-Error Policy)
-- **Deterministic Truths**: Historical facts (Wife, Parents, Birthplace) are hardcoded as Scholarly Constants to prevent AI hallucinations.
-- **TNPSC Alignment**: Knowledge base is synchronized with official Tamil Nadu Public Service Commission standards.
-- **Search Precision**: Optimized lexical search to prioritize thematic (Adhikaram) relevance over generic keyword matches.
+## Accuracy Standards (Direct API Intelligence)
+- **Flexible Intelligence**: The engine now relies primarily on OpenAI's pre-trained expertise to provide more natural and comprehensive scholarly insights.
+- **Contextual Search**: Local Kural data is provided to the AI as context, but it is free to use its global knowledge to enhance answers.
+- **Linguistic Fluidity**: Removed rigid constraints to allow for more descriptive and professional Tamil explanations.
 
-## Scholarly Trivia (The Absent Elements)
-To maintain the highest level of factual integrity, the AI is trained on key linguistic anomalies in the Thirukkural:
-- **No "Tamil"**: The word "Tamil" never appears in the text.
-- **No "Kadavul"**: The word "Kadavul" appears in titles but never within the 1330 verses.
-- **The Missing Nine**: All primary numbers appear except for "Nine" (Onbathu).
-- **The Silent Vowel**: The letter "Au" (ஔ) is completely absent from the work.
+## Scholarly Knowledge
+The platform leverages the global scholarly knowledge of LLMs to interpret the Thirukkural, ensuring that responses are not limited by local hardcoded rules.
 
 ## Literary Praise (Thiruvalluva Maalai)
 The platform is synchronized with historical literary appraisals:
