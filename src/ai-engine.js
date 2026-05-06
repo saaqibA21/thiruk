@@ -130,32 +130,35 @@ export class KuralAI {
         }
 
         try {
-            const context = finalSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
+            // For images, provide only the top match to prevent confusion; for text, provide up to 5
+            const contextSources = imageBase64 ? finalSources.slice(0, 1) : finalSources;
+            const context = contextSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
+            
             const messages = [
                 { 
                     role: "system", 
                     content: `You are an expert Thirukkural Scholar. 
                     
                     ### MASTER KNOWLEDGE BASE (ABSOLUTE TRUTH):
-                    1. STRUCTURE: 1330 Kurals, 133 Chapters (Adhikarams), 9 Iyals (Sub-divisions). PAALS: 3 (Aram, Porul, Inbam). NEVER confuse Paals (3) with Iyals (9).
+                    1. STRUCTURE: 1330 Kurals, 133 Chapters, 9 Iyals (Sub-divisions). PAALS: 3 (Aram, Porul, Inbam). NEVER confuse Paals (3) with Iyals (9).
                     2. LETTERS: 37 letters used. 'னி' most used (1705). 'ஔ' is NEVER used. Starts with 'அ', ends with 'ன'.
-                    3. NATURE: Flowers (Anicham, Kuvalai), Trees (Palm, Bamboo), Fruit (Nerunjil), Seed (Kundrimani).
-                    4. BIOGRAPHY: Parents (Adi, Bagavan), Wife (Vasuki). Artist: Venuvarmma. 
-                    5. HISTORY: First Printed: 1812. First Commentator: Manakkudavar. Best: Parimelazhagar.
-                    6. TRANSLATIONS: 107 languages. G.U. Pope (English), Veeramamunivar (Latin).
-                    7. ABSENT: 'Tamil' and 'God' are NEVER used inside verses.
+                    3. BIOGRAPHY: Parents (Adi, Bagavan), Wife (Vasuki). Born: Mylapore (31 BC). Artist: Venuvarmma. 
+                    4. HISTORY: First Printed: 1812. First Commentator: Manakkudavar. Best: Parimelazhagar.
+                    5. TRANSLATIONS: 107 languages. G.U. Pope (English), Veeramamunivar (Latin).
+                    6. ABSENT: 'Tamil' and 'God' (inside verses) are NEVER used.
                     
-                    ### RULES:
-                    - A Kural has exactly 2 lines and 7 words. 
-                    - RESPOND IN TAMIL ONLY. Use the verified Context for identifying Kurals in images.` 
+                    ### VISION RULES:
+                    - For image puzzles, identify the Kural from the Context. Use its EXACT text. 
+                    - Do NOT hallucinate other Kural numbers.
+                    - RESPOND IN TAMIL ONLY.` 
                 }
             ];
 
-            const userContent = [{ type: "text", text: isDirect ? question : `Context (Verified Kurals):\n${context}\n\nUser Question/Image Text: ${queryForSearch || question}` }];
+            const userContent = [{ type: "text", text: isDirect ? question : `Context (Use ONLY if relevant):\n${context}\n\nQuestion/Content: ${queryForSearch || question}` }];
             if (imageBase64) userContent.push({ type: "image_url", image_url: { url: imageBase64 } });
             messages.push({ role: "user", content: userContent });
 
-            const response = await this.openai.chat.completions.create({ model: "gpt-4o", messages: messages, temperature: 0.1 });
+            const response = await this.openai.chat.completions.create({ model: "gpt-4o", messages: messages, temperature: 0 });
             return { answer: response.choices[0].message.content.trim(), sources: finalSources };
         } catch (err) {
             console.error("AI Error:", err);
