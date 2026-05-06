@@ -130,7 +130,7 @@ export class KuralAI {
         }
 
         try {
-            // For images, provide only the top match to prevent confusion; for text, provide up to 5
+            // Context logic: 1 source for images to prevent confusion, up to 5 for text
             const contextSources = imageBase64 ? finalSources.slice(0, 1) : finalSources;
             const context = contextSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
             
@@ -145,11 +145,11 @@ export class KuralAI {
                     3. BIOGRAPHY: Parents (Adi, Bagavan), Wife (Vasuki). Born: Mylapore (31 BC). Artist: Venuvarmma. 
                     4. HISTORY: First Printed: 1812. First Commentator: Manakkudavar. Best: Parimelazhagar.
                     5. TRANSLATIONS: 107 languages. G.U. Pope (English), Veeramamunivar (Latin).
-                    6. ABSENT: 'Tamil' and 'God' (inside verses) are NEVER used.
+                    6. ABSENT: 'Tamil' and 'God' are NEVER used inside verses.
                     
                     ### VISION RULES:
-                    - For image puzzles, identify the Kural from the Context. Use its EXACT text. 
-                    - Do NOT hallucinate other Kural numbers.
+                    - For image puzzles: Identify the Kural from the Context provided. 
+                    - CRITICAL: Use ONLY the Context Kural. NEVER fallback to Kural 1 ("அகர முதல...") unless it is the only Kural in Context.
                     - RESPOND IN TAMIL ONLY.` 
                 }
             ];
