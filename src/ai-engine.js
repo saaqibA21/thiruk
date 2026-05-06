@@ -141,16 +141,6 @@ const CHAPTER_INDEX = [
 import OpenAI from 'openai';
 
 export class KuralAI {
-        // DETERMINISTIC VALIDATION LAYER (Double-Check before AI)
-        const numMatch = query.match(/(\d+)/);
-        if (numMatch) {
-            const num = parseInt(numMatch[1]);
-            if (num >= 1 && num <= 133 && (query.includes("அதிகாரம்") || query.includes("Chapter"))) {
-                const correctName = CHAPTER_INDEX[num - 1];
-                return `திருக்குறளின் ${num}-ஆம் அதிகாரம் "${correctName}" ஆகும். [HIDE_SOURCES]`;
-            }
-        }
-
     constructor(dataset) {
         this.dataset = dataset;
         this.openai = null;
@@ -177,6 +167,16 @@ export class KuralAI {
     async search(query, isImageSearch = false) {
         if (!query) return { results: [], searchTerms: [] };
 
+        // DETERMINISTIC VALIDATION LAYER (Double-Check before AI)
+        const numMatchDirect = query.match(/(\d+)/);
+        if (numMatchDirect) {
+            const num = parseInt(numMatchDirect[1]);
+            if (num >= 1 && num <= 133 && (query.includes("அதிகாரம்") || query.includes("Chapter"))) {
+                const correctName = CHAPTER_INDEX[num - 1];
+                return { results: this.dataset.filter(k => k.Number >= (num - 1) * 10 + 1 && k.Number <= num * 10), searchTerms: [], isStartsWith: false, isEndsWith: false };
+            }
+        }
+
         const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
         const cleanQuery = normalize(query);
         const allQueryWords = cleanQuery.split(/\s+/);
@@ -202,6 +202,17 @@ export class KuralAI {
                 chapterRange = { start: (chapNum - 1) * 10 + 1, end: chapNum * 10, num: chapNum };
             }
         }
+
+        // Chapter Name Match (New: Detects chapter name in query)
+        let namedChapterRange = null;
+        for (let i = 0; i < CHAPTER_INDEX.length; i++) {
+            const chapName = CHAPTER_INDEX[i];
+            if (cleanQuery.includes(normalize(chapName))) {
+                namedChapterRange = { start: i * 10 + 1, end: (i + 1) * 10, num: i + 1 };
+                break;
+            }
+        }
+
         const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'துடாங்கும்', 'starting', 'start', 'தொடக்கம்', 'ஆரம்பம்', 'சதொடங்கு'].map(s => s.normalize('NFC'));
         const endKeywords = ['முடியும்', 'முடிகிற', 'ending', 'ends with', 'முடிவு', 'ஈறு'].map(s => s.normalize('NFC'));
 
@@ -216,7 +227,7 @@ export class KuralAI {
             !['என்று', 'எண்று', 'என', 'சொல்லுடன்', 'தொடர்புடைய', 'பற்றிய', 'பற்றி', 'என்னா'].includes(w)
         ) || allQueryWords[0];
 
-        const stopWords = ['விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'என்று', 'எண்று', 'சொல்லுடன்', 'தொடர்புடைய', 'மீதி', 'காட்டு', 'மற்ற', 'இன்னும்', 'குறள்களையும்', 'காட்டவும்', 'தெரிவி'].map(s => s.normalize('NFC'));
+        const stopWords = ['திருக்குறள்', 'திருக்குறளில்', 'குறள்', 'குறள்கள்', 'விளக்கம்', 'என்ன', 'படம்', 'image', 'explain', 'what', 'என்று', 'எண்று', 'சொல்லுடன்', 'தொடர்புடைய', 'மீதி', 'காட்டு', 'மற்ற', 'இன்னும்', 'குறள்களையும்', 'காட்டவும்', 'தெரிவி'].map(s => s.normalize('NFC'));
         const searchTerms = allQueryWords.filter(t => !stopWords.some(sw => t === sw) && !startKeywords.includes(t) && !endKeywords.includes(t) && t.length > 1);
 
         const results = this.dataset.map(k => {
@@ -325,7 +336,10 @@ export class KuralAI {
             }
 
             if (chapterRange && k.Number >= chapterRange.start && k.Number <= chapterRange.end) {
-                score += 20000000; // Ultimate priority for specific chapter
+                score += 20000000; // Ultimate priority for specific chapter number
+            }
+            if (namedChapterRange && k.Number >= namedChapterRange.start && k.Number <= namedChapterRange.end) {
+                score += 15000000; // High priority for specific chapter name match
             }
 
             const numMatch = query.match(/\b(?:kural|குறள்|எண்)\s*(\d+)\b/i);
@@ -455,8 +469,13 @@ export class KuralAI {
                              - METER: **குறள் வெண்பா** (Kural Venba).
                              - SECTIONS: Aram (1-38), Porul (39-108), Inbam (109-133).
                              - MASTER INDEX: 1. கடவுள் வாழ்த்து, 2. வான் சிறப்பு, 3. நீத்தார் பெருமை, 4. அறன் வலியுறுத்தல், 5. இல் வாழ்க்கை, 6. வாழ்க்கைத் துணைநலம், 7. மக்கள் பேறு, 8. அன்பு உடைமை, 9. விருந்து ஓம்பல், 10. இனியவை கூறல், 11. செய்ந்நன்றி அறிதல், 12. நடுவு நிலைமை, 13. அடக்கம் உடைமை, 14. ஒழுக்கம் உடைமை, 15. பிறன் இல் விழையாமை, 16. பொறை உடைமை, 17. அழுக்காறாமை, 18. வெஃகாமை, 19. புறம் கூறாமை, 20. பயன் இல சொல்லாமை, 21. தீவினை அச்சம், 22. ஒப்புரவு அறிதல், 23. ஈகை, 24. புகழ், 25. அருள் உடைமை, 26. புலால் மறுத்தல், 27. தவம், 28. கூடா ஒழுக்கம், 29. கள்ளாமை, 30. வாய்மை, 31. வெகுளாமை, 32. இன்னா செய்யாமை, 33. கொல்லாமை, 34. நிலையாமை, 35. துறவு, 36. மெய் உணர்தல், 37. அவா அறுத்தல், 38. ஊழ், 39. இறை மாட்சி, 40. கல்வி, 41. கல்லாமை, 42. கேள்வி, 43. அறிவு உடைமை, 44. குற்றம் கடிதல், 45. பெரியோரைத் துணைக்கோடல், 46. சிற்றினம் சேராமை, 47. தெரிந்து செயல் வகை, 48. வலி அறிதல், 49. காலம் அறிதல், 50. இடன் அறிதல், 51. தெரிந்து தெளிதல், 52. தெரிந்து வினையாடல், 53. சுற்றம் தழால், 54. பொச்சாவாமை, 55. செங்கோன்மை, 56. கொடுங்கோன்மை, 57. வெருவந்த செய்யாமை, 58. கண்ணோட்டம், 59. ஒற்றாடல், 60. ஊக்கம் உடைமை, 61. மடி இன்மை, 62. ஆள்வினை உடைமை, 63. இடுக்கண் அழியாமை, 64. அமைச்சு, 65. சொல்வன்மை, 66. வினைத் தூய்மை, 67. வினைத் திட்பம், 68. வினை செயல் வகை, 69. தூது, 70. மன்னரைச் சேர்ந்து ஒழுகல், 71. குறிப்பு அறிதல், 72. அவை அறிதல், 73. அவை அஞ்சாமை, 74. நாடு, 75. அரண், 76. பொருள் செயல் வகை, 77. படை மாட்சி, 78. படைச் செருக்கு, 79. நட்பு, 80. நட்பு ஆராய்தல், 81. பழைமை, 82. தீ நட்பு, 83. கூடா நட்பு, 84. பேதைமை, 85. புல்லறிவாண்மை, 86. இகல், 87. பகை மாட்சி, 88. பகைத் திறம் தெளிதல், 89. உட்பகை, 90. பெரியோரைப் பிழையாமை, 91. பெண்வழிச் சேறல், 92. வரைவின் மகளிர், 93. கள் உண்ணாமை, 94. சூது, 95. மருந்து, 96. குடிமை, 97. மானம், 98. பெருமை, 99. சான்றாண்மை, 100. பண்பு உடைமை, 101. நன்றி இல் செல்வம், 102. நாண் உடைமை, 103. குடி செயல் வகை, 104. உழவு, 105. நல்குரவு, 106. இரவு, 107. இரவு அச்சம், 108. கயமை, 109. தகையணங்கு உறுத்தல், 110. குறிப்பு அறிதல், 111. புணர்ச்சி மகிழ்தல், 112. நலம் புனைந்து உரைத்தல், 113. காதல் சிறப்பு உரைத்தல், 114. நாணுத் துறவு உரைத்தல், 115. அலர் அறிவுறுத்தல், 116. பிரிவு ஆற்றாமை, 117. படர் மெலிந்து இரங்கல், 118. கண் விதுப்பு அழிதல், 119. பசப்புறு பருவரல், 120. தனிப்படர் மிகுதி, 121. நினைந்தவர் புலம்பல், 122. கனவு நிலை உரைத்தல், 123. பொழுது கண்டு இரங்கல், 124. உறுப்பு நலன் அழிதல், 125. நெஞ்சொடு கிளத்தல், 126. நிறை அழிதல், 127. அவர் வயின் விதும்பல், 128. குறிப்பு அறிவுறுத்தல், 129. புணர்ச்சி விதும்பல், 130. நெஞ்சொடு புலத்தல், 131. புலவி, 132. புலவி நுணுக்கம், 133. ஊடல் உவகை.
-                             - IYAL vs ADHIKARAM: NEVER use Iyal names as Adhikaram names.
-                             - RULE: Every chapter has exactly 10 Kurals.
+                              - IYAL vs ADHIKARAM: NEVER use Iyal names as Adhikaram names.
+                              - WIFE: **வாசுகி** (Vasuki).
+                              - PARENTS: **ஆதி - பகவன்** (Aadhi - Bhagavan).
+                              - BIRTH PLACE: **மயிலாப்பூர்** (Mylapore, Chennai).
+                              - PERIOD: **கி.மு. 31** (31 BC).
+                              - ALTERNATE NAMES: நாயனார், தேவர், முதற்பாவலர், தெய்வப்புலவர், நான்முகனார், மாதானுபங்கி, செந்நாப்போதார், பெருநாவலர்.
+                              - RULE: Every chapter has exactly 10 Kurals.
 
                              ### RULES:
                              - Answer ONLY in Tamil.

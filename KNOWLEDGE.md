@@ -26,5 +26,10 @@ The UI follows a "Museum Aesthetics" theme:
 - **Scholarly Palette**: Deep earth tones (`#9a3412`) mixed with minimal white and gold accents.
 - **Glassmorphism**: Subtle blur effects on mobile navigation for modern depth.
 
+## Accuracy Standards (Zero-Error Policy)
+- **Deterministic Truths**: Historical facts (Wife, Parents, Birthplace) are hardcoded as Scholarly Constants to prevent AI hallucinations.
+- **TNPSC Alignment**: Knowledge base is synchronized with official Tamil Nadu Public Service Commission standards.
+- **Search Precision**: Optimized lexical search to prioritize thematic (Adhikaram) relevance over generic keyword matches.
+
 ---
 *Created on: 2026-04-14*
