@@ -44,7 +44,7 @@ export class KuralAI {
             const words = v.split(/\s+/);
 
             if (isStartsWith && target) {
-                const targetRoot = target.length > 2 ? target.substring(0, 3) : target;
+                const targetRoot = target.endsWith('ம்') ? target.slice(0, -1) : target;
                 if (l1.startsWith(target) || words[0].startsWith(target) || l1.startsWith(targetRoot) || words[0].startsWith(targetRoot)) {
                     score += 1000000;
                 }
