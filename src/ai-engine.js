@@ -45,24 +45,30 @@ export class KuralAI {
         const isValidKey = this.openai && this.openai.apiKey?.startsWith('sk-');
         if (!isValidKey) return { answer: "API Key invalid.", sources: [] };
 
-        // Step 1: Search local context
-        const { results: finalSources } = await this.search(question, !!imageBase64);
-        const context = finalSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
+        let context = "";
+        let finalSources = [];
+
+        // Bypass local data if isDirect is true
+        if (!isDirect) {
+            const { results } = await this.search(question, !!imageBase64);
+            finalSources = results;
+            context = finalSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
+        }
 
         try {
             const messages = [
                 { 
                     role: "system", 
-                    content: `You are an expert Thirukkural Scholar. 
-                    - Goal: Provide accurate and professional answers in Tamil.
-                    - Blanks: If a Kural has ___ or ..., solve it and provide the FULL completed verse.
-                    - Context: Use the provided search results to ensure 100% precision.
-                    - Logic: If an image is provided, focus on solving any questions or puzzles within it.
-                    - Style: Respond in pure, scholarly Tamil.` 
+                    content: isDirect 
+                        ? "You are a helpful assistant. Answer the user query directly in Tamil based on your knowledge."
+                        : `You are an expert Thirukkural Scholar. 
+                           - Use the provided search results to ensure 100% precision.
+                           - If a Kural has ___ or ..., solve it using context or your knowledge.
+                           - Respond in professional Tamil.` 
                 }
             ];
 
-            const userContent = [{ type: "text", text: `Context:\n${context}\n\nUser Question: ${question}` }];
+            const userContent = [{ type: "text", text: isDirect ? question : `Context:\n${context}\n\nUser Question: ${question}` }];
             if (imageBase64) {
                 userContent.push({ type: "image_url", image_url: { url: imageBase64 } });
             }
