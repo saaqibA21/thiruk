@@ -71,25 +71,34 @@ export class KuralAI {
         if (!isValidKey) return { answer: "API Key invalid.", sources: [] };
 
         const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
-        const cleanQ = normalize(question);
+        let queryForSearch = normalize(question);
         
+        // Step 1: If image only, perform quick OCR to get text for grounding
+        if (imageBase64 && queryForSearch.length < 5) {
+            try {
+                const ocr = await this.openai.chat.completions.create({
+                    model: "gpt-4o",
+                    messages: [{ role: "user", content: [{ type: "text", text: "Transcribe ONLY the Tamil text from this image. No other text." }, { type: "image_url", image_url: { url: imageBase64 } }] }],
+                    max_tokens: 100
+                });
+                queryForSearch = normalize(ocr.choices[0].message.content.trim());
+            } catch (e) { console.error("OCR Error:", e); }
+        }
+
         let finalSources = [];
         const questionWords = ['என்ன', 'ஏன்', 'எப்படி', 'விளக்கம்', 'explain', 'what', 'why', 'how', '?', 'சொல்', 'கூறு'];
-        const isQuestion = questionWords.some(w => cleanQ.includes(w));
-
-        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்'];
-        const endKeywords = ['முடியும்', 'ending', 'ends', 'முடிவு'];
-        const isStructural = startKeywords.some(kw => cleanQ.includes(kw)) || endKeywords.some(kw => cleanQ.includes(kw));
+        const isQuestion = questionWords.some(w => queryForSearch.includes(w));
 
         if (!isDirect) {
-            const { results } = await this.search(question, !!imageBase64);
+            const { results } = await this.search(queryForSearch, !!imageBase64);
             finalSources = results;
 
-            // ABSOLUTE BYPASS: Structural queries or clear searches NEVER use AI unless it's a descriptive question
+            const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்'];
+            const isStructural = startKeywords.some(kw => queryForSearch.includes(kw));
+
             if ((isStructural || (!isQuestion && finalSources.length > 0)) && !imageBase64) {
                 const count = finalSources.length;
-                const intro = count > 1 ? `இது குறித்து ${count} குறள்கள் கண்டறியப்பட்டுள்ளன:` : `இதோ நீங்கள் கேட்ட குறள்:`;
-                return { answer: intro, sources: finalSources };
+                return { answer: count > 1 ? `இதோ நீங்கள் கேட்டது குறித்த ${count} குறள்கள்:` : `இதோ நீங்கள் கேட்ட குறள்:`, sources: finalSources };
             }
         }
 
@@ -99,33 +108,18 @@ export class KuralAI {
                 { 
                     role: "system", 
                     content: `You are an expert Thirukkural Scholar. 
-                    
-                    ### MASTER KNOWLEDGE BASE (ABSOLUTE TRUTH):
-                    1. STRUCTURE: 1,330 Kurals, 133 Chapters, 9 Iyals. Words: 14,000. Letters: 42,194. 'ஃ' used 14 times. 'குறிப்பறிதல்' is the only chapter title used twice.
-                    2. LETTERS: Only 37 out of 247 letters used. 'னி' most used (1705). 'ஔ' is NEVER used. Starts with 'அ' and ends with 'ன'.
-                    3. NUMBERS: '9' NEVER used. '7' occurs 8 times. '70 Crore' occurs once.
-                    4. NATURE: Flowers (Anicham, Kuvalai), Trees (Palm, Bamboo), Fruit (Nerunjil), Seed (Kundrimani).
-                    5. BIOGRAPHY: Parents (Adi, Bagavan), Wife (Vasuki). Born: Mylapore (31 BC). Artist who drew his picture: Venuvarmma (Puducherry).
-                    6. HISTORY: First Printed: 1812 (Tanjore) by Nanaprakasam. First Commentator: Manakkudavar. Best Commentator: Parimelazhagar.
-                    7. TRANSLATIONS: 107 languages. G.U. Pope (English), Veeramamunivar (Latin), Kittu Sironmani (Narikkuravar/Vak boli).
-                    8. ABSENT: 'Tamil' and 'God' (inside verses) are NEVER used.
-                    
-                    ### RULES:
-                    - A Kural has exactly 2 lines and 7 words. Line 1: 4 words. Line 2: 3 words.
-                    - ALWAYS respond in professional Tamil.` 
+                    - Goal: Identify and complete the Kural correctly.
+                    - If the image contains a Kural with blanks, use the provided Context to fill them accurately.
+                    - ABSOLUTE TRUTH: A Kural has exactly 2 lines and 7 words. 
+                    - RESPOND IN TAMIL ONLY.` 
                 }
             ];
 
-            const userContent = [{ type: "text", text: isDirect ? question : `Context:\n${context}\n\nUser Question: ${question}` }];
+            const userContent = [{ type: "text", text: isDirect ? question : `Context (Verified Kurals):\n${context}\n\nUser Question/Image Text: ${queryForSearch || question}` }];
             if (imageBase64) userContent.push({ type: "image_url", image_url: { url: imageBase64 } });
             messages.push({ role: "user", content: userContent });
 
-            const response = await this.openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: messages,
-                temperature: 0.3
-            });
-
+            const response = await this.openai.chat.completions.create({ model: "gpt-4o", messages: messages, temperature: 0.1 });
             return { answer: response.choices[0].message.content.trim(), sources: finalSources };
         } catch (err) {
             console.error("AI Error:", err);
