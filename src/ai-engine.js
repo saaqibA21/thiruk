@@ -483,6 +483,11 @@ export class KuralAI {
                               - BIRTH PLACE: **மயிலாப்பூர்** (Mylapore, Chennai).
                               - PERIOD: **கி.மு. 31** (31 BC).
                               - ALTERNATE NAMES: நாயனார், தேவர், முதற்பாவலர், தெய்வப்புலவர், நான்முகனார், மாதானுபங்கி, செந்நாப்போதார், பெருநாவலர்.
+                              - ABSENT ELEMENTS: 
+                                1. WORD "தமிழ்" (Tamil) - Never used in 1330 Kurals.
+                                2. WORD "கடவுள்" (Kadavul) - Never used in verses.
+                                3. NUMBER "ஒன்பது" (Nine) - Never used.
+                                4. LETTER "ஔ" (Au) - Never used.
                               - RULE: Every chapter has exactly 10 Kurals.
 
                              ### RULES:
