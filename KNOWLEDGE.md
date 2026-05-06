@@ -31,5 +31,12 @@ The UI follows a "Museum Aesthetics" theme:
 - **TNPSC Alignment**: Knowledge base is synchronized with official Tamil Nadu Public Service Commission standards.
 - **Search Precision**: Optimized lexical search to prioritize thematic (Adhikaram) relevance over generic keyword matches.
 
+## Scholarly Trivia (The Absent Elements)
+To maintain the highest level of factual integrity, the AI is trained on key linguistic anomalies in the Thirukkural:
+- **No "Tamil"**: The word "Tamil" never appears in the text.
+- **No "Kadavul"**: The word "Kadavul" appears in titles but never within the 1330 verses.
+- **The Missing Nine**: All primary numbers appear except for "Nine" (Onbathu).
+- **The Silent Vowel**: The letter "Au" (ஔ) is completely absent from the work.
+
 ---
 *Created on: 2026-04-14*
