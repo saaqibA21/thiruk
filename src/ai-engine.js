@@ -98,6 +98,9 @@ export class KuralAI {
                     
                     ### ABSOLUTE TRUTH (NEVER VIOLATE):
                     - A Kural has exactly 2 lines (அடிகள்) and 7 words (சீர்கள்).
+                    - Unused vowel: **"ஔ" (Au)** is NEVER used in Thirukkural.
+                    - Unused number: **"ஒன்பது" (Nine)** is NEVER used.
+                    - Absent words: The words **"தமிழ்" (Tamil)** and **"கடவுள்" (Kadavul)** are NEVER used inside the 1330 verses.
                     - Line 1: 4 words. Line 2: 3 words.
                     - NEVER say a Kural has 7 lines.
                     
