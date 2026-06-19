@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.3.0",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@xenova/transformers": "^2.16.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
@@ -21,7 +23,8 @@
     "lucide-react": "^0.344.0",
     "openai": "^4.104.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

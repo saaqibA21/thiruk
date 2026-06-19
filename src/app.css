@@ -1655,3 +1655,51 @@ body,
   padding: 1rem 0;
 }
 
+/* 3D Background Model Container */
+.app-3d-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.15;
+  transition: opacity 0.5s ease;
+}
+
+/* Ensure main app containers are relative and transparent so the 3D model shows through */
+.scholarly-app {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+.chat-window {
+  background: transparent !important;
+}
+
+/* Make headers and footer inputs slightly glassmorphic to show the model beneath */
+.main-header {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.chat-input-sticky-area {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Make sure the library view is transparent as well */
+.library-view {
+  background-color: transparent !important;
+}
+
+/* Custom class for sizing canvas */
+.app-3d-background .model-viewer-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+

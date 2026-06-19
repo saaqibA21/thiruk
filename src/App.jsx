@@ -3,6 +3,7 @@ import './app.css';
 import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
+import ModelViewer from './components/ModelViewer';
 
 const TAMIL_KEYS = [
    ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ'],
@@ -432,6 +433,25 @@ const App = () => {
 
    return (
       <div className="scholarly-app">
+         <div className="app-3d-background">
+            <ModelViewer
+               url="thiruvalluvar"
+               width="100%"
+               height="100%"
+               autoRotate={true}
+               autoRotateSpeed={0.15}
+               showScreenshotButton={false}
+               enableManualRotation={false}
+               enableHoverRotation={false}
+               enableManualZoom={false}
+               enableMouseParallax={true}
+               ambientIntensity={0.2}
+               keyLightIntensity={0.45}
+               fillLightIntensity={0.25}
+               rimLightIntensity={0.55}
+               environmentPreset="forest"
+            />
+         </div>
          <header className="main-header">
             <div className="header-container-inner">
                <div className="header-left-group">
