@@ -92,7 +92,7 @@ const App = () => {
          const envKey = import.meta.env.VITE_OPENAI_API_KEY;
          if (envKey && envKey.length > 20 && envKey.startsWith('sk-')) return envKey;
       } catch (e) { }
-      return atob('c2stcHJvai1IR09OVnJuZlZkamZjdTB3Q1BHY3ptMTBsT09sTG8yRmtxUWNXV296Uk1UWXk2NUE5NFA4aEk5V1hQZzVpMzRUd0laUlBDcmprVDNCbGtkRkpVTmo0OEdkekpwLVA0b3E2Y2txNTdlTVBoTE1OeGxMT3dsYXVkSk55ZUk5ZjZHeFo5SzRxTUdNTlo3b0ZYZUZOVlFKUWhDeHdB');
+      return '';
    };
 
    const [apiKey, setApiKey] = useState(getInitialKey());
