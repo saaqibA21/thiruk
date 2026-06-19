@@ -1674,6 +1674,8 @@ body {
   pointer-events: none;
   opacity: 0.9;
   transition: opacity 0.5s ease;
+  border: 3px dashed #9a3412; /* Diagnostic border */
+  background: rgba(154, 52, 18, 0.05); /* Diagnostic tint */
 }
 
 @media (max-width: 1200px) {

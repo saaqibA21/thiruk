@@ -569,8 +569,14 @@ const ModelViewer = ({
           rendererRef.current = gl;
           sceneRef.current = scene;
           cameraRef.current = camera;
-          gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.outputColorSpace = THREE.SRGBColorSpace;
+          try {
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            if ('outputColorSpace' in gl) {
+              gl.outputColorSpace = THREE.SRGBColorSpace;
+            }
+          } catch (err) {
+            console.warn('Three.js canvas setup warning:', err);
+          }
         }}
         camera={{ fov: 45, position: [0, 0, camZ], near: 0.01, far: 100 }}
         style={{ touchAction: 'pan-y pinch-zoom' }}
