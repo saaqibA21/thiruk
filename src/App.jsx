@@ -449,7 +449,7 @@ const App = () => {
                keyLightIntensity={0.45}
                fillLightIntensity={0.25}
                rimLightIntensity={0.55}
-               environmentPreset="forest"
+               environmentPreset="none"
             />
          </div>
          <header className="main-header">

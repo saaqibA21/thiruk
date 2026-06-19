@@ -31,14 +31,22 @@
 
 /* Base Layout */
 html,
-body,
-#root {
+body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
   background: var(--bg);
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent !important;
 }
 
 .scholarly-app {
@@ -1662,7 +1670,7 @@ body,
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
   opacity: 0.22;
   transition: opacity 0.5s ease;
