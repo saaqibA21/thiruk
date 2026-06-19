@@ -1664,12 +1664,13 @@ body,
   height: 100vh;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.15;
+  opacity: 0.22;
   transition: opacity 0.5s ease;
 }
 
 /* Ensure main app containers are relative and transparent so the 3D model shows through */
-.scholarly-app {
+.scholarly-app,
+.content-container {
   position: relative;
   z-index: 1;
   background: transparent !important;
