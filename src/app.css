@@ -1666,14 +1666,36 @@ body {
 /* 3D Background Model Container */
 .app-3d-background {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
+  top: 80px;
+  right: 2rem;
+  width: 25vw;
+  height: calc(100vh - 120px);
+  z-index: 10;
   pointer-events: none;
-  opacity: 0.22;
+  opacity: 0.9;
   transition: opacity 0.5s ease;
+}
+
+@media (max-width: 1200px) {
+  .app-3d-background {
+    width: 20vw;
+    right: 1rem;
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-3d-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    opacity: 0.15;
+  }
 }
 
 /* Ensure main app containers are relative and transparent so the 3D model shows through */
