@@ -62,7 +62,7 @@ const ThiruvalluvarStatue = ({
     }
     // Subtle breathing/floating motion
     if (groupRef.current) {
-      groupRef.current.position.y = -1.25 + Math.sin(state.clock.getElapsedTime() * 0.6) * 0.05;
+      groupRef.current.position.y = -0.5 + Math.sin(state.clock.getElapsedTime() * 0.6) * 0.03;
     }
   });
 
@@ -89,84 +89,86 @@ const ThiruvalluvarStatue = ({
   }), []);
 
   return (
-    <group ref={groupRef} position={[0, -1.25, 0]} scale={[1.1, 1.1, 1.1]}>
-      {/* --- PEDESTAL (3-Tiered Platform representing 38 Chapters of Aram) --- */}
-      {/* Base tier */}
-      <mesh position={[0, 0.2, 0]} castShadow receiveShadow material={stoneMaterial}>
-        <boxGeometry args={[2.0, 0.4, 2.0]} />
-      </mesh>
-      {/* Middle tier */}
-      <mesh position={[0, 0.65, 0]} castShadow receiveShadow material={stoneMaterial}>
-        <boxGeometry args={[1.5, 0.5, 1.5]} />
-      </mesh>
-      {/* Top cap */}
-      <mesh position={[0, 1.0, 0]} castShadow receiveShadow material={stoneMaterial}>
-        <boxGeometry args={[1.7, 0.2, 1.7]} />
-      </mesh>
-
-      {/* --- VALLUVAR FIGURE (Standing Majestic Statue representing 95 Chapters of Porul/Inbam) --- */}
-      {/* Lower Garment Base */}
-      <mesh position={[0, 1.3, 0]} castShadow receiveShadow material={stoneMaterial}>
-        <cylinderGeometry args={[0.45, 0.55, 0.4, 8]} />
-      </mesh>
-
-      {/* Torso / Folds of Robe */}
-      <mesh position={[0, 1.95, 0]} castShadow receiveShadow material={stoneMaterial}>
-        <cylinderGeometry args={[0.32, 0.45, 0.9, 8]} />
-      </mesh>
-
-      {/* Chest / Shoulders */}
-      <mesh position={[0, 2.55, 0]} castShadow receiveShadow material={stoneMaterial}>
-        <cylinderGeometry args={[0.28, 0.32, 0.35, 8]} />
-      </mesh>
-
-      {/* Left Shoulder & Arm (Pointing downwards to indicate base values) */}
-      <group position={[-0.38, 2.55, 0]}>
-        {/* Upper Arm */}
-        <mesh position={[0, -0.15, 0]} rotation={[0, 0, 0.2]} castShadow material={stoneMaterial}>
-          <cylinderGeometry args={[0.07, 0.06, 0.35, 6]} />
+    <group ref={groupRef} position={[0, -0.5, 0]} scale={[0.35, 0.35, 0.35]}>
+      <group position={[0, -1.65, 0]}>
+        {/* --- PEDESTAL (3-Tiered Platform representing 38 Chapters of Aram) --- */}
+        {/* Base tier */}
+        <mesh position={[0, 0.2, 0]} castShadow receiveShadow material={stoneMaterial}>
+          <boxGeometry args={[2.0, 0.4, 2.0]} />
         </mesh>
-        {/* Forearm pointing down */}
-        <mesh position={[-0.03, -0.4, 0.08]} rotation={[0.4, 0, 0.15]} castShadow material={stoneMaterial}>
-          <cylinderGeometry args={[0.06, 0.05, 0.35, 6]} />
+        {/* Middle tier */}
+        <mesh position={[0, 0.65, 0]} castShadow receiveShadow material={stoneMaterial}>
+          <boxGeometry args={[1.5, 0.5, 1.5]} />
+        </mesh>
+        {/* Top cap */}
+        <mesh position={[0, 1.0, 0]} castShadow receiveShadow material={stoneMaterial}>
+          <boxGeometry args={[1.7, 0.2, 1.7]} />
+        </mesh>
+
+        {/* --- VALLUVAR FIGURE (Standing Majestic Statue representing 95 Chapters of Porul/Inbam) --- */}
+        {/* Lower Garment Base */}
+        <mesh position={[0, 1.3, 0]} castShadow receiveShadow material={stoneMaterial}>
+          <cylinderGeometry args={[0.45, 0.55, 0.4, 8]} />
+        </mesh>
+
+        {/* Torso / Folds of Robe */}
+        <mesh position={[0, 1.95, 0]} castShadow receiveShadow material={stoneMaterial}>
+          <cylinderGeometry args={[0.32, 0.45, 0.9, 8]} />
+        </mesh>
+
+        {/* Chest / Shoulders */}
+        <mesh position={[0, 2.55, 0]} castShadow receiveShadow material={stoneMaterial}>
+          <cylinderGeometry args={[0.28, 0.32, 0.35, 8]} />
+        </mesh>
+
+        {/* Left Shoulder & Arm (Pointing downwards to indicate base values) */}
+        <group position={[-0.38, 2.55, 0]}>
+          {/* Upper Arm */}
+          <mesh position={[0, -0.15, 0]} rotation={[0, 0, 0.2]} castShadow material={stoneMaterial}>
+            <cylinderGeometry args={[0.07, 0.06, 0.35, 6]} />
+          </mesh>
+          {/* Forearm pointing down */}
+          <mesh position={[-0.03, -0.4, 0.08]} rotation={[0.4, 0, 0.15]} castShadow material={stoneMaterial}>
+            <cylinderGeometry args={[0.06, 0.05, 0.35, 6]} />
+          </mesh>
+        </group>
+
+        {/* Right Shoulder & Arm (Holding the palm leaf scroll) */}
+        <group position={[0.38, 2.55, 0]}>
+          {/* Upper Arm raised */}
+          <mesh position={[0.08, 0.08, 0.08]} rotation={[-0.4, 0, -0.4]} castShadow material={stoneMaterial}>
+            <cylinderGeometry args={[0.07, 0.06, 0.35, 6]} />
+          </mesh>
+          {/* Forearm bent forward holding scroll */}
+          <mesh position={[0.18, 0.2, 0.25]} rotation={[0.7, -0.5, 0]} castShadow material={stoneMaterial}>
+            <cylinderGeometry args={[0.06, 0.05, 0.35, 6]} />
+          </mesh>
+          {/* Palm Leaf Scroll (Olai Chuvadi) */}
+          <mesh position={[0.18, 0.28, 0.45]} rotation={[0.2, 0.4, -0.1]} castShadow material={scrollMaterial}>
+            <boxGeometry args={[0.4, 0.03, 0.08]} />
+          </mesh>
+        </group>
+
+        {/* Neck */}
+        <mesh position={[0, 2.8, 0]} castShadow material={stoneMaterial}>
+          <cylinderGeometry args={[0.12, 0.15, 0.15, 8]} />
+        </mesh>
+
+        {/* Head */}
+        <mesh position={[0, 3.02, 0.01]} castShadow material={stoneMaterial}>
+          <sphereGeometry args={[0.18, 8, 8]} />
+        </mesh>
+
+        {/* Hair Bun (Kondai) on the side - Classic Thiruvalluvar feature */}
+        <mesh position={[0.1, 3.12, -0.04]} castShadow material={stoneMaterial}>
+          <sphereGeometry args={[0.08, 6, 6]} />
+        </mesh>
+
+        {/* Beard */}
+        <mesh position={[0, 2.85, 0.12]} rotation={[0.3, 0, 0]} castShadow material={stoneMaterial}>
+          <coneGeometry args={[0.08, 0.25, 6]} />
         </mesh>
       </group>
-
-      {/* Right Shoulder & Arm (Holding the palm leaf scroll) */}
-      <group position={[0.38, 2.55, 0]}>
-        {/* Upper Arm raised */}
-        <mesh position={[0.08, 0.08, 0.08]} rotation={[-0.4, 0, -0.4]} castShadow material={stoneMaterial}>
-          <cylinderGeometry args={[0.07, 0.06, 0.35, 6]} />
-        </mesh>
-        {/* Forearm bent forward holding scroll */}
-        <mesh position={[0.18, 0.2, 0.25]} rotation={[0.7, -0.5, 0]} castShadow material={stoneMaterial}>
-          <cylinderGeometry args={[0.06, 0.05, 0.35, 6]} />
-        </mesh>
-        {/* Palm Leaf Scroll (Olai Chuvadi) */}
-        <mesh position={[0.18, 0.28, 0.45]} rotation={[0.2, 0.4, -0.1]} castShadow material={scrollMaterial}>
-          <boxGeometry args={[0.4, 0.03, 0.08]} />
-        </mesh>
-      </group>
-
-      {/* Neck */}
-      <mesh position={[0, 2.8, 0]} castShadow material={stoneMaterial}>
-        <cylinderGeometry args={[0.12, 0.15, 0.15, 8]} />
-      </mesh>
-
-      {/* Head */}
-      <mesh position={[0, 3.02, 0.01]} castShadow material={stoneMaterial}>
-        <sphereGeometry args={[0.18, 8, 8]} />
-      </mesh>
-
-      {/* Hair Bun (Kondai) on the side - Classic Thiruvalluvar feature */}
-      <mesh position={[0.1, 3.12, -0.04]} castShadow material={stoneMaterial}>
-        <sphereGeometry args={[0.08, 6, 6]} />
-      </mesh>
-
-      {/* Beard */}
-      <mesh position={[0, 2.85, 0.12]} rotation={[0.3, 0, 0]} castShadow material={stoneMaterial}>
-        <coneGeometry args={[0.08, 0.25, 6]} />
-      </mesh>
     </group>
   );
 };

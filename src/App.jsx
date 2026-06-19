@@ -438,6 +438,9 @@ const App = () => {
                url="thiruvalluvar"
                width="100%"
                height="100%"
+               defaultZoom={2.8}
+               minZoomDistance={1.0}
+               maxZoomDistance={10.0}
                autoRotate={true}
                autoRotateSpeed={0.15}
                showScreenshotButton={false}
