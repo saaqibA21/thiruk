@@ -1424,14 +1424,16 @@ body {
   }
 }
 .chat-usage-instructions {
-  background: #fffaf0;
-  border: 1px solid #feebc8;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(180, 83, 9, 0.22);
   border-radius: 1.25rem;
-  padding: 1.5rem;
-  margin-bottom: 2.5rem;
-  font-size: 1rem;
-  color: #7b341e;
-  box-shadow: 0 4px 20px rgba(154, 52, 18, 0.04);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: #78350f;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .instruction-header {
@@ -1691,15 +1693,12 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(253, 251, 247, 0.82) 0%,
-    rgba(253, 251, 247, 0.88) 35%,
-    rgba(250, 246, 238, 0.92) 70%,
-    rgba(245, 238, 226, 0.96) 100%
+  background: radial-gradient(
+    circle at center,
+    rgba(253, 251, 247, 0.12) 0%,
+    rgba(250, 246, 238, 0.25) 50%,
+    rgba(235, 222, 203, 0.45) 100%
   );
-  backdrop-filter: blur(2.5px);
-  -webkit-backdrop-filter: blur(2.5px);
   pointer-events: none;
 }
 
@@ -1717,17 +1716,19 @@ body {
 
 /* Make headers and footer inputs glassmorphic with warm sandstone tint */
 .main-header {
-  background: rgba(253, 251, 247, 0.94) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1.5px solid rgba(180, 83, 9, 0.2);
+  background: rgba(253, 251, 247, 0.85) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1.5px solid rgba(180, 83, 9, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .chat-input-sticky-area {
-  background: rgba(253, 251, 247, 0.94) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1.5px solid rgba(180, 83, 9, 0.2);
+  background: rgba(253, 251, 247, 0.85) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1.5px solid rgba(180, 83, 9, 0.25);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
 }
 
 /* Make sure the library view is transparent as well */
