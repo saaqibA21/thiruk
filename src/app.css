@@ -87,7 +87,21 @@ body {
 }
 
 .srm-logo-top {
-  height: 50px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.mozhi-logo-top {
+  height: 46px;
+  width: 46px;
+  border-radius: 50%;
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.mozhi-logo-top:hover {
+  transform: scale(1.06);
 }
 
 .main-title {
@@ -1025,9 +1039,17 @@ body {
   }
 
   .srm-logo-top {
-    height: 32px;
+    height: 30px;
     width: auto;
-    max-width: 100px;
+    max-width: 90px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .mozhi-logo-top {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
     object-fit: contain;
     flex-shrink: 0;
   }
