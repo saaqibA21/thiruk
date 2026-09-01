@@ -3,7 +3,6 @@ import './app.css';
 import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
-import ModelViewer from './components/ModelViewer';
 import {
    MODERN_LIFE_CATEGORIES,
    WHISPER_PROMPTS,
@@ -73,15 +72,7 @@ const UsageInstructions = () => (
 );
 
 
-class Safe3D extends React.Component {
-   state = { hasError: false };
-   static getDerivedStateFromError() { return { hasError: true }; }
-   componentDidCatch(err) { console.warn('3D background disabled:', err); }
-   render() {
-      if (this.state.hasError) return null;
-      return this.props.children;
-   }
-}
+
 
 const App = () => {
    const [activeTab, setActiveTab] = useState('ask');
@@ -470,29 +461,9 @@ const App = () => {
 
    return (
       <div className="scholarly-app">
-         <div className="app-3d-background">
-            <Safe3D>
-               <ModelViewer
-                  url="thiruvalluvar"
-                  width="100%"
-                  height="100%"
-                  defaultZoom={2.8}
-                  minZoomDistance={1.0}
-                  maxZoomDistance={10.0}
-                  autoRotate={true}
-                  autoRotateSpeed={0.15}
-                  showScreenshotButton={false}
-                  enableManualRotation={false}
-                  enableHoverRotation={false}
-                  enableManualZoom={false}
-                  enableMouseParallax={true}
-                  ambientIntensity={0.2}
-                  keyLightIntensity={0.45}
-                  fillLightIntensity={0.25}
-                  rimLightIntensity={0.55}
-                  environmentPreset="none"
-               />
-            </Safe3D>
+         <div className="app-heritage-background">
+            <div className="heritage-bg-overlay"></div>
+            <img src="valluvar_hero.jpg" alt="திருவள்ளுவர் (Thiruvalluvar)" className="heritage-valluvar-img" />
          </div>
          <header className="main-header">
             <div className="header-container-inner">

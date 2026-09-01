@@ -1,13 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
 
 :root {
-  --primary: #9a3412;
-  --bg: #fdfcfa;
-  --text: #1e293b;
-  --muted: #64748b;
-  --white: #fff;
-  --border: #e2e8f0;
-  --accent: #f59e0b
+  --primary: #8c2e0b;
+  --primary-gold: #b45309;
+  --royal-maroon: #881337;
+  --bg: #fcfaf6;
+  --sandstone-surface: rgba(255, 255, 255, 0.9);
+  --text: #1c1917;
+  --muted: #57534e;
+  --white: #ffffff;
+  --border: rgba(180, 83, 9, 0.2);
+  --accent: #d97706;
 }
 
 * {
@@ -1663,43 +1666,65 @@ body {
   padding: 1rem 0;
 }
 
-/* 3D Background Model Container */
-.app-3d-background {
+/* Heritage Thiruvalluvar Backdrop matching user image & temple aesthetic */
+.app-heritage-background {
   position: fixed;
-  top: 80px;
-  right: 2rem;
-  width: 25vw;
-  height: calc(100vh - 120px);
-  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.95;
   overflow: hidden;
-  transition: opacity 0.5s ease;
+  background: radial-gradient(circle at 85% 35%, #fdfbf7 0%, #f7f2e7 45%, #ece3d2 100%);
 }
 
-@media (max-width: 1200px) {
-  .app-3d-background {
-    width: 20vw;
-    right: 1rem;
-    opacity: 0.7;
+.heritage-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(253, 251, 247, 0.88) 0%, rgba(247, 242, 231, 0.65) 50%, rgba(236, 227, 210, 0.45) 100%);
+  pointer-events: none;
+}
+
+.heritage-valluvar-img {
+  position: absolute;
+  right: 1.5vw;
+  bottom: 0;
+  height: 92vh;
+  max-width: 500px;
+  object-fit: contain;
+  object-position: bottom right;
+  opacity: 0.9;
+  filter: drop-shadow(-12px 8px 32px rgba(120, 53, 15, 0.16));
+  mask-image: linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 65%, transparent 100%);
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+@media (max-width: 1280px) {
+  .heritage-valluvar-img {
+    height: 78vh;
+    opacity: 0.45;
+    right: -2vw;
   }
 }
 
 @media (max-width: 768px) {
-  .app-3d-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 0;
-    opacity: 0.15;
+  .heritage-valluvar-img {
+    height: 55vh;
+    opacity: 0.18;
+    right: -15vw;
+    bottom: 4vh;
   }
 }
 
-/* Ensure main app containers are relative and transparent so the 3D model shows through */
+/* Ensure main app containers are relative and transparent so the backdrop shows through */
 .scholarly-app,
 .content-container {
   position: relative;
@@ -1711,28 +1736,23 @@ body {
   background: transparent !important;
 }
 
-/* Make headers and footer inputs slightly glassmorphic to show the model beneath */
+/* Make headers and footer inputs glassmorphic with warm sandstone tint */
 .main-header {
-  background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(253, 251, 247, 0.92) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .chat-input-sticky-area {
-  background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(253, 251, 247, 0.92) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1.5px solid rgba(180, 83, 9, 0.2);
 }
 
 /* Make sure the library view is transparent as well */
 .library-view {
   background-color: transparent !important;
-}
-
-/* Custom class for sizing canvas */
-.app-3d-background .model-viewer-container {
-  width: 100% !important;
-  height: 100% !important;
 }
 
 /* =========================================================================
