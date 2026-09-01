@@ -461,9 +461,8 @@ const App = () => {
 
    return (
       <div className="scholarly-app">
-         <div className="app-heritage-background">
+         <div className="app-heritage-background" style={{ backgroundImage: "url('valluvar_hero.jpg')" }}>
             <div className="heritage-bg-overlay"></div>
-            <img src="valluvar_hero.jpg" alt="திருவள்ளுவர் (Thiruvalluvar)" className="heritage-valluvar-img" />
          </div>
          <header className="main-header">
             <div className="header-container-inner">
