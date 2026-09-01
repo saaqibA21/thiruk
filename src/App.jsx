@@ -65,6 +65,16 @@ const UsageInstructions = () => (
 );
 
 
+class Safe3D extends React.Component {
+   state = { hasError: false };
+   static getDerivedStateFromError() { return { hasError: true }; }
+   componentDidCatch(err) { console.warn('3D background disabled:', err); }
+   render() {
+      if (this.state.hasError) return null;
+      return this.props.children;
+   }
+}
+
 const App = () => {
    const [activeTab, setActiveTab] = useState('ask');
    const [selectedPaal, setSelectedPaal] = useState(null);
@@ -434,26 +444,28 @@ const App = () => {
    return (
       <div className="scholarly-app">
          <div className="app-3d-background">
-            <ModelViewer
-               url="thiruvalluvar"
-               width="100%"
-               height="100%"
-               defaultZoom={2.8}
-               minZoomDistance={1.0}
-               maxZoomDistance={10.0}
-               autoRotate={true}
-               autoRotateSpeed={0.15}
-               showScreenshotButton={false}
-               enableManualRotation={false}
-               enableHoverRotation={false}
-               enableManualZoom={false}
-               enableMouseParallax={true}
-               ambientIntensity={0.2}
-               keyLightIntensity={0.45}
-               fillLightIntensity={0.25}
-               rimLightIntensity={0.55}
-               environmentPreset="none"
-            />
+            <Safe3D>
+               <ModelViewer
+                  url="thiruvalluvar"
+                  width="100%"
+                  height="100%"
+                  defaultZoom={2.8}
+                  minZoomDistance={1.0}
+                  maxZoomDistance={10.0}
+                  autoRotate={true}
+                  autoRotateSpeed={0.15}
+                  showScreenshotButton={false}
+                  enableManualRotation={false}
+                  enableHoverRotation={false}
+                  enableManualZoom={false}
+                  enableMouseParallax={true}
+                  ambientIntensity={0.2}
+                  keyLightIntensity={0.45}
+                  fillLightIntensity={0.25}
+                  rimLightIntensity={0.55}
+                  environmentPreset="none"
+               />
+            </Safe3D>
          </div>
          <header className="main-header">
             <div className="header-container-inner">
