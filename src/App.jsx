@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
+import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 import ModelViewer from './components/ModelViewer';
+import {
+   MODERN_LIFE_CATEGORIES,
+   WHISPER_PROMPTS,
+   getKuralLifeCategory,
+   getMetreDetails,
+   playTamilSpeech,
+   stopTamilSpeech
+} from './utils/kuralFeatures';
 
 const TAMIL_KEYS = [
    ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ'],
@@ -79,7 +87,10 @@ const App = () => {
    const [activeTab, setActiveTab] = useState('ask');
    const [selectedPaal, setSelectedPaal] = useState(null);
    const [selectedChapter, setSelectedChapter] = useState(null);
+   const [selectedTheme, setSelectedTheme] = useState(null);
+   const [libraryMode, setLibraryMode] = useState('paals'); // 'paals' or 'themes'
    const [selectedKural, setSelectedKural] = useState(null);
+   const [playingKuralId, setPlayingKuralId] = useState(null);
    const [query, setQuery] = useState('');
    const [messages, setMessages] = useState([
       { role: 'ai', content: 'வணக்கம்! நான் உங்கள் திருக்குறள் நிபுணர். திருக்குறளின் ஆழமான வாழ்வியல் நெறிகளைப் பற்றி நீங்கள் என்னிடம் உரையாடலாம்.', sources: [] }
@@ -96,6 +107,19 @@ const App = () => {
    const [directAI, setDirectAI] = useState(false);
    const [isDragging, setIsDragging] = useState(false);
    const fileInputRef = useRef(null);
+
+   const handleToggleAudio = (kural) => {
+      if (playingKuralId === kural.Number) {
+         stopTamilSpeech(() => setPlayingKuralId(null));
+      } else {
+         setPlayingKuralId(kural.Number);
+         playTamilSpeech(
+            kural,
+            () => setPlayingKuralId(kural.Number),
+            () => setPlayingKuralId(null)
+         );
+      }
+   };
 
    const getInitialKey = () => {
       try {
@@ -421,6 +445,9 @@ const App = () => {
 
    const filteredKurals = useMemo(() => {
       let list = kuralData;
+      if (selectedTheme) {
+         list = list.filter(k => selectedTheme.chapters.includes(Math.ceil(k.Number / 10)));
+      }
       if (selectedPaal) {
          if (selectedPaal === 'அறத்துப்பால்') list = list.filter(k => k.Number <= 380);
          else if (selectedPaal === 'பொருட்பால்') list = list.filter(k => k.Number > 380 && k.Number <= 1080);
@@ -435,7 +462,7 @@ const App = () => {
       }
 
       return list.filter(k => (k.Line1 && k.Line1.includes(search)) || (k.Number.toString().includes(search)));
-   }, [kuralData, searchQuery, selectedPaal, selectedChapter]);
+   }, [kuralData, searchQuery, selectedPaal, selectedChapter, selectedTheme]);
 
    useEffect(() => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -577,6 +604,13 @@ const App = () => {
                                  </div>
                               )}
                               <UsageInstructions />
+                              <div className="whisper-chips-container">
+                                 {WHISPER_PROMPTS.map((wp, i) => (
+                                    <button key={i} className="whisper-chip" onClick={() => handleAsk(wp.query)}>
+                                       {wp.label}
+                                    </button>
+                                 ))}
+                              </div>
                               <AnimatePresence>
                                  {isDragging && (
                                     <motion.div 
@@ -613,6 +647,8 @@ const App = () => {
                                                       kural={s}
                                                       highlight={m.searchTerms}
                                                       onSelect={() => setSelectedKural(s)}
+                                                      onPlayAudio={handleToggleAudio}
+                                                      isPlaying={playingKuralId === s.Number}
                                                    />
                                                 </div>
                                              ))}
@@ -693,60 +729,128 @@ const App = () => {
                      </div>
                   </motion.div>
                ) : activeTab === 'list' ? (
-                  <motion.div key="list" className="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                     {!selectedPaal ? (
-                        <div className="paal-cards-container">
-                           <h2 className="library-main-title">திருக்குறள் நூலகம்</h2>
-                           <div className="paal-cards">
-                              <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}>
-                                 <span className="orn-bl"></span> <span className="orn-br"></span>
-                                 <h3>அறத்துப்பால்</h3>
-                                 <p>38 அதிகாரங்கள்</p>
-                              </div>
-                              <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}>
-                                 <span className="orn-bl"></span> <span className="orn-br"></span>
-                                 <h3>பொருட்பால்</h3>
-                                 <p>70 அதிகாரங்கள்</p>
-                              </div>
-                              <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}>
-                                 <span className="orn-bl"></span> <span className="orn-br"></span>
-                                 <h3>இன்பத்துப்பால்</h3>
-                                 <p>25 அதிகாரங்கள்</p>
-                              </div>
-                           </div>
-                        </div>
-                     ) : !selectedChapter ? (
-                        <div className="chapter-view">
-                           <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> Back </button>
-                           <h2>{selectedPaal}</h2>
-                           <div className="chapter-grid">
-                              {ATHIGARAMS.map((name, i) => {
-                                 const num = i + 1;
-                                 const inPaal = (selectedPaal === 'அறத்துப்பால்' && num <= 38) || (selectedPaal === 'பொருட்பால்' && num > 38 && num <= 108) || (selectedPaal === 'காமத்துப்பால்' && num > 108);
-                                 return inPaal && <button key={num} className="chapter-tile" onClick={() => setSelectedChapter(num)}> <span>{num}</span> {name} </button>
-                              })}
-                           </div>
-                        </div>
-                     ) : (
-                        <div className="kural-view">
-                           <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> Back </button>
-                           <div className="kural-grid-stack">
-                              {filteredKurals.map(k => {
-                                 const allWords = `${k.Line1} ${k.Line2}`.trim().split(/\s+/);
-                                 return (
-                                    <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
-                                       <div className="k-header-row">குறள் எண்: {k.Number}</div>
-                                       <p>{allWords.slice(0, 4).join(' ')}</p>
-                                       <p>{allWords.slice(4).join(' ')}</p>
-                                    </div>
-                                 );
-                              })}
-                           </div>
-                        </div>
-                     )}
-                  </motion.div>
+                   <motion.div key="list" className="library-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                      <div className="library-tab-switcher">
+                         <button 
+                            className={`lib-switch-btn ${libraryMode === 'paals' ? 'active' : ''}`}
+                            onClick={() => { setLibraryMode('paals'); setSelectedTheme(null); }}
+                         >
+                            <BookOpen size={16} /> பாரம்பரிய பால்கள் (3 Paals)
+                         </button>
+                         <button 
+                            className={`lib-switch-btn ${libraryMode === 'themes' ? 'active' : ''}`}
+                            onClick={() => { setLibraryMode('themes'); setSelectedPaal(null); }}
+                         >
+                            <Sparkles size={16} /> நவீன வாழ்வியல் பிரிவுகள் (Life Themes)
+                         </button>
+                      </div>
 
-               ) : (
+                      {libraryMode === 'paals' ? (
+                         !selectedPaal ? (
+                            <div className="paal-cards-container">
+                               <h2 className="library-main-title">திருக்குறள் நூலகம்</h2>
+                               <div className="paal-cards">
+                                  <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}>
+                                     <span className="orn-bl"></span> <span className="orn-br"></span>
+                                     <h3>அறத்துப்பால்</h3>
+                                     <p>38 அதிகாரங்கள்</p>
+                                  </div>
+                                  <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}>
+                                     <span className="orn-bl"></span> <span className="orn-br"></span>
+                                     <h3>பொருட்பால்</h3>
+                                     <p>70 அதிகாரங்கள்</p>
+                                  </div>
+                                  <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}>
+                                     <span className="orn-bl"></span> <span className="orn-br"></span>
+                                     <h3>இன்பத்துப்பால்</h3>
+                                     <p>25 அதிகாரங்கள்</p>
+                                  </div>
+                               </div>
+                            </div>
+                         ) : !selectedChapter ? (
+                            <div className="chapter-view">
+                               <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> Back </button>
+                               <h2>{selectedPaal}</h2>
+                               <div className="chapter-grid">
+                                  {ATHIGARAMS.map((name, i) => {
+                                     const num = i + 1;
+                                     const inPaal = (selectedPaal === 'அறத்துப்பால்' && num <= 38) || (selectedPaal === 'பொருட்பால்' && num > 38 && num <= 108) || (selectedPaal === 'காமத்துப்பால்' && num > 108);
+                                     return inPaal && <button key={num} className="chapter-tile" onClick={() => setSelectedChapter(num)}> <span>{num}</span> {name} </button>
+                                  })}
+                               </div>
+                            </div>
+                         ) : (
+                            <div className="kural-view">
+                               <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> Back </button>
+                               <div className="kural-grid-stack">
+                                  {filteredKurals.map(k => {
+                                     const allWords = `${k.Line1} ${k.Line2}`.trim().split(/\s+/);
+                                     const isPlaying = playingKuralId === k.Number;
+                                     return (
+                                        <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
+                                           <div className="k-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                              <span>குறள் எண்: {k.Number}</span>
+                                              <button 
+                                                 className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
+                                                 onClick={(e) => { e.stopPropagation(); handleToggleAudio(k); }}
+                                                 title="ஒலி வடிவம் (Listen to Kural)"
+                                              >
+                                                 {isPlaying ? <Square size={13} /> : <Volume2 size={15} />}
+                                              </button>
+                                           </div>
+                                           <p>{allWords.slice(0, 4).join(' ')}</p>
+                                           <p>{allWords.slice(4).join(' ')}</p>
+                                        </div>
+                                     );
+                                  })}
+                               </div>
+                            </div>
+                         )
+                      ) : (
+                         /* Modern Life Themes View */
+                         !selectedTheme ? (
+                            <div className="paal-cards-container">
+                               <h2 className="library-main-title">நவீன வாழ்வியல் பிரிவுகள் (Modern Life Themes)</h2>
+                               <p style={{ textAlign: 'center', color: '#64748b', marginBottom: '20px' }}>
+                                  திருக்குறளின் 1,330 வாழ்வியல் நெறிகளை சமகால வாழ்க்கைத் தேவைகளோடு இணைத்துப் பயிலுங்கள்.
+                                </p>
+                               <div className="modern-life-grid">
+                                  {MODERN_LIFE_CATEGORIES.map(cat => (
+                                     <div key={cat.id} className="life-category-card" onClick={() => setSelectedTheme(cat)}>
+                                        <div className="life-card-header">
+                                           <span className="life-card-icon">{cat.icon}</span>
+                                           <div>
+                                              <h3>{cat.name}</h3>
+                                              <span>{cat.nameEn}</span>
+                                           </div>
+                                        </div>
+                                        <p className="life-card-desc">{cat.desc}</p>
+                                        <div className="life-card-footer">
+                                           <span>{cat.chapters.length} அதிகாரங்கள் ({cat.chapters.length * 10} குறள்கள்)</span>
+                                           <ChevronRight size={16} />
+                                        </div>
+                                     </div>
+                                  ))}
+                               </div>
+                            </div>
+                         ) : (
+                            <div className="chapter-view">
+                               <button className="tamil-back" onClick={() => setSelectedTheme(null)}> <ArrowLeft size={16} /> Back to Themes </button>
+                               <h2>{selectedTheme.icon} {selectedTheme.name} ({selectedTheme.nameEn})</h2>
+                               <p style={{ color: '#64748b', marginBottom: '15px' }}>{selectedTheme.desc}</p>
+                               <div className="chapter-grid">
+                                  {selectedTheme.chapters.map(num => (
+                                     <button key={num} className="chapter-tile" onClick={() => setSelectedChapter(num)}>
+                                        <span>{num}</span> {ATHIGARAMS[num - 1]}
+                                     </button>
+                                  ))}
+                               </div>
+                            </div>
+                         )
+                      )}
+                   </motion.div>
+
+                ) : (
                   <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                      <div className="history-hero-v2">
                         <div className="h-hero-content">
@@ -825,37 +929,89 @@ const App = () => {
          </main>
 
          <AnimatePresence>
-            {selectedKural && (
-               <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
-                  <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
-                     <header className="m-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                        <span className="m-badge">குறள் {selectedKural.Number}</span>
-                        <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button>
-                     </header>
-                     {(() => {
-                        const allWords = `${selectedKural.Line1} ${selectedKural.Line2}`.trim().split(/\s+/);
-                        return (
-                           <div className="m-verse-box">
-                              <h3>{allWords.slice(0, 4).join(' ')}</h3>
-                              <h3>{allWords.slice(4).join(' ')}</h3>
+            {selectedKural && (() => {
+               const allWords = `${selectedKural.Line1} ${selectedKural.Line2}`.trim().split(/\s+/);
+               const lifeCat = getKuralLifeCategory(selectedKural.Number);
+               const metre = getMetreDetails(selectedKural);
+               const isPlaying = playingKuralId === selectedKural.Number;
+
+               return (
+                  <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
+                     <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
+                        <header className="m-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                              <span className="m-badge">குறள் {selectedKural.Number}</span>
+                              <span className="life-tag-badge">{lifeCat.icon} {lifeCat.name}</span>
                            </div>
-                        );
-                     })()}
-                     <div className="m-explanations-stack">
-                        {selectedKural.mv && <div className="e-block"> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
-                        {selectedKural.sp && <div className="e-block"> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
-                        {selectedKural.mk && <div className="e-block"> <h5>மு. கருணாநிதி உரை</h5> <p>{selectedKural.mk}</p> </div>}
-                     </div>
-                  </motion.div>
-               </div>
-            )}
+                           <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button>
+                        </header>
+
+                        {/* Audio Recitation Bar */}
+                        <div className="modal-audio-player-bar">
+                           <div className="audio-player-info">
+                              <Headphones size={20} color="#b45309" />
+                              <div>
+                                 <strong style={{ fontSize: '0.9rem', color: '#78350f', display: 'block' }}>திருக்குறள் வெண்பா ஒலி வடிவம்</strong>
+                                 <span style={{ fontSize: '0.75rem', color: '#92400e' }}>சீர் மற்றும் அசை நிறுத்தங்களுடன் கூடிய தூய உச்சரிப்பு</span>
+                              </div>
+                           </div>
+                           <button 
+                              className={`audio-play-large-btn ${isPlaying ? 'active' : ''}`}
+                              onClick={() => handleToggleAudio(selectedKural)}
+                           >
+                              {isPlaying ? <Square size={16} /> : <Volume2 size={16} />}
+                              {isPlaying ? 'நிறுத்து (Stop)' : 'கேளுங்கள் (Listen)'}
+                           </button>
+                        </div>
+
+                        {/* Verse Display */}
+                        <div className="m-verse-box">
+                           <h3>{allWords.slice(0, 4).join(' ')}</h3>
+                           <h3>{allWords.slice(4).join(' ')}</h3>
+                        </div>
+
+                        {/* Metre & Pronunciation Guide */}
+                        <div className="metre-guide-section">
+                           <div className="metre-guide-title">
+                              <Feather size={16} color="#b45309" />
+                              <span>சீர் & அசை சந்த அமைப்பு (Metre & Pronunciation Guide)</span>
+                           </div>
+                           <div style={{ fontSize: '0.8rem', color: '#475569', marginBottom: '4px' }}>முதல் அடி (4 சீர்கள்):</div>
+                           <div className="metre-seer-row">
+                              {metre.line1Seers.map((s, idx) => (
+                                 <span key={idx} className="seer-pill line1">சீர் {idx + 1}: {s}</span>
+                              ))}
+                           </div>
+                           <div style={{ fontSize: '0.8rem', color: '#475569', margin: '8px 0 4px 0' }}>இரண்டாம் அடி (3 சீர்கள்):</div>
+                           <div className="metre-seer-row">
+                              {metre.line2Seers.map((s, idx) => (
+                                 <span key={idx} className="seer-pill line2">சீர் {idx + 5}: {s}</span>
+                              ))}
+                           </div>
+                           <div className="metre-summary-bar">
+                              <span><strong>யாப்பிலக்கணம்:</strong> குரள் வெண்பா (7 சீர்கள்)</span>
+                              <span><strong>ஈற்றுச் சீர் வாய்பாடு:</strong> {metre.endingVaipaadu}</span>
+                           </div>
+                        </div>
+
+                        {/* Explanations Stack */}
+                        <div className="m-explanations-stack">
+                           {selectedKural.mv && <div className="e-block"> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
+                           {selectedKural.sp && <div className="e-block"> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
+                           {selectedKural.mk && <div className="e-block"> <h5>மு. கருணாநிதி உரை</h5> <p>{selectedKural.mk}</p> </div>}
+                        </div>
+                     </motion.div>
+                  </div>
+               );
+            })()}
          </AnimatePresence>
       </div>
    );
 };
 
-const KuralCard = ({ kural, highlight, onSelect }) => {
+const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying }) => {
    const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
+   const lifeCat = getKuralLifeCategory(kural.Number);
 
    const highlightText = (text) => {
       if (!highlight || highlight.length === 0) return text;
@@ -868,15 +1024,28 @@ const KuralCard = ({ kural, highlight, onSelect }) => {
    };
 
    return (
-      <div className="kural-mini-card" onClick={onSelect}>
-         <div className="k-mini-info">
-            <div className="k-mini-num">குறள் எண்: {kural.Number}</div>
+      <div className="kural-mini-card">
+         <button 
+            className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
+            title={isPlaying ? "நிறுத்து (Stop)" : "குறள் ஒலி வடிவம் (Listen to Kural)"}
+            onClick={(e) => {
+               e.stopPropagation();
+               if (onPlayAudio) onPlayAudio(kural);
+            }}
+         >
+            {isPlaying ? <Square size={14} /> : <Volume2 size={16} />}
+         </button>
+         <div className="k-mini-info" onClick={onSelect} style={{ flex: 1, cursor: 'pointer' }}>
+            <div className="k-mini-num" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+               <span>குறள் எண்: {kural.Number}</span>
+               <span className="life-tag-badge mini">{lifeCat.icon} {lifeCat.nameEn}</span>
+            </div>
             <div className="k-mini-lines">
                <p>{highlightText(allWords.slice(0, 4).join(' '))}</p>
                <p>{highlightText(allWords.slice(4).join(' '))}</p>
             </div>
          </div>
-         <ChevronRight className="k-mini-arrow" size={20} />
+         <ChevronRight className="k-mini-arrow" size={20} onClick={onSelect} style={{ cursor: 'pointer' }} />
       </div>
    );
 };
