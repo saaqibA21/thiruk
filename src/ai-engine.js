@@ -23,6 +23,64 @@ const TRIVIA_KNOWLEDGE = {
 
 import OpenAI from 'openai';
 
+export function getAthigaramDetails(query, dataset) {
+    if (!query || !dataset) return null;
+    const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
+    const clean = normalize(query);
+    const compact = clean.replace(/\s+/g, '');
+
+    // 1. Number based Athigaram lookup:
+    // Matches: அதிகாரம் 13, அதிகாரம்: 13, 13 அதிகாரம், 13வது அதிகாரம், 13 ஆம் அதிகாரம், chapter 13, athigaram 13, etc.
+    const patterns = [
+        /(?:அதிகாரம்|athigaram|adhigaram|chapter|athikaram)\s*[:\-\s]*(\d+)/i,
+        /(\d+)\s*(?:வது|ஆம்|th|st|nd|rd|[-_]வது|[-_]ஆம்)?\s*(?:அதிகாரம்|athigaram|adhigaram|chapter|athikaram)/i
+    ];
+
+    let chapterNum = null;
+    for (const p of patterns) {
+        const m = clean.match(p);
+        if (m) {
+            const n = parseInt(m[1], 10);
+            if (n >= 1 && n <= 133) {
+                chapterNum = n;
+                break;
+            }
+        }
+    }
+
+    // 2. Name based Athigaram lookup:
+    if (!chapterNum) {
+        for (let i = 0; i < CHAPTER_INDEX.length; i++) {
+            const chName = CHAPTER_INDEX[i];
+            const chNorm = normalize(chName);
+            const chCompact = chNorm.replace(/\s+/g, '');
+            
+            if (compact === chCompact || compact === chCompact + 'அதிகாரம்' || compact === 'அதிகாரம்' + chCompact ||
+                compact === chCompact + 'குறள்கள்' || compact === chCompact + 'குறள்' ||
+                clean === chNorm) {
+                chapterNum = i + 1;
+                break;
+            }
+        }
+    }
+
+    if (chapterNum) {
+        const start = (chapterNum - 1) * 10 + 1;
+        const end = chapterNum * 10;
+        const chapterName = CHAPTER_INDEX[chapterNum - 1];
+        const kurals = dataset.filter(k => k.Number >= start && k.Number <= end);
+        return {
+            chapterNumber: chapterNum,
+            chapterName: chapterName,
+            startKural: start,
+            endKural: end,
+            kurals: kurals
+        };
+    }
+
+    return null;
+}
+
 export class KuralAI {
     constructor(dataset) {
         this.dataset = dataset;
@@ -41,6 +99,13 @@ export class KuralAI {
 
     async search(query, isImageSearch = false) {
         if (!query) return { results: [], searchTerms: [] };
+        
+        // Check if query is targeting a specific Athigaram
+        const athigaram = getAthigaramDetails(query, this.dataset);
+        if (athigaram) {
+            return { results: athigaram.kurals, searchTerms: [athigaram.chapterName] };
+        }
+
         const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
         const cleanQuery = normalize(query);
         
@@ -86,14 +151,11 @@ export class KuralAI {
     }
 
     async ask(question, imageBase64 = null, isDirect = false) {
-        const isValidKey = this.openai && this.openai.apiKey?.startsWith('sk-');
-        if (!isValidKey) return { answer: "API Key invalid.", sources: [] };
-
         const normalize = (text) => (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·\s]+/g, ' ').trim();
         let queryForSearch = normalize(question);
         
         // Step 1: If image only, perform quick OCR to get text for grounding
-        if (imageBase64 && queryForSearch.length < 5) {
+        if (imageBase64 && queryForSearch.length < 5 && this.openai) {
             try {
                 const ocr = await this.openai.chat.completions.create({
                     model: "gpt-4o",
@@ -104,11 +166,40 @@ export class KuralAI {
             } catch (e) { console.error("OCR Error:", e); }
         }
 
-        // Step 2: Deterministic Trivia Shield - Check if the question is a known trivia fact
-        const triviaKeys = Object.keys(TRIVIA_KNOWLEDGE);
-        for (const key of triviaKeys) {
-            if (queryForSearch.includes(key)) {
-                return { answer: TRIVIA_KNOWLEDGE[key], sources: [] };
+        // Step 2: Specific Athigaram / Chapter Query Handler (Deterministic, 100% precision)
+        const athigaram = getAthigaramDetails(queryForSearch, this.dataset);
+        if (athigaram) {
+            return {
+                answer: `அதிகாரம் ${athigaram.chapterNumber}: ${athigaram.chapterName} (குறள் ${athigaram.startKural} முதல் ${athigaram.endKural} வரை):`,
+                sources: athigaram.kurals
+            };
+        }
+
+        // Step 3: Deterministic Trivia Shield (Only triggers on true trivia questions, not general verse searches)
+        const isCountQuery = ['எத்தனை', 'மொத்தம்', 'how many', 'total', 'count', 'யார்', 'பெயர்', 'எப்போது', 'ஆண்டு'].some(w => queryForSearch.includes(w));
+        
+        if (isCountQuery || queryForSearch.length < 15) {
+            if ((queryForSearch.includes("அதிகாரம்") || queryForSearch.includes("அதிகாரங்கள்")) && (isCountQuery || queryForSearch === "அதிகாரம்" || queryForSearch === "அதிகாரங்கள்")) {
+                return { answer: TRIVIA_KNOWLEDGE["அதிகாரம்"], sources: [] };
+            }
+            if ((queryForSearch.includes("பால்") || queryForSearch.includes("பால்கள்")) && (isCountQuery || queryForSearch === "பால்" || queryForSearch === "பால்கள்")) {
+                return { answer: TRIVIA_KNOWLEDGE["பால்"], sources: [] };
+            }
+            if ((queryForSearch.includes("இயல்") || queryForSearch.includes("இயல்கள்")) && (isCountQuery || queryForSearch === "இயல்" || queryForSearch === "இயல்கள்")) {
+                return { answer: TRIVIA_KNOWLEDGE["இயல்"], sources: [] };
+            }
+            if ((queryForSearch.includes("எழுத்து") || queryForSearch.includes("எழுத்துக்கள்")) && (isCountQuery || queryForSearch.includes("முதல் எழுத்து") || queryForSearch === "எழுத்து")) {
+                return { answer: TRIVIA_KNOWLEDGE["எழுத்து"], sources: [] };
+            }
+            if ((queryForSearch.includes("சொல்") || queryForSearch.includes("சொற்கள்")) && isCountQuery) {
+                return { answer: TRIVIA_KNOWLEDGE["சொல்"], sources: [] };
+            }
+            
+            const otherTriviaKeys = ["பெற்றோர்", "மனைவி", "ஆண்டு", "மொழிபெயர்ப்பு", "மலர்", "மரம்", "விதை", "பழம்", "தமிழ்", "கடவுள்", "தினம்"];
+            for (const key of otherTriviaKeys) {
+                if (queryForSearch.includes(key)) {
+                    return { answer: TRIVIA_KNOWLEDGE[key], sources: [] };
+                }
             }
         }
 
@@ -128,6 +219,15 @@ export class KuralAI {
                 const count = finalSources.length;
                 return { answer: count > 1 ? `இதோ நீங்கள் கேட்டது குறித்த ${count} குறள்கள்:` : `இதோ நீங்கள் கேட்ட குறள்:`, sources: finalSources };
             }
+        }
+
+        // Check if OpenAI key is available for LLM generative queries
+        const isValidKey = this.openai && this.openai.apiKey?.startsWith('sk-');
+        if (!isValidKey) {
+            if (finalSources.length > 0) {
+                return { answer: `இதோ தொடர்புடைய ${finalSources.length} குறள்கள்:`, sources: finalSources };
+            }
+            return { answer: "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை.", sources: [] };
         }
 
         try {

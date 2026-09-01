@@ -606,7 +606,7 @@ const App = () => {
                                        )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
-                                             {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
+                                             {m.sources.slice(0, m.showMore || m.sources.length <= 10 ? m.sources.length : 5).map((s, idx) => (
                                                 <div key={idx} className="kural-card-wrapper">
 
                                                    <KuralCard
@@ -616,7 +616,7 @@ const App = () => {
                                                    />
                                                 </div>
                                              ))}
-                                             {m.sources.length > 5 && (
+                                             {m.sources.length > 10 && (
                                                 <button
                                                    className="show-more-kurals-btn"
                                                    onClick={() => {
