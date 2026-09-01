@@ -458,9 +458,10 @@ const App = () => {
          <header className="main-header">
             <div className="header-container-inner">
                <div className="header-left-group">
+                  <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
                   <div className="app-title-group">
                      <h1 className="main-title">திருக்குறள் AI</h1>
-                     <p className="sub-title">நுண்மதி ஆய்வுத் தளம்</p>
+                     <p className="sub-title">SRM நிபுணர்</p>
                   </div>
                </div>
 
