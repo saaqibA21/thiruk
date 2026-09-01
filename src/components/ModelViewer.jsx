@@ -60,9 +60,9 @@ const ThiruvalluvarStatue = ({
     if (autoRotate && groupRef.current) {
       groupRef.current.rotation.y += autoRotateSpeed * delta;
     }
-    // Subtle breathing/floating motion
+    // Subtle breathing/floating motion around origin
     if (groupRef.current) {
-      groupRef.current.position.y = -0.5 + Math.sin(state.clock.getElapsedTime() * 0.6) * 0.03;
+      groupRef.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.8) * 0.04;
     }
   });
 
@@ -72,24 +72,24 @@ const ThiruvalluvarStatue = ({
     }
   }, [onLoaded]);
 
-  // Slate-grey granite stone material with flatShading for a premium low-poly look
+  // Elegant granite stone material with flatShading for a premium low-poly look
   const stoneMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#334155', // slate-700
-    roughness: 0.9,
-    metalness: 0.1,
+    color: '#64748b', // slate-500 for clear visibility
+    roughness: 0.6,
+    metalness: 0.2,
     flatShading: true
   }), []);
 
   // Palm leaf scroll (Olai Chuvadi) material - warm yellow/parchment tone
   const scrollMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-    color: '#e2e8f0', // slate-200
-    roughness: 0.8,
-    metalness: 0.0,
+    color: '#fef08a', // warm yellow
+    roughness: 0.5,
+    metalness: 0.1,
     flatShading: true
   }), []);
 
   return (
-    <group ref={groupRef} position={[0, -0.5, 0]} scale={[0.35, 0.35, 0.35]}>
+    <group ref={groupRef} position={[0, 0, 0]} scale={[0.55, 0.55, 0.55]}>
       <group position={[0, -1.65, 0]}>
         {/* --- PEDESTAL (3-Tiered Platform representing 38 Chapters of Aram) --- */}
         {/* Base tier */}
@@ -583,15 +583,15 @@ const ModelViewer = ({
       >
         {environmentPreset !== 'none' && <Environment preset={environmentPreset} background={false} />}
 
-        <ambientLight intensity={ambientIntensity} />
+        <ambientLight intensity={0.6} />
         {/* Soft, warm key light */}
-        <directionalLight position={[5, 8, 5]} intensity={keyLightIntensity} castShadow />
+        <directionalLight position={[5, 8, 5]} intensity={1.2} castShadow />
         {/* Cool blue fill light for high contrast modern look */}
-        <directionalLight position={[-5, 4, 3]} intensity={fillLightIntensity} color="#90cdf4" />
+        <directionalLight position={[-5, 4, 3]} intensity={0.7} color="#90cdf4" />
         {/* Soft back/rim light */}
-        <directionalLight position={[0, 6, -5]} intensity={rimLightIntensity} color="#fbd38d" />
+        <directionalLight position={[0, 6, -5]} intensity={0.9} color="#fbd38d" />
 
-        <ContactShadows ref={contactRef} position={[0, -1.25, 0]} opacity={0.4} scale={6} blur={2} />
+        <ContactShadows ref={contactRef} position={[0, -0.9, 0]} opacity={0.45} scale={5} blur={2} />
 
         <Suspense fallback={<Loader placeholderSrc={placeholderSrc} />}>
           {isThiruvalluvar ? (
@@ -625,7 +625,7 @@ const ModelViewer = ({
 
         {!isTouch && (
           <DesktopControls
-            pivot={isThiruvalluvar ? new THREE.Vector3(0, 1.0, 0) : pivot}
+            pivot={isThiruvalluvar ? new THREE.Vector3(0, 0, 0) : pivot}
             min={minZoomDistance}
             max={maxZoomDistance}
             zoomEnabled={enableManualZoom}
