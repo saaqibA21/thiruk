@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<title>Thirukkural AI - Project Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&family=Outfit:wght@400;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 20mm 20mm 20mm;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Merriweather', 'Noto Sans Tamil', serif;
+    font-size: 11.5pt;
+    line-height: 1.65;
+    color: #1a1a1a;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+
+  .page-container {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  /* Header Logos */
+  .header-logos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .logo-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .logo-elroi {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 19pt;
+    color: #0284c7;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .logo-elroi span {
+    font-size: 6.5pt;
+    letter-spacing: 2px;
+    color: #475569;
+    display: block;
+    font-weight: 600;
+  }
+
+  .logo-m2m {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #451a03;
+    color: #f59e0b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-weight: 700;
+    border: 2px solid #b45309;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .logo-m2m .t-text {
+    font-size: 15pt;
+    line-height: 1;
+  }
+  .logo-m2m .sub-text {
+    font-size: 5pt;
+    color: #fde68a;
+    letter-spacing: 0.5px;
+  }
+
+  .logo-srm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-srm img {
+    height: 48px;
+  }
+  .srm-text {
+    text-align: left;
+    font-family: 'Outfit', sans-serif;
+  }
+  .srm-text .srm-title {
+    font-size: 16pt;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+    letter-spacing: 0.5px;
+  }
+  .srm-text .srm-sub {
+    font-size: 5.5pt;
+    color: #64748b;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  /* Document Title */
+  .doc-title {
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
+    font-size: 17pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 15px 0 25px 0;
+  }
+
+  /* Section Headings */
+  h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13.5pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    border-bottom: 1.5px solid #cbd5e1;
+    padding-bottom: 4px;
+  }
+
+  h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11.5pt;
+    font-weight: 600;
+    color: #1e293b;
+    margin-top: 18px;
+    margin-bottom: 6px;
+  }
+
+  p {
+    text-align: justify;
+    margin-bottom: 12px;
+    line-height: 1.65;
+  }
+
+  .tamil-highlight {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-weight: 600;
+  }
+
+  ul {
+    margin-top: 6px;
+    margin-bottom: 14px;
+    padding-left: 22px;
+  }
+
+  li {
+    margin-bottom: 6px;
+    line-height: 1.55;
+  }
+
+  .quote-highlight {
+    font-family: 'Noto Sans Tamil', 'Merriweather', serif;
+    font-style: italic;
+    color: #b91c1c;
+    font-weight: 600;
+    text-align: center;
+    margin: 22px 0;
+    font-size: 11pt;
+    line-height: 1.6;
+    padding: 10px 15px;
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+    border-radius: 4px;
+  }
+
+  /* Architecture Diagram */
+  .diagram-container {
+    margin: 20px auto;
+    text-align: center;
+    background: #f8fafc;
+    padding: 18px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .diagram-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Outfit', 'Noto Sans Tamil', sans-serif;
+  }
+
+  .diag-box {
+    background: #ffffff;
+    border: 1.5px solid #3b82f6;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 9.5pt;
+    color: #1e3a8a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    width: 380px;
+  }
+
+  .diag-box.accent {
+    border-color: #d97706;
+    background: #fffbeb;
+    color: #92400e;
+  }
+
+  .diag-box.success {
+    border-color: #059669;
+    background: #ecfdf5;
+    color: #065f46;
+  }
+
+  .diag-box.llm {
+    border-color: #7c3aed;
+    background: #f5f3ff;
+    color: #5b21b6;
+    font-weight: 600;
+  }
+
+  .diag-arrow {
+    color: #64748b;
+    font-size: 14pt;
+    line-height: 1;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 10pt;
+  }
+
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f1f5f9;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: #0f172a;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-container">
+  <!-- Header with 3 Logos -->
+  <div class="header-logos">
+    <div class="logo-box">
+      <div class="logo-elroi">ÉLROI<span>AUTOMATION PVT LTD</span></div>
+    </div>
+    <div class="logo-box">
+      <div class="logo-m2m">
+        <div class="t-text">மொழி</div>
+        <div class="sub-text">MOZHI TO MACHINE</div>
+      </div>
+    </div>
+    <div class="logo-box">
+      <div class="logo-srm">
+        <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM Logo" />
+        <div class="srm-text">
+          <div class="srm-title">SRM</div>
+          <div class="srm-sub">Institute of Science & Technology</div>
+          <div class="srm-sub">(Deemed to be University u/s 3 of UGC Act, 1956)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-title">Thirukkural AI – Domain-Specific Tamil Knowledge Model</div>
+
+  <h2>Project Statement</h2>
+  <p>
+    Classical Tamil literature, prominently <span class="tamil-highlight">திருக்குறள் (Thirukkural)</span>, represents the foundational corpus of human ethics, governance, social justice, and universal moral philosophy. Composed of <strong>1,330 couplets (குறட்பாக்கள்)</strong> categorized across <strong>133 chapters (அதிகாரங்கள்)</strong>, <strong>9 sub-sections (இயல்கள்)</strong>, and <strong>3 primary divisions (அறத்துப்பால், பொருட்பால், காமத்துப்பால்)</strong>, it stands as an unexcelled guide to righteous living.
+  </p>
+  <p>
+    Despite its profound significance, access to Thirukkural remains constrained for modern learners, competitive exam aspirants (UPSC / TNPSC), and the global diaspora due to the poetic complexity of classical Tamil (செந்தமிழ்), fragmented traditional print commentaries, and the absence of dependable AI-based interpretation platforms.
+  </p>
+  <p>
+    Most existing digital tools are static text repositories or unconstrained generic LLMs prone to severe hallucinations, generating fictional verses or incorrect moral attributions. There is an urgent need for a <strong>Tamil-first, explainable, and academically grounded AI system</strong> that makes Thirukkural accessible, interactive, and trustworthy in simple modern Tamil.
+  </p>
+  <p>
+    To address this gap, we propose <strong>Thirukkural AI (திருக்குறள் நிபுணர்)</strong>, an intelligent domain-specific Tamil Language and Retrieval Model engineered for zero-hallucination semantic search, comparative multi-scholar commentary synthesis, and multi-modal image intelligence.
+  </p>
+
+  <h2>Proposed Solution</h2>
+  <p>
+    <strong>Thirukkural AI</strong> is an LLM-powered conversational and research platform designed to interact with the complete Thirukkural corpus and provide insightful explanations in <span class="tamil-highlight">எளிய இன்றைய தமிழ் (Simple Modern Tamil)</span> and English without compromising classical literary authenticity.
+  </p>
+  <p>
+    Rather than relying on ungrounded generation, the platform integrates a <strong>Retrieval-Augmented Generation (RAG)</strong> framework with local vector embeddings and deterministic scholarly knowledge bases. Authoritative commentaries from <strong>மு. வரதராசனார் (Mu. Va.)</strong>, <strong>சாலமன் பாப்பையா (Solomon Pappaiah)</strong>, <strong>மு. கருணாநிதி (Kalaignar)</strong>, and <strong>Rev. G.U. Pope</strong> serve as the verified knowledge core, ensuring <span class="tamil-highlight">உரை அடிப்படையிலான நம்பகமான மற்றும் துல்லியமான விளக்கங்கள் (Rigorous, Verified Commentary-Grounded Explanations)</span>.
+  </p>
+
+  <div class="page-break"></div>
+
+  <p>
+    When a user submits a natural language question, an Athigaram name/number (e.g., <em>அதிகாரம் 13</em>), or an image of a verse, the system retrieves the exact couplets and multi-scholar commentaries. The retrieved context is provided to the Tamil AI engine to synthesize structured, hallucination-free explanations.
+  </p>
+
+  <p><strong>The system delivers:</strong></p>
+  <ul>
+    <li>Deterministic Athigaram & Verse Resolution (retrieving all 10 Kurals per chapter with zero hallucination).</li>
+    <li>Comparative Multi-Scholar Commentary (<span class="tamil-highlight">மு.வ., சாலமன் பாப்பையா, கலைஞர் உரை, ஆங்கில மொழிபெயர்ப்பு</span>).</li>
+    <li>Paal, Iyal, and Athigaram hierarchical classification.</li>
+    <li>Real-time English-to-Tamil phonetic transliteration typing.</li>
+    <li>Vision OCR understanding for manuscript and exam question image inputs.</li>
+  </ul>
+
+  <!-- System Architecture Flowchart -->
+  <div class="diagram-container">
+    <div class="diagram-flow">
+      <div class="diag-box"><strong>User Input:</strong> Tamil Text / English Transliteration / Manuscript Image</div>
+      <div class="diag-arrow">▼</div>
+      <div class="diag-box accent"><strong>Preprocessing Layer:</strong> Unicode Normalization / OCR / Intent Router</div>
+      <div class="diag-arrow">▼</div>
+      <div class="diag-box"><strong>Retrieval Module (RAG):</strong> Hybrid Vector Search & Athigaram Deterministic Engine</div>
+      <div class="diag-arrow">▼</div>
+      <div class="diag-box llm"><strong>Grounded Tamil LLM:</strong> Context-Bound Zero-Hallucination Decoder</div>
+      <div class="diag-arrow">▼</div>
+      <div class="diag-box success"><strong>Structured Output:</strong> Metrical Verse + 3 Scholar Commentaries + Moral Meaning</div>
+    </div>
+  </div>
+
+  <h2>Target Beneficiaries</h2>
+  <p>Thirukkural AI will empower a broad spectrum of users, including:</p>
+  <ul>
+    <li><strong>Civil Services (UPSC) Aspirants:</strong> Tamil Literature optional & Ethics (GS-IV) essay citations.</li>
+    <li><strong>Tamil Nadu Group 1, Group 2, Group 3, and Group 4 Candidates:</strong> Compulsory Tamil eligibility and descriptive questions.</li>
+    <li><strong>Tamil Scholars, Academicians & Literary Researchers:</strong> Cross-commentary comparative studies.</li>
+    <li><strong>School & University Students:</strong> Simplified, relatable ethical education.</li>
+    <li><strong>Global Tamil Diaspora & Heritage Learners:</strong> Bilingual Tamil ↔ English access.</li>
+  </ul>
+
+  <h2>Core Functionality & Model Capabilities</h2>
+  <ul>
+    <li><strong>Domain-Specific Tamil RAG Architecture:</strong> Grounded strictly on 1,330 Kurals and verified commentaries.</li>
+    <li><strong>Multi-Scholar Comparative Insight:</strong> Side-by-side synthesis of Mu.Va, Solomon Pappaiah, and Kalaignar Karunanidhi.</li>
+    <li><strong>Real-Time Phonetic Transliteration:</strong> Instant Tanglish-to-Tamil conversion on spacebar press.</li>
+    <li><strong>Vision OCR Input:</strong> Image-based query grounding for printed poems, books, or handwritten text.</li>
+    <li><strong>3D Cultural Heritage Experience:</strong> Interactive 3D Thiruvalluvar model with dynamic lighting.</li>
+    <li><strong>Offline PWA & Android App:</strong> Standalone cross-platform distribution.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <h2>Industry Collaboration</h2>
+  <p>
+    The project receives industry-level architecture mentorship and technology guidance through <strong>ÉLROI Automation Pvt Ltd</strong>, founded by <strong>Dr. R. Annie Uthra</strong>, contributing to:
+  </p>
+  <ul>
+    <li>Strategic alignment with real-world Tamil LangTech applications and scalable deployment architectures.</li>
+    <li>Mentorship on ethical AI, zero-hallucination guardrails, and enterprise-grade system resilience.</li>
+  </ul>
+
+  <h2>Academic Guidance</h2>
+  <p>
+    The project is guided by distinguished faculty members from the <strong>Department of Computational Intelligence (CINTEL), School of Computing, SRM Institute of Science and Technology (SRMIST)</strong>:
+  </p>
+  <ul>
+    <li><strong>Dr. K. Shanmugam</strong></li>
+    <li><strong>Dr. R. Udendhran</strong></li>
+    <li><strong>Dr. R. Babu</strong></li>
+    <li><strong>Dr. G. Dinesh</strong></li>
+  </ul>
+  <p>
+    Their academic stewardship ensures structured research methodology, algorithmic rigor, linguistic accuracy, and strict adherence to responsible AI ethics.
+  </p>
+
+  <div class="quote-highlight">
+    “AI வழியாக திருக்குறளின் உலகளாவிய வாழ்வியல் நெறிகளை இளைய தலைமுறைக்கும் உலகச் சமூகத்திற்கும் கொண்டு செல்லும் சீரிய முயற்சி.”
+  </div>
+
+  <h2>Future Scope</h2>
+  <ul>
+    <li><strong>Voice-Based Interaction:</strong> Integration of Tamil Speech-to-Text (STT) and expressive Text-to-Speech (TTS) for acoustic recitation and vocal query processing.</li>
+    <li><strong>Expansion Across Classical Epics:</strong> Scaling knowledge modules to include <em>நாலடியார் (Naladiyar)</em>, <em>சிலப்பதிகாரம் (Silappathikaram)</em>, and the complete <em>Sangam Corpus (பதினெண்கீழ்க்கணக்கு & எட்டுத்தொகை)</em>.</li>
+    <li><strong>Adaptive Assessment Engine:</strong> Automated competitive exam question generation and interactive Kural quizzes.</li>
+    <li><strong>Digital Education & LMS Integration:</strong> Connectors for DIKSHA portal, government educational systems, and Tamil Virtual Academy.</li>
+  </ul>
+
+  <div class="quote-highlight">
+    “திருக்குறள் ஞானம் முழுவதும் ஒரே இடத்தில் – Thirukkural AI”
+  </div>
+
+  <h2>Alignment with Tamil Computing Centre (TCC - SRMIST) – Vision & Mission</h2>
+  <p>Thirukkural AI aligns directly with the core objectives of the <strong>Tamil Computing Centre (TCC - SRMIST)</strong>:</p>
+  <ul>
+    <li>Development and open-source distribution of AI software and toolkits for Tamil computing.</li>
+    <li>Advanced research in Tamil NLP, semantic retrieval, and multi-modal understanding.</li>
+    <li>Preservation of classical Tamil heritage and empowerment of Tamil speakers worldwide.</li>
+  </ul>
+
+  <h3>Activities Completed So Far:</h3>
+  <ul>
+    <li>Conducted the <strong>International Conference on Tamil Computing and Information Technology (ICTCIT) 2025</strong>.</li>
+    <li>Organized the premier hackathon <strong>Tamizh-A-THON 1.0</strong>.</li>
+    <li>Actively engaged in Tamil book digitization and translation initiatives.</li>
+    <li>Published technical contributions in the Tamil computing magazine <strong>“கணினிச்சிறகு”</strong>.</li>
+  </ul>
+
+  <h2>Conclusion</h2>
+  <p>
+    <strong>Thirukkural AI</strong> is not merely an AI product but a cultural preservation and educational empowerment initiative powered by responsible artificial intelligence. By combining authentic Tamil scholarship with modern Retrieval-Augmented Generation, the project democratizes access to Thirukkural while upholding uncompromising academic integrity.
+  </p>
+
+  <div class="quote-highlight">
+    “தமிழின் பெருமையை தொழில்நுட்பத்தின் மூலம் பாதுகாக்கும் மற்றும் பரப்பும் ஒரு பொறுப்பான AI முயற்சி.”
+  </div>
+
+</div>
+
+</body>
+</html>
