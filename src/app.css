@@ -399,6 +399,64 @@ body {
   transform: scale(1.05);
 }
 
+/* Voice Mic Recording Styles */
+.voice-mic-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid rgba(180, 83, 9, 0.15);
+  color: #78350f;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.voice-mic-btn:hover {
+  background: #fef3c7;
+  color: #b45309;
+  transform: scale(1.08);
+}
+
+.voice-mic-btn.recording-active {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.7);
+  animation: voicePulse 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes voicePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+  }
+  100% {
+    transform: scale(1.12);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.9);
+  }
+}
+
+.mic-recording-icon {
+  animation: micBlink 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes micBlink {
+  0% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+.tamil-input-box-v2.recording-mode {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.25), 0 10px 40px rgba(0, 0, 0, 0.06) !important;
+}
+
+.tamil-input-box-v2 input.input-recording-active {
+  color: #b91c1c;
+  font-weight: 800;
+}
+
 /* Chat Kural Links */
 .chat-kural-link {
   background: #f1f5f9;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
+import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 import {
@@ -97,7 +97,62 @@ const App = () => {
    const [showMobileMenu, setShowMobileMenu] = useState(false);
    const [directAI, setDirectAI] = useState(false);
    const [isDragging, setIsDragging] = useState(false);
+   const [isRecording, setIsRecording] = useState(false);
    const fileInputRef = useRef(null);
+   const recognitionRef = useRef(null);
+
+   const handleToggleVoice = () => {
+      if (isRecording) {
+         try {
+            recognitionRef.current?.stop();
+         } catch (e) { }
+         setIsRecording(false);
+         return;
+      }
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+         alert("உங்கள் உலாவியில் குரல் உள்ளீடு (Speech Recognition) ஆதரிக்கப்படவில்லை. தயவுசெய்து Google Chrome அல்லது Microsoft Edge உலாவியைப் பயன்படுத்தவும்.");
+         return;
+      }
+
+      try {
+         const recognition = new SpeechRecognition();
+         recognition.lang = 'ta-IN'; // Tamil (India)
+         recognition.continuous = false;
+         recognition.interimResults = true;
+         recognition.maxAlternatives = 1;
+
+         recognition.onstart = () => {
+            setIsRecording(true);
+         };
+
+         recognition.onresult = (event) => {
+            let currentTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+               currentTranscript += event.results[i][0].transcript;
+            }
+            if (currentTranscript) {
+               setQuery(currentTranscript);
+            }
+         };
+
+         recognition.onerror = (event) => {
+            console.warn("Speech recognition notice:", event.error);
+            setIsRecording(false);
+         };
+
+         recognition.onend = () => {
+            setIsRecording(false);
+         };
+
+         recognitionRef.current = recognition;
+         recognition.start();
+      } catch (err) {
+         console.error("Speech Recognition initialization error:", err);
+         setIsRecording(false);
+      }
+   };
 
    const handleToggleAudio = (kural) => {
       if (playingKuralId === kural.Number) {
@@ -673,23 +728,32 @@ const App = () => {
                                     </div>
                                  </div>
                               )}
-                              <div className="tamil-input-box-v2">
-                                 <button className={`kb-toggle-v2 ${showKeyboard ? 'active' : ''}`} onClick={() => setShowKeyboard(!showKeyboard)}>
+                              <div className={`tamil-input-box-v2 ${isRecording ? 'recording-mode' : ''}`}>
+                                 <button className={`kb-toggle-v2 ${showKeyboard ? 'active' : ''}`} onClick={() => setShowKeyboard(!showKeyboard)} title="தமிழ் விசைப்பலகை (Tamil Keyboard)">
                                     <Languages size={20} />
                                  </button>
-                                 <button className="kb-toggle-v2" onClick={() => fileInputRef.current?.click()}>
+                                 <button className="kb-toggle-v2" onClick={() => fileInputRef.current?.click()} title="படத்தைப் பதிவேற்றவும் (Upload Image / Puzzle)">
                                     <Camera size={20} />
+                                 </button>
+                                 <button 
+                                    className={`kb-toggle-v2 voice-mic-btn ${isRecording ? 'recording-active' : ''}`} 
+                                    onClick={handleToggleVoice}
+                                    title={isRecording ? "குரல் பதிவை நிறுத்தவும் (Stop Recording)" : "குரல் மூலம் பேசவும் (Voice Message / Speech Input)"}
+                                    type="button"
+                                 >
+                                    {isRecording ? <MicOff size={20} className="mic-recording-icon" /> : <Mic size={20} />}
                                  </button>
                                  <input
                                     type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*"
                                     onChange={handleImageUpload}
                                  />
                                  <input
-                                    placeholder="எதையும் கேளுங்கள்..."
+                                    placeholder={isRecording ? "🎙️ கேட்கிறது... தமிழில் அல்லது ஆங்கிலத்தில் பேசுங்கள்..." : "எதையும் கேளுங்கள்... (அல்லது மைக் அழுத்திப் பேசுங்கள்)"}
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
                                     onPaste={handlePaste}
+                                    className={isRecording ? "input-recording-active" : ""}
                                  />
                                  <button onClick={() => handleAsk(query)} disabled={loading || !aiEngine} className="send-btn-v2" title={!aiEngine ? "தயாராகிறது..." : "அனுப்பு"}>
                                     {isTranslating ? <div className="mini-loader"></div> : !aiEngine ? <div className="mini-loader-orange"></div> : <Send size={20} />}
