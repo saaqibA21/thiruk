@@ -12,6 +12,7 @@ import {
    stopTamilSpeech
 } from './utils/kuralFeatures';
 import { KuralImage } from './components/KuralImage';
+import { IntroVideo } from './components/IntroVideo';
 import { findAthigaram } from './utils/athigaramsData.js';
 
 const TAMIL_KEYS = [
@@ -179,6 +180,9 @@ const App = () => {
 
    const [apiKey, setApiKey] = useState(getInitialKey());
    const [showSettings, setShowSettings] = useState(false);
+   const [showIntro, setShowIntro] = useState(() => {
+      return !sessionStorage.getItem('thirukural_intro_seen');
+   });
    const chatEndRef = useRef(null);
    const initRef = useRef(false);
 
@@ -537,6 +541,9 @@ const App = () => {
 
    return (
       <div className="scholarly-app">
+         {/* Cinematic Fullscreen Website Intro Video */}
+         {showIntro && <IntroVideo onComplete={() => setShowIntro(false)} />}
+
          <div className="app-heritage-background" style={{ backgroundImage: "url('valluvar_hero.jpg')" }}>
             <div className="heritage-bg-overlay"></div>
          </div>
@@ -552,6 +559,15 @@ const App = () => {
                </div>
 
                <div className="header-right-group">
+                   <button
+                      className="intro-replay-btn desktop-only"
+                      onClick={() => setShowIntro(true)}
+                      title="அறிமுக காணொளி (Play Intro Video)"
+                   >
+                      <Play size={11} fill="currentColor" />
+                      <span>Intro</span>
+                   </button>
+
                    <div className="direct-ai-header-control">
                       <span className="toggle-label desktop-only">{directAI ? 'Direct AI' : 'Search AI'}</span>
                       <button
@@ -588,6 +604,7 @@ const App = () => {
                               <button onClick={() => { setActiveTab('ask'); setShowMobileMenu(false); }}> <Cpu size={18} /> AI நிபுணர் </button>
                               <button onClick={() => { setActiveTab('list'); setShowMobileMenu(false); }}> <BookOpen size={18} /> நூலகம் </button>
                               <button onClick={() => { setActiveTab('history'); setShowMobileMenu(false); }}> <HistoryIcon size={18} /> வரலாறு </button>
+                              <button onClick={() => { setShowIntro(true); setShowMobileMenu(false); }} style={{ color: '#b45309' }}> <Play size={18} fill="currentColor" /> அறிமுக காணொளி </button>
                            </motion.div>
                         )}
                      </AnimatePresence>
