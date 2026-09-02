@@ -255,6 +255,36 @@ export function getPolysemyKurals(query, dataset) {
   return matched;
 }
 
+const OFF_TOPIC_RESPONSE = `🙏 **வணக்கம்!**\n\nநான் **திருக்குறள் மற்றும் திருவள்ளுவர் வாழ்வியல் நெறிகளுக்கு** மட்டுமே பதிலளிக்கும் பிரத்யேக AI ஆய்வாளர் (Thirukkural AI Scholar) ஆவேன்.\n\nகணினி நிரலாக்கம் (Coding), மென்பொருள் உருவாக்கம் அல்லது திருக்குறள் சாராத பொதுவான தலைப்புகளுக்கு என்னால் பதிலளிக்க இயலாது.\n\n✨ **என்னிடம் நீங்கள் கேட்கக்கூடியவை:**\n• திருக்குறள் மற்றும் அதிகாரங்களின் தேடல் / விளக்கம்\n• குறிப்பிட்ட சொற்களின் பொருள், தோற்றங்கள் மற்றும் பயன்பாடு\n• பரிமேலழகர், மு.வ, சாலமன் பாப்பையா, கலைஞர் உரைகள்\n• அன்பு, நட்பு, கல்வி, அறம் போன்ற வாழ்வியல் வழிகாட்டல்கள்`;
+
+function isOffTopicQuery(query) {
+    if (!query) return false;
+    const q = query.toLowerCase();
+
+    // Specific Thirukkural contextual keywords (if present, do not block)
+    const kuralIndicators = [
+        'குறள்', 'திருக்குறள்', 'வள்ளுவர்', 'திருவள்ளுவர்', 'அதிகாரம்', 'பால்', 'இயல்', 'உரை', 
+        'மு.வ', 'சாலமன்', 'கலைஞர்', 'பரிமேலழகர்', 'பொருள்', 'வாழ்வியல்',
+        'kural', 'thirukkural', 'valluvar', 'athigaram', 'couplet'
+    ];
+    if (kuralIndicators.some(kw => q.includes(kw))) {
+        return false;
+    }
+
+    // Explicit Coding / Programming / Software / General Off-Topic requests
+    const offTopicKeywords = [
+        'code to create', 'create website', 'html code', 'python code', 'write code', 'flask', 'django', 
+        'javascript', 'react', 'node.js', 'nodejs', 'c++', 'java code', 'programming code', 'sql query',
+        'மலைப்பாம்பு code', 'மலைப்பாம்பு', 'நிரல் எழுது', 'புரோகிராமிங்', 'இணையதள code', 'website code',
+        'develop app', 'write script', 'generate code', 'make a game', 'coding', 'source code', 'api code',
+        'write python', 'write javascript', 'write html', 'write java', 'write c++',
+        'recipe', 'cook biryani', 'movie review', 'weather today', 'cricket score', 'football match',
+        'சமையல் குறிப்பு', 'திரைப்பட விமர்சனம்', 'வானிலை'
+    ];
+
+    return offTopicKeywords.some(kw => q.includes(kw));
+}
+
 export class KuralAI {
     constructor(dataset) {
         this.dataset = dataset;
@@ -347,6 +377,14 @@ export class KuralAI {
 
     async ask(question, imageBase64 = null, isDirect = false) {
         let queryForSearch = normalizeTamil(question);
+
+        // Step 0: Strict Domain Guardrail (Reject Off-topic & Coding Requests)
+        if (isOffTopicQuery(question) || isOffTopicQuery(queryForSearch)) {
+            return {
+                answer: OFF_TOPIC_RESPONSE,
+                sources: []
+            };
+        }
         
         // Step 1: If image only, perform quick OCR to get text for grounding
         if (imageBase64 && queryForSearch.length < 5 && this.openai) {
@@ -550,7 +588,13 @@ export class KuralAI {
             const messages = [
                 { 
                     role: "system", 
-                    content: `You are an expert Thirukkural Scholar and Linguistic Analyst.
+                    content: `You are an expert Thirukkural Scholar and Classical Tamil Linguistic Analyst.
+                    
+                    ### STRICT DOMAIN GUARDRAILS (ABSOLUTE BOUNDARY):
+                    - You are EXCLUSIVELY an AI Scholar for Thirukkural, Thiruvalluvar, and classical Tamil wisdom.
+                    - You MUST NEVER provide general computer programming code (such as Python, Flask, Django, HTML, JavaScript, C++, Java, React, SQL, etc.), website development tutorials, or answers to off-topic non-Thirukkural queries.
+                    - If the user asks for coding, website creation, or any off-topic request, politely decline in Tamil:
+                      "மன்னிக்கவும்! நான் திருக்குறள் மற்றும் திருவள்ளுவர் வாழ்வியல் ஆய்வுகளுக்கு மட்டுமே பதிலளிக்கும் பிரத்யேக AI ஆய்வாளர். கணினி நிரலாக்கம் (Coding) அல்லது பிற பொதுத் தலைப்புகளுக்கு என்னால் பதிலளிக்க இயலாது. திருக்குறள், அதிகாரங்கள், உரை விளக்கங்கள் அல்லது வாழ்வியல் நெறிகள் பற்றி ஏதேனும் கேட்க விரும்பினால் மகிழ்ச்சியுடன் உதவுகிறேன்."
                     
                     ### MASTER CORPUS KNOWLEDGE:
                     - Total 1,330 Kurals, 133 Chapters, 9 Iyals, 3 Paals (Aram: 38, Porul: 70, Inbam: 25).
