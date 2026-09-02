@@ -675,7 +675,7 @@ const App = () => {
                                        )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
-                                             {m.sources.slice(0, m.showMore || m.sources.length <= 10 ? m.sources.length : 5).map((s, idx) => (
+                                             {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
                                                 <div key={idx} className="kural-card-wrapper">
 
                                                    <KuralCard
@@ -687,7 +687,7 @@ const App = () => {
                                                    />
                                                 </div>
                                              ))}
-                                             {m.sources.length > 10 && (
+                                             {m.sources.length > 5 && (
                                                 <button
                                                    className="show-more-kurals-btn"
                                                    onClick={() => {
@@ -697,7 +697,7 @@ const App = () => {
                                                       setMessages(newMessages);
                                                    }}
                                                 >
-                                                   {m.showMore ? 'சுருக்கமாகக் காட்டு' : `மீதி ${m.sources.length - 5} குறள்களையும் காட்டு`}
+                                                   {m.showMore ? '▲ குறைவாகக் காட்டு (Show Less)' : `▼ மேலும் ${m.sources.length - 5} குறள்களைக் காட்டு (Show More — மொத்தம் ${m.sources.length} குறள்கள்)`}
                                                 </button>
                                              )}
                                           </div>

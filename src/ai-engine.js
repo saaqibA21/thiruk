@@ -507,7 +507,12 @@ export class KuralAI {
 
             if (!isDirect && (isStructural || (!isQuestion && finalSources.length > 0)) && !imageBase64) {
                 const count = finalSources.length;
-                return { answer: count > 1 ? `இதோ நீங்கள் கேட்டது குறித்த ${count} குறள்கள்:` : `இதோ நீங்கள் கேட்ட குறள்:`, sources: finalSources };
+                return { 
+                    answer: count > 1 
+                        ? `🔍 **தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
+                        : `இதோ நீங்கள் கேட்ட குறள்:`, 
+                    sources: finalSources 
+                };
             }
         }
 
@@ -515,7 +520,13 @@ export class KuralAI {
         const isValidKey = this.openai && this.openai.apiKey?.startsWith('sk-');
         if (!isValidKey) {
             if (finalSources.length > 0) {
-                return { answer: `இதோ தொடர்புடைய ${finalSources.length} குறள்கள்:`, sources: finalSources };
+                const count = finalSources.length;
+                return { 
+                    answer: count > 1 
+                        ? `🔍 **தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
+                        : `இதோ நீங்கள் கேட்ட குறள்:`, 
+                    sources: finalSources 
+                };
             }
             return { answer: "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை.", sources: [] };
         }
