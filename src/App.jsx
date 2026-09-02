@@ -492,10 +492,11 @@ const App = () => {
 
    const filteredKurals = useMemo(() => {
       let list = kuralData;
-      if (selectedTheme) {
-         list = list.filter(k => selectedTheme.chapters.includes(Math.ceil(k.Number / 10)));
-      }
-      if (selectedPaal) {
+      if (libraryMode === 'themes') {
+         if (selectedTheme) {
+            list = list.filter(k => selectedTheme.chapters.includes(Math.ceil(k.Number / 10)));
+         }
+      } else if (libraryMode === 'paals') {
          if (selectedPaal === 'அறத்துப்பால்') list = list.filter(k => k.Number <= 380);
          else if (selectedPaal === 'பொருட்பால்') list = list.filter(k => k.Number > 380 && k.Number <= 1080);
          else if (selectedPaal === 'காமத்துப்பால்') list = list.filter(k => k.Number > 1080);
@@ -509,7 +510,7 @@ const App = () => {
       }
 
       return list.filter(k => (k.Line1 && k.Line1.includes(search)) || (k.Number.toString().includes(search)));
-   }, [kuralData, searchQuery, selectedPaal, selectedChapter, selectedTheme]);
+   }, [kuralData, searchQuery, selectedPaal, selectedChapter, selectedTheme, libraryMode]);
 
    useEffect(() => {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -750,13 +751,13 @@ const App = () => {
                       <div className="library-tab-switcher">
                          <button 
                             className={`lib-switch-btn ${libraryMode === 'paals' ? 'active' : ''}`}
-                            onClick={() => { setLibraryMode('paals'); setSelectedTheme(null); }}
+                            onClick={() => { setLibraryMode('paals'); setSelectedTheme(null); setSelectedChapter(null); }}
                          >
                             <BookOpen size={16} /> பாரம்பரிய பால்கள் (3 Paals)
                          </button>
                          <button 
                             className={`lib-switch-btn ${libraryMode === 'themes' ? 'active' : ''}`}
-                            onClick={() => { setLibraryMode('themes'); setSelectedPaal(null); }}
+                            onClick={() => { setLibraryMode('themes'); setSelectedPaal(null); setSelectedChapter(null); }}
                          >
                             <Sparkles size={16} /> நவீன வாழ்வியல் பிரிவுகள் (Life Themes)
                          </button>
@@ -767,17 +768,17 @@ const App = () => {
                             <div className="paal-cards-container">
                                <h2 className="library-main-title">திருக்குறள் நூலகம்</h2>
                                <div className="paal-cards">
-                                  <div className="paal-card aram" onClick={() => setSelectedPaal('அறத்துப்பால்')}>
+                                  <div className="paal-card aram" onClick={() => { setSelectedPaal('அறத்துப்பால்'); setSelectedChapter(null); }}>
                                      <span className="orn-bl"></span> <span className="orn-br"></span>
                                      <h3>அறத்துப்பால்</h3>
                                      <p>38 அதிகாரங்கள்</p>
                                   </div>
-                                  <div className="paal-card porul" onClick={() => setSelectedPaal('பொருட்பால்')}>
+                                  <div className="paal-card porul" onClick={() => { setSelectedPaal('பொருட்பால்'); setSelectedChapter(null); }}>
                                      <span className="orn-bl"></span> <span className="orn-br"></span>
                                      <h3>பொருட்பால்</h3>
                                      <p>70 அதிகாரங்கள்</p>
                                   </div>
-                                  <div className="paal-card inbam" onClick={() => setSelectedPaal('காமத்துப்பால்')}>
+                                  <div className="paal-card inbam" onClick={() => { setSelectedPaal('காமத்துப்பால்'); setSelectedChapter(null); }}>
                                      <span className="orn-bl"></span> <span className="orn-br"></span>
                                      <h3>இன்பத்துப்பால்</h3>
                                      <p>25 அதிகாரங்கள்</p>
@@ -786,7 +787,7 @@ const App = () => {
                             </div>
                          ) : !selectedChapter ? (
                             <div className="chapter-view">
-                               <button className="tamil-back" onClick={() => setSelectedPaal(null)}> <ArrowLeft size={16} /> Back </button>
+                               <button className="tamil-back" onClick={() => { setSelectedPaal(null); setSelectedChapter(null); }}> <ArrowLeft size={16} /> Back to Paals </button>
                                <h2>{selectedPaal}</h2>
                                <div className="chapter-grid">
                                   {ATHIGARAMS.map((name, i) => {
@@ -833,7 +834,7 @@ const App = () => {
                                 </p>
                                <div className="modern-life-grid">
                                   {MODERN_LIFE_CATEGORIES.map(cat => (
-                                     <div key={cat.id} className="life-category-card" onClick={() => setSelectedTheme(cat)}>
+                                     <div key={cat.id} className="life-category-card" onClick={() => { setSelectedTheme(cat); setSelectedChapter(null); }}>
                                         <div className="life-card-header">
                                            <span className="life-card-icon">{cat.icon}</span>
                                            <div>
@@ -850,20 +851,50 @@ const App = () => {
                                   ))}
                                </div>
                             </div>
-                         ) : (
-                            <div className="chapter-view">
-                               <button className="tamil-back" onClick={() => setSelectedTheme(null)}> <ArrowLeft size={16} /> Back to Themes </button>
-                               <h2>{selectedTheme.icon} {selectedTheme.name} ({selectedTheme.nameEn})</h2>
-                               <p style={{ color: '#64748b', marginBottom: '15px' }}>{selectedTheme.desc}</p>
-                               <div className="chapter-grid">
-                                  {selectedTheme.chapters.map(num => (
-                                     <button key={num} className="chapter-tile" onClick={() => setSelectedChapter(num)}>
-                                        <span>{num}</span> {ATHIGARAMS[num - 1]}
-                                     </button>
-                                  ))}
-                               </div>
-                            </div>
-                         )
+                          ) : !selectedChapter ? (
+                             <div className="chapter-view">
+                                <button className="tamil-back" onClick={() => { setSelectedTheme(null); setSelectedChapter(null); }}> <ArrowLeft size={16} /> Back to Themes </button>
+                                <h2>{selectedTheme.icon} {selectedTheme.name} ({selectedTheme.nameEn})</h2>
+                                <p style={{ color: '#64748b', marginBottom: '15px' }}>{selectedTheme.desc}</p>
+                                <div className="chapter-grid">
+                                   {selectedTheme.chapters.map(num => (
+                                      <button key={num} className="chapter-tile" onClick={() => setSelectedChapter(num)}>
+                                         <span>{num}</span> {ATHIGARAMS[num - 1]}
+                                      </button>
+                                   ))}
+                                </div>
+                             </div>
+                          ) : (
+                             <div className="kural-view">
+                                <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> Back to Chapters </button>
+                                <div className="chapter-kural-header" style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+                                   <span className="life-tag-badge" style={{ marginBottom: '0.5rem' }}>{selectedTheme.icon} {selectedTheme.name}</span>
+                                   <h2 style={{ fontSize: '1.4rem', color: 'var(--primary)', marginTop: '4px' }}>அதிகாரம் {selectedChapter}: {ATHIGARAMS[selectedChapter - 1]}</h2>
+                                </div>
+                                <div className="kural-grid-stack">
+                                   {filteredKurals.map(k => {
+                                      const allWords = `${k.Line1} ${k.Line2}`.trim().split(/\s+/);
+                                      const isPlaying = playingKuralId === k.Number;
+                                      return (
+                                         <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
+                                            <div className="k-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                               <span>குறள் எண்: {k.Number}</span>
+                                               <button 
+                                                  className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
+                                                  onClick={(e) => { e.stopPropagation(); handleToggleAudio(k); }}
+                                                  title="ஒலி வடிவம் (Listen to Kural)"
+                                               >
+                                                  {isPlaying ? <Square size={13} /> : <Volume2 size={15} />}
+                                               </button>
+                                            </div>
+                                            <p>{allWords.slice(0, 4).join(' ')}</p>
+                                            <p>{allWords.slice(4).join(' ')}</p>
+                                         </div>
+                                      );
+                                   })}
+                                </div>
+                             </div>
+                          )
                       )}
                    </motion.div>
 
