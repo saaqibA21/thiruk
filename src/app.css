@@ -2376,7 +2376,8 @@ body {
   align-items: center;
   justify-content: center;
   background: #000;
-  cursor: pointer;
+  cursor: default;
+  user-select: none;
 }
 
 .intro-video-player {
@@ -2384,6 +2385,7 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  pointer-events: none;
 }
 
 @media (min-aspect-ratio: 16/9) {
@@ -2447,48 +2449,6 @@ body {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(217, 119, 6, 0.95) 100%);
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 6px 24px rgba(245, 158, 11, 0.4);
-}
-
-.intro-video-progress-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.15);
-  z-index: 10;
-}
-
-.intro-video-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #f59e0b, #fbbf24, #fef08a);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
-  transition: width 0.1s linear;
-}
-
-/* Header Replay Button */
-.intro-replay-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(217, 119, 6, 0.3);
-  color: #b45309;
-  border-radius: 9999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: 'Outfit', 'Noto Sans Tamil', sans-serif;
-}
-
-.intro-replay-btn:hover {
-  background: #f59e0b;
-  color: #ffffff;
-  border-color: #f59e0b;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
 }
 
 

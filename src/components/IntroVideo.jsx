@@ -1,11 +1,9 @@
 ﻿import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, FastForward, Play, Pause } from 'lucide-react';
+import { Volume2, VolumeX, FastForward } from 'lucide-react';
 
-export const IntroVideo = ({ onComplete, forceShow = false }) => {
-  const [isPlaying, setIsPlaying] = useState(true);
+export const IntroVideo = ({ onComplete }) => {
   const [isMuted, setIsMuted] = useState(true);
-  const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const videoRef = useRef(null);
 
@@ -16,20 +14,9 @@ export const IntroVideo = ({ onComplete, forceShow = false }) => {
     if (videoRef.current) {
       videoRef.current.play().catch(err => {
         console.warn("Autoplay was prevented:", err);
-        setIsPlaying(false);
       });
     }
   }, []);
-
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      const current = videoRef.current.currentTime;
-      const duration = videoRef.current.duration;
-      if (duration > 0) {
-        setProgress((current / duration) * 100);
-      }
-    }
-  };
 
   const handleEnded = () => {
     finishIntro();
@@ -41,19 +28,6 @@ export const IntroVideo = ({ onComplete, forceShow = false }) => {
     setTimeout(() => {
       if (onComplete) onComplete();
     }, 600); // Allow fade-out animation to complete
-  };
-
-  const togglePlay = (e) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
-      }
-    }
   };
 
   const toggleMute = (e) => {
@@ -77,8 +51,8 @@ export const IntroVideo = ({ onComplete, forceShow = false }) => {
           {/* Ambient blur background */}
           <div className="intro-video-ambient-bg" />
 
-          {/* Main Video Container */}
-          <div className="intro-video-container" onClick={togglePlay}>
+          {/* Main Video Container - No pause on click */}
+          <div className="intro-video-container">
             <video
               ref={videoRef}
               src={videoSrc}
@@ -86,7 +60,6 @@ export const IntroVideo = ({ onComplete, forceShow = false }) => {
               playsInline
               autoPlay
               muted={isMuted}
-              onTimeUpdate={handleTimeUpdate}
               onEnded={handleEnded}
             />
 
@@ -112,14 +85,6 @@ export const IntroVideo = ({ onComplete, forceShow = false }) => {
                 <span>தொடங்கு / Skip</span>
                 <FastForward size={16} />
               </button>
-            </div>
-
-            {/* Bottom Progress Bar */}
-            <div className="intro-video-progress-container" onClick={(e) => e.stopPropagation()}>
-              <div
-                className="intro-video-progress-bar"
-                style={{ width: `${progress}%` }}
-              />
             </div>
           </div>
         </motion.div>

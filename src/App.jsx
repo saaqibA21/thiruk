@@ -559,15 +559,6 @@ const App = () => {
                </div>
 
                <div className="header-right-group">
-                   <button
-                      className="intro-replay-btn desktop-only"
-                      onClick={() => setShowIntro(true)}
-                      title="அறிமுக காணொளி (Play Intro Video)"
-                   >
-                      <Play size={11} fill="currentColor" />
-                      <span>Intro</span>
-                   </button>
-
                    <div className="direct-ai-header-control">
                       <span className="toggle-label desktop-only">{directAI ? 'Direct AI' : 'Search AI'}</span>
                       <button
@@ -604,7 +595,6 @@ const App = () => {
                               <button onClick={() => { setActiveTab('ask'); setShowMobileMenu(false); }}> <Cpu size={18} /> AI நிபுணர் </button>
                               <button onClick={() => { setActiveTab('list'); setShowMobileMenu(false); }}> <BookOpen size={18} /> நூலகம் </button>
                               <button onClick={() => { setActiveTab('history'); setShowMobileMenu(false); }}> <HistoryIcon size={18} /> வரலாறு </button>
-                              <button onClick={() => { setShowIntro(true); setShowMobileMenu(false); }} style={{ color: '#b45309' }}> <Play size={18} fill="currentColor" /> அறிமுக காணொளி </button>
                            </motion.div>
                         )}
                      </AnimatePresence>
