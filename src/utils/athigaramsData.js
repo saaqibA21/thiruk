@@ -1876,13 +1876,19 @@ export function normalizeTamilSandhi(text) {
 export function findAthigaram(query) {
   if (!query) return null;
   const raw = String(query).trim().toLowerCase();
+
+  // If query is PURELY digits (e.g. "40", "1", "133"), DO NOT treat as Athigaram (it is a Kural number)
+  if (/^\d+$/.test(raw)) {
+    return null;
+  }
+
   const sandhiNorm = normalizeTamilSandhi(raw);
   const clean = sandhiNorm.replace(/[.,!?;:"\-_…·`'""''\s]+/g, ' ').trim();
   const compact = clean.replace(/\s+/g, '');
 
-  // 1. Direct number check (e.g. "40", "அதிகாரம் 40", "chapter 40")
-  const numMatch = clean.match(/(?:அதிகாரம்|athigaram|adhigaram|chapter|athikaram)?\s*[:\-\s]*(\b\d{1,3}\b)/i) 
-                || clean.match(/(\b\d{1,3}\b)\s*(?:வது|ஆம்|th|st|nd|rd)?\s*(?:அதிகாரம்|athigaram|adhigaram|chapter)/i);
+  // 1. Explicit Athigaram Number check (MUST explicitly contain அதிகாரம்/chapter/athigaram/athikaram keyword)
+  const numMatch = clean.match(/(?:அதிகாரம்|athigaram|adhigaram|athikaram|chapter)\s*[:\-\s]*(\b\d{1,3}\b)/i) 
+                || clean.match(/(\b\d{1,3}\b)\s*(?:வது|ஆம்|th|st|nd|rd)?\s*(?:அதிகாரம்|athigaram|adhigaram|athikaram|chapter)/i);
   if (numMatch) {
     const num = parseInt(numMatch[1], 10);
     if (num >= 1 && num <= 133) {

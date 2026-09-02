@@ -274,7 +274,16 @@ export class KuralAI {
     async search(query, isImageSearch = false) {
         if (!query) return { results: [], searchTerms: [] };
         
-        // Check if query is targeting a specific Athigaram
+        // 1. If query is a pure number (e.g. "40", "1", "1330"), return ONLY that specific Kural
+        const pureNum = parseInt(query.trim(), 10);
+        if (/^\d{1,4}$/.test(query.trim()) && pureNum >= 1 && pureNum <= 1330) {
+            const exactKural = this.dataset.find(k => k.Number === pureNum);
+            if (exactKural) {
+                return { results: [exactKural], searchTerms: [pureNum.toString()] };
+            }
+        }
+
+        // 2. Check if query is targeting a specific Athigaram (e.g. "அதிகாரம் 40", "chapter 40", "கல்வி")
         const athigaram = getAthigaramDetails(query, this.dataset);
         if (athigaram) {
             return { results: athigaram.kurals, searchTerms: [athigaram.chapterName] };
@@ -320,7 +329,8 @@ export class KuralAI {
             return { ...k, score };
         }).filter(r => r.score > 0).sort((a, b) => b.score - a.score);
 
-        return { results: scoredResults.slice(0, isImageSearch ? 1 : 5), searchTerms };
+        // Unlimited results for search (single result for image searches)
+        return { results: isImageSearch ? scoredResults.slice(0, 1) : scoredResults, searchTerms };
     }
 
     async ask(question, imageBase64 = null, isDirect = false) {
@@ -407,7 +417,41 @@ export class KuralAI {
             }
         }
 
-        // Step 5: Specific Athigaram Query Handler (by Name, Sandhi, English, or Number)
+        // Step 4.5: Specific Kural Number Query Handler (e.g. "40", "1", "குறள் 40", "kural 40", "40வது குறள்")
+        const rawTrimmed = question.trim();
+        let targetKuralNum = null;
+        if (/^\d{1,4}$/.test(rawTrimmed)) {
+            const n = parseInt(rawTrimmed, 10);
+            if (n >= 1 && n <= 1330) targetKuralNum = n;
+        } else {
+            const kMatch = rawTrimmed.match(/(?:குறள்|kural|thirukkural)\s*(?:எண்|no|number|#)?\s*[:\-\s]*(\b\d{1,4}\b)/i)
+                        || rawTrimmed.match(/(\b\d{1,4}\b)\s*(?:வது|ஆம்|th|st|nd|rd)?\s*(?:குறள்|kural)/i);
+            if (kMatch) {
+                const kn = parseInt(kMatch[1], 10);
+                if (kn >= 1 && kn <= 1330) targetKuralNum = kn;
+            }
+        }
+
+        if (targetKuralNum) {
+            const kural = this.dataset.find(k => k.Number === targetKuralNum);
+            if (kural) {
+                const chNum = Math.ceil(targetKuralNum / 10);
+                const chInfo = ALL_ATHIGARAMS.find(a => a.n === chNum);
+                const chTitle = chInfo ? `${chInfo.name} (${chInfo.paal})` : `அதிகாரம் ${chNum}`;
+                const text = `📖 **திருக்குறள் ${kural.Number} - அதிகாரம் ${chNum}: ${chTitle}**\n\n` +
+                             `**"${kural.Line1}\n${kural.Line2}"**\n\n` +
+                             (kural.mv ? `• **மு. வரதராசனார் உரை:** ${kural.mv}\n` : '') +
+                             (kural.sp ? `• **சாலமன் பாப்பையா உரை:** ${kural.sp}\n` : '') +
+                             (kural.mk ? `• **மு. கருணாநிதி உரை:** ${kural.mk}\n` : '') +
+                             (kural.Translation ? `\n• **English Translation:** ${kural.Translation}\n` : '');
+                return {
+                    answer: text.trim(),
+                    sources: [kural]
+                };
+            }
+        }
+
+        // Step 5: Specific Athigaram Query Handler (by Name, Sandhi, English, or Explicit Chapter Number)
         const athigaram = getAthigaramDetails(question, this.dataset) || getAthigaramDetails(queryForSearch, this.dataset);
         if (athigaram) {
             const answer = `📜 **அதிகாரம் ${athigaram.chapterNumber}: ${athigaram.chapterName} (${athigaram.chapterEnglish})**\n\n` +
