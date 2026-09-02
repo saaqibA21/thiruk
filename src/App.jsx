@@ -11,6 +11,7 @@ import {
    playTamilSpeech,
    stopTamilSpeech
 } from './utils/kuralFeatures';
+import { KuralImage } from './components/KuralImage';
 
 const TAMIL_KEYS = [
    ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ'],
@@ -986,6 +987,12 @@ const App = () => {
                            <h3>{allWords.slice(4).join(' ')}</h3>
                         </div>
 
+                        {/* Kural Visual Representation Image */}
+                        <KuralImage 
+                           kuralNumber={selectedKural.Number} 
+                           title={`${allWords.join(' ')} - ${selectedKural.mv || selectedKural.Translation || ''}`} 
+                        />
+
                         {/* Metre & Pronunciation Guide */}
                         <div className="metre-guide-section">
                            <div className="metre-guide-title">
@@ -1051,6 +1058,7 @@ const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying }) => {
          >
             {isPlaying ? <Square size={14} /> : <Volume2 size={16} />}
          </button>
+         <KuralImage kuralNumber={kural.Number} isThumbnail={true} />
          <div className="k-mini-info" onClick={onSelect} style={{ flex: 1, cursor: 'pointer' }}>
             <div className="k-mini-num" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                <span>குறள் எண்: {kural.Number}</span>
