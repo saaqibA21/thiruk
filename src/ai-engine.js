@@ -25,6 +25,7 @@ const TRIVIA_KNOWLEDGE = {
 };
 
 import OpenAI from 'openai';
+import { findAthigaram, ALL_ATHIGARAMS } from './utils/athigaramsData.js';
 
 // Unicode-aware Tamil stemmer and normalizer
 export function normalizeTamil(text) {
@@ -38,59 +39,29 @@ export function getTamilStem(word) {
   return w;
 }
 
-// 1. Specific Athigaram Lookup
+// 1. Specific Athigaram Lookup (Exact, sandhi, English/Tamil by name or number)
 export function getAthigaramDetails(query, dataset) {
     if (!query || !dataset) return null;
-    const clean = normalizeTamil(query);
-    const compact = clean.replace(/\s+/g, '');
+    const athigaram = findAthigaram(query);
+    if (!athigaram) return null;
 
-    const patterns = [
-        /(?:அதிகாரம்|athigaram|adhigaram|chapter|athikaram)\s*[:\-\s]*(\d+)/i,
-        /(\d+)\s*(?:வது|ஆம்|th|st|nd|rd|[-_]வது|[-_]ஆம்)?\s*(?:அதிகாரம்|athigaram|adhigaram|chapter|athikaram)/i
-    ];
+    const start = (athigaram.n - 1) * 10 + 1;
+    const end = athigaram.n * 10;
+    const kurals = dataset.filter(k => k.Number >= start && k.Number <= end);
 
-    let chapterNum = null;
-    for (const p of patterns) {
-        const m = clean.match(p);
-        if (m) {
-            const n = parseInt(m[1], 10);
-            if (n >= 1 && n <= 133) {
-                chapterNum = n;
-                break;
-            }
-        }
-    }
-
-    if (!chapterNum) {
-        for (let i = 0; i < CHAPTER_INDEX.length; i++) {
-            const chName = CHAPTER_INDEX[i];
-            const chNorm = normalizeTamil(chName);
-            const chCompact = chNorm.replace(/\s+/g, '');
-            
-            if (compact === chCompact || compact === chCompact + 'அதிகாரம்' || compact === 'அதிகாரம்' + chCompact ||
-                compact === chCompact + 'குறள்கள்' || compact === chCompact + 'குறள்' ||
-                clean === chNorm) {
-                chapterNum = i + 1;
-                break;
-            }
-        }
-    }
-
-    if (chapterNum) {
-        const start = (chapterNum - 1) * 10 + 1;
-        const end = chapterNum * 10;
-        const chapterName = CHAPTER_INDEX[chapterNum - 1];
-        const kurals = dataset.filter(k => k.Number >= start && k.Number <= end);
-        return {
-            chapterNumber: chapterNum,
-            chapterName: chapterName,
-            startKural: start,
-            endKural: end,
-            kurals: kurals
-        };
-    }
-
-    return null;
+    return {
+        chapterNumber: athigaram.n,
+        chapterName: athigaram.name,
+        chapterEnglish: athigaram.en,
+        transliteration: athigaram.trans,
+        paal: athigaram.paal,
+        paalEn: athigaram.paalEn,
+        iyal: athigaram.iyal,
+        iyalEn: athigaram.iyalEn,
+        startKural: start,
+        endKural: end,
+        kurals: kurals
+    };
 }
 
 // 2. Exact Word Count in a Specific Kural (e.g. குறள் 12ல் 'துப்பு' எத்தனை முறை வந்துள்ளது?)
@@ -436,11 +407,16 @@ export class KuralAI {
             }
         }
 
-        // Step 5: Specific Athigaram Query Handler
-        const athigaram = getAthigaramDetails(queryForSearch, this.dataset);
+        // Step 5: Specific Athigaram Query Handler (by Name, Sandhi, English, or Number)
+        const athigaram = getAthigaramDetails(question, this.dataset) || getAthigaramDetails(queryForSearch, this.dataset);
         if (athigaram) {
+            const answer = `📜 **அதிகாரம் ${athigaram.chapterNumber}: ${athigaram.chapterName} (${athigaram.chapterEnglish})**\n\n` +
+                           `• **பால்:** ${athigaram.paal} (${athigaram.paalEn})\n` +
+                           `• **இயல்:** ${athigaram.iyal} (${athigaram.iyalEn})\n` +
+                           `• **குறட்பாக்கள்:** குறள் ${athigaram.startKural} முதல் ${athigaram.endKural} வரை (மொத்தம் 10 குறள்கள்)\n\n` +
+                           `இதோ **${athigaram.chapterName}** அதிகாரத்தின் 10 திருக்குறள்களும் அவற்றின் முழுமையான உரை விளக்கங்களும்:`;
             return {
-                answer: `அதிகாரம் ${athigaram.chapterNumber}: ${athigaram.chapterName} (குறள் ${athigaram.startKural} முதல் ${athigaram.endKural} வரை):`,
+                answer,
                 sources: athigaram.kurals
             };
         }
