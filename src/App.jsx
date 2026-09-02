@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Search, Send, BookOpen, MessageSquare, Database, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
+import { Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 import {
@@ -532,25 +532,6 @@ const App = () => {
 
                <div className="header-right-group">
                    <div className="direct-ai-header-control">
-                      <button 
-                         className="export-logs-btn" 
-                         onClick={() => aiEngine?.exportHistory()} 
-                         title="Export AI Logs as JSON"
-                         style={{ 
-                            background: 'rgba(0,0,0,0.05)', 
-                            border: '1px solid rgba(0,0,0,0.1)', 
-                            borderRadius: '8px', 
-                            padding: '6px', 
-                            marginRight: '12px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'var(--primary)'
-                         }}
-                      >
-                         <Database size={16} />
-                      </button>
                       <span className="toggle-label desktop-only">{directAI ? 'Direct AI' : 'Search AI'}</span>
                       <button
                          className={`ai-switch ${directAI ? 'on' : 'off'}`}
