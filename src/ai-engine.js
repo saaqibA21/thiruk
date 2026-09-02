@@ -261,28 +261,54 @@ function isOffTopicQuery(query) {
     if (!query) return false;
     const q = query.toLowerCase();
 
-    // Specific Thirukkural contextual keywords (if present, do not block)
+    // Specific Thirukkural contextual keywords (if present, do not block unless it asks for code)
     const kuralIndicators = [
         'குறள்', 'திருக்குறள்', 'வள்ளுவர்', 'திருவள்ளுவர்', 'அதிகாரம்', 'பால்', 'இயல்', 'உரை', 
-        'மு.வ', 'சாலமன்', 'கலைஞர்', 'பரிமேலழகர்', 'பொருள்', 'வாழ்வியல்',
-        'kural', 'thirukkural', 'valluvar', 'athigaram', 'couplet'
+        'மு.வ', 'சாலமன்', 'கலைஞர்', 'பரிமேலழகர்', 'பொருள் விளக்கம்', 'வாழ்வியல் நெறி',
+        'kural', 'thirukkural', 'valluvar', 'athigaram'
     ];
-    if (kuralIndicators.some(kw => q.includes(kw))) {
-        return false;
+    const isKuralRelated = kuralIndicators.some(kw => q.includes(kw));
+
+    // Explicit Coding / Programming / Software / General Off-Topic keywords
+    const codingKeywords = [
+        'code', 'coding', 'script', 'program', 'programming', 'software', 'developer', 'development',
+        'website', 'webpage', 'app', 'application', 'function', 'algorithm', 'backend', 'frontend',
+        'database', 'sql', 'api', 'json', 'html', 'css', 'javascript', 'js', 'python', 'java', 'c++', 'c#',
+        'php', 'flask', 'django', 'react', 'angular', 'vue', 'node', 'nodejs', 'express', 'tailwind', 'bootstrap',
+        'மலைப்பாம்பு', 'நிரல்', 'நிரலாக்கம்', 'குறியீடு', 'புரோகிராமிங்', 'இணையதள'
+    ];
+
+    const hasCodingKeyword = codingKeywords.some(kw => q.includes(kw));
+
+    if (hasCodingKeyword) {
+        return true;
     }
 
-    // Explicit Coding / Programming / Software / General Off-Topic requests
-    const offTopicKeywords = [
-        'code to create', 'create website', 'html code', 'python code', 'write code', 'flask', 'django', 
-        'javascript', 'react', 'node.js', 'nodejs', 'c++', 'java code', 'programming code', 'sql query',
-        'மலைப்பாம்பு code', 'மலைப்பாம்பு', 'நிரல் எழுது', 'புரோகிராமிங்', 'இணையதள code', 'website code',
-        'develop app', 'write script', 'generate code', 'make a game', 'coding', 'source code', 'api code',
-        'write python', 'write javascript', 'write html', 'write java', 'write c++',
-        'recipe', 'cook biryani', 'movie review', 'weather today', 'cricket score', 'football match',
-        'சமையல் குறிப்பு', 'திரைப்பட விமர்சனம்', 'வானிலை'
-    ];
+    if (!isKuralRelated) {
+        const generalOffTopic = [
+            'recipe', 'cook', 'biryani', 'movie', 'film', 'review', 'weather', 'cricket', 'football', 'match', 'score',
+            'சமையல்', 'திரைப்படம்', 'வானிலை', 'விளையாட்டு'
+        ];
+        if (generalOffTopic.some(kw => q.includes(kw))) {
+            return true;
+        }
+    }
 
-    return offTopicKeywords.some(kw => q.includes(kw));
+    return false;
+}
+
+function sanitizeResponse(rawAnswer) {
+    if (!rawAnswer) return rawAnswer;
+    
+    // If response contains markdown code blocks or programming syntax, reject immediately
+    const codeBlockRegex = /```[\s\S]*?```/i;
+    const programmingSyntaxRegex = /(?:def\s+[a-zA-Z_]|import\s+[a-zA-Z_]|from\s+[a-zA-Z_]|app\.route|public\s+class|<html|<script|console\.log|function\s*\(|var\s+[a-zA-Z_]|const\s+[a-zA-Z_]|let\s+[a-zA-Z_]|SELECT\s+.*\s+FROM)/i;
+
+    if (codeBlockRegex.test(rawAnswer) || programmingSyntaxRegex.test(rawAnswer)) {
+        return OFF_TOPIC_RESPONSE;
+    }
+
+    return rawAnswer;
 }
 
 export class KuralAI {
@@ -616,7 +642,9 @@ export class KuralAI {
             messages.push({ role: "user", content: userContent });
 
             const response = await this.openai.chat.completions.create({ model: "gpt-4o", messages: messages, temperature: 0 });
-            return { answer: response.choices[0].message.content.trim(), sources: finalSources };
+            const rawOutput = response.choices[0].message.content.trim();
+            const sanitized = sanitizeResponse(rawOutput);
+            return { answer: sanitized, sources: sanitized === OFF_TOPIC_RESPONSE ? [] : finalSources };
         } catch (err) {
             console.error("AI Error:", err);
             return { answer: "மன்னிக்கவும், பதிலளிப்பதில் சிக்கல் ஏற்பட்டது.", sources: finalSources };
