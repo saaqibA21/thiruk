@@ -1877,8 +1877,17 @@ export function findAthigaram(query) {
   if (!query) return null;
   const raw = String(query).trim().toLowerCase();
 
-  // If query is PURELY digits (e.g. "40", "1", "133"), DO NOT treat as Athigaram (it is a Kural number)
+  // 1. If query is PURELY digits (e.g. "40", "1", "133"), DO NOT treat as Athigaram (it is a Kural number)
   if (/^\d+$/.test(raw)) {
+    return null;
+  }
+
+  // 2. If query contains structural or specific kural query indicators, DO NOT treat as Athigaram (it is a Kural search)
+  const structuralKeywords = ['தொடங்கும்', 'துடங்கும்', 'துவங்கும்', 'ஆரம்பிக்கும்', 'start', 'starts', 'starting', 
+                              'முடியும்', 'முடிவு', 'end', 'ends', 'ending', 'என்று வரும்', 'என்னா', 'என்னும்', 
+                              'என்ற சொல்', 'என்ற வார்த்தை', 'வரி', 'அடி', 'சீர்', 'பொருள் என்ன', 'விளக்கம் என்ன', 
+                              'எந்த குறள்', 'எத்தனை முறை', 'முறை வருகிறது', 'முதல் குறள்', 'கடைசி குறள்'];
+  if (structuralKeywords.some(w => raw.includes(w))) {
     return null;
   }
 
@@ -1886,7 +1895,7 @@ export function findAthigaram(query) {
   const clean = sandhiNorm.replace(/[.,!?;:"\-_…·`'""''\s]+/g, ' ').trim();
   const compact = clean.replace(/\s+/g, '');
 
-  // 1. Explicit Athigaram Number check (MUST explicitly contain அதிகாரம்/chapter/athigaram/athikaram keyword)
+  // 3. Explicit Athigaram Number check (MUST explicitly contain அதிகாரம்/chapter/athigaram/athikaram keyword)
   const numMatch = clean.match(/(?:அதிகாரம்|athigaram|adhigaram|athikaram|chapter)\s*[:\-\s]*(\b\d{1,3}\b)/i) 
                 || clean.match(/(\b\d{1,3}\b)\s*(?:வது|ஆம்|th|st|nd|rd)?\s*(?:அதிகாரம்|athigaram|adhigaram|athikaram|chapter)/i);
   if (numMatch) {
@@ -1896,27 +1905,27 @@ export function findAthigaram(query) {
     }
   }
 
-  // 2. Exact & Sandhi Matches in Tamil
+  // 4. Exact & Sandhi Matches in Tamil
   for (const a of ALL_ATHIGARAMS) {
     const aNorm = a.name.normalize('NFC').replace(/\s+/g, '').toLowerCase();
     const aClean = a.name.normalize('NFC').toLowerCase();
 
-    if (compact === aNorm || clean === aClean || clean.includes(aClean)) return a;
+    if (compact === aNorm || clean === aClean) return a;
     if (compact === aNorm + 'அதிகாரம்' || compact === 'அதிகாரம்' + aNorm ||
-        compact === aNorm + 'குறள்கள்' || compact === aNorm + 'குறள்' ||
-        compact.includes(aNorm)) return a;
+        compact === aNorm + 'குறள்கள்' || compact === aNorm + 'விளக்கம்' ||
+        compact === aNorm + 'அதிகாரவிளக்கம்') return a;
 
     if (a.alt && Array.isArray(a.alt)) {
       for (const alt of a.alt) {
         const altCompact = alt.normalize('NFC').replace(/\s+/g, '').toLowerCase();
-        if (compact === altCompact || compact === altCompact + 'அதிகாரம்' || compact === altCompact + 'குறள்கள்' || compact.includes(altCompact)) {
+        if (compact === altCompact || compact === altCompact + 'அதிகாரம்' || compact === altCompact + 'குறள்கள்' || compact === altCompact + 'விளக்கம்') {
           return a;
         }
       }
     }
   }
 
-  // 3. English Transliteration and English Meaning Matching
+  // 5. English Transliteration and English Meaning Matching
   for (const a of ALL_ATHIGARAMS) {
     const aTrans = a.trans.toLowerCase().replace(/[^a-z0-9]/g, '');
     const aEn = a.en.toLowerCase();
@@ -1927,24 +1936,16 @@ export function findAthigaram(query) {
       return a;
     }
 
-    if (aTrans.length >= 4 && (compactLatin.includes(aTrans) || (compactLatin.length >= 5 && aTrans.includes(compactLatin)))) {
+    if (aTrans.length >= 4 && (compactLatin === aTrans || cleanLatin === a.trans.toLowerCase())) {
       return a;
     }
 
     // Direct English Title keywords (e.g. "education", "friendship", "medicine", "learning")
     const enKeywords = aEn.split(/[ &(),/\-]+/).filter(w => w.length > 3 && !['the', 'and', 'not', 'with', 'from', 'action', 'possession'].includes(w));
     for (const kw of enKeywords) {
-      if (cleanLatin.includes(kw)) {
+      if (cleanLatin === kw || cleanLatin === kw + ' chapter' || cleanLatin === 'chapter ' + kw) {
         return a;
       }
-    }
-  }
-
-  // 4. Substring in Tamil name (min 3 chars)
-  for (const a of ALL_ATHIGARAMS) {
-    const aNorm = a.name.normalize('NFC').replace(/\s+/g, '').toLowerCase();
-    if (compact.length >= 3 && (compact.includes(aNorm) || (aNorm.length >= 4 && aNorm.includes(compact)))) {
-      return a;
     }
   }
 

@@ -291,16 +291,17 @@ export class KuralAI {
 
         const cleanQuery = normalizeTamil(query);
         
-        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்'];
+        const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'துவங்கும்', 'ஆரம்பிக்கும்', 'starting', 'start', 'starts', 'தொடக்கம்', 'துவக்கம்'];
         const endKeywords = ['முடியும்', 'ending', 'ends', 'முடிவு'];
         
         const isStartsWith = startKeywords.some(kw => cleanQuery.includes(kw));
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
         
         const allWords = cleanQuery.split(/\s+/);
-        const ignoreWords = [...startKeywords, ...endKeywords, 'குறள்', 'திருக்குறள்', 'என்று', 'என'];
+        const ignoreWords = [...startKeywords, ...endKeywords, 'குறள்', 'திருக்குறள்', 'என்று', 'என', 'என்னா', 'என்னும்', 'என்ற', 'சொல்', 'வார்த்தை'];
         const searchTerms = allWords.filter(t => !ignoreWords.includes(t) && t.length > 1);
         const target = searchTerms[0] || allWords[0];
+        const targetPhrase = searchTerms.join(' ');
 
         const scoredResults = this.dataset.map(k => {
             let score = 0;
@@ -311,11 +312,22 @@ export class KuralAI {
 
             if (isStartsWith && target) {
                 const targetRoot = target.endsWith('ம்') ? target.slice(0, -1) : target;
-                if (l1.startsWith(target) || words[0].startsWith(target) || l1.startsWith(targetRoot) || words[0].startsWith(targetRoot)) {
+                if (targetPhrase && l1.startsWith(targetPhrase)) {
+                    score += 3000000;
+                } else if (l1.startsWith(target) || words[0].startsWith(target)) {
+                    score += 2000000;
+                } else if (l1.startsWith(targetRoot) || words[0].startsWith(targetRoot)) {
                     score += 1000000;
+                } else if (target.length >= 4 && (l1.startsWith(target.slice(0, 4)) || words[0].startsWith(target.slice(0, 4)))) {
+                    score += 800000;
+                } else if (l1.includes(target)) {
+                    score += 500000;
+                } else if (v.includes(target)) {
+                    score += 200000;
                 }
             } else if (isEndsWith && target) {
-                if (l2.endsWith(target) || words[words.length-1].endsWith(target)) score += 1000000;
+                if (l2.endsWith(target) || words[words.length-1].endsWith(target)) score += 2000000;
+                else if (l2.includes(target)) score += 500000;
             } else {
                 searchTerms.forEach(t => {
                     if (words.includes(t)) score += 5000;
