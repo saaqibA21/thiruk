@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart } from 'lucide-react';
+import { Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 import {
@@ -14,6 +14,7 @@ import {
 import { KuralImage } from './components/KuralImage';
 import { IntroVideo } from './components/IntroVideo';
 import HistoryView from './components/HistoryView';
+import AboutView from './components/AboutView';
 import { findAthigaram } from './utils/athigaramsData.js';
 
 const TAMIL_KEYS = [
@@ -578,6 +579,7 @@ const App = () => {
                      <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>AI நிபுணர்</span> </button>
                      <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
                      <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
+                     <button className={activeTab === 'about' ? 'active' : ''} onClick={() => setActiveTab('about')}> <Users size={16} /> <span>தமிழ் மன்றம்</span> </button>
                   </nav>
 
                   {/* Mobile Nav Button */}
@@ -596,6 +598,7 @@ const App = () => {
                               <button onClick={() => { setActiveTab('ask'); setShowMobileMenu(false); }}> <Cpu size={18} /> AI நிபுணர் </button>
                               <button onClick={() => { setActiveTab('list'); setShowMobileMenu(false); }}> <BookOpen size={18} /> நூலகம் </button>
                               <button onClick={() => { setActiveTab('history'); setShowMobileMenu(false); }}> <HistoryIcon size={18} /> வரலாறு </button>
+                              <button onClick={() => { setActiveTab('about'); setShowMobileMenu(false); }}> <Users size={18} /> தமிழ் மன்றம் </button>
                            </motion.div>
                         )}
                      </AnimatePresence>
@@ -925,18 +928,27 @@ const App = () => {
                       )}
                    </motion.div>
 
+                ) : activeTab === 'history' ? (
+                    <motion.div key="history" className="history-view-wrapper" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                       <HistoryView 
+                          onNavigatePaal={(paalName) => {
+                            setActiveTab('list');
+                            setSelectedPaal(paalName);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                         }}
+                      />
+                   </motion.div>
                 ) : (
-                   <motion.div key="history" className="history-view-wrapper" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                      <HistoryView 
-                         onNavigatePaal={(paalName) => {
-                           setActiveTab('list');
-                           setSelectedPaal(paalName);
-                           window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                     />
-                  </motion.div>
-               )}
-            </AnimatePresence>
+                   <motion.div key="about" className="about-view-wrapper" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                      <AboutView 
+                         onNavigateTab={(tab) => {
+                            setActiveTab(tab);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                         }}
+                      />
+                   </motion.div>
+                )}
+             </AnimatePresence>
 
          </main>
 
