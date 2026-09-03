@@ -761,7 +761,7 @@ const App = () => {
                                     onChange={handleImageUpload}
                                  />
                                  <input
-                                    placeholder={isRecording ? "🎙️ கேட்கிறது... தமிழில் அல்லது ஆங்கிலத்தில் பேசுங்கள்..." : "எதையும் கேளுங்கள்... (அல்லது மைக் அழுத்திப் பேசுங்கள்)"}
+                                    placeholder={isRecording ? "🎙️ பேசவும் (Listening...)" : "எதையும் கேளுங்கள்..."}
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
