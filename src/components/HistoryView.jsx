@@ -7,244 +7,176 @@ import {
   Sparkles, 
   RotateCw, 
   Compass, 
-  Award, 
-  Globe, 
   ScrollText, 
-  Feather,
-  ExternalLink
+  Feather
 } from 'lucide-react';
 import ExternalResources from './ExternalResources';
 
-const TOTAL_FRAMES_TARGET = 72; // High-fidelity 72 frames for ultra-smooth 360 spin
-
 export default function HistoryView({ onNavigatePaal }) {
   const containerRef = useRef(null);
-  const canvasRef = useRef(null);
   const videoRef = useRef(null);
-  const framesRef = useRef([]);
-  const [framesLoadedCount, setFramesLoadedCount] = useState(0);
+  const canvasRef = useRef(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [isAutoSpin, setIsAutoSpin] = useState(false);
-  const [scrollPercent, setScrollPercent] = useState(0);
   const animFrameRef = useRef(null);
-  const autoSpinAngleRef = useRef(0);
+  const targetTimeRef = useRef(0);
+  const autoSpinProgressRef = useRef(0);
 
-  // 1. Frame Extraction Engine from Video
+  // Initialize video settings
   useEffect(() => {
-    const video = document.createElement('video');
-    video.src = 'thiruvalluvar_spin.mp4';
-    video.playsInline = true;
-    video.muted = true;
-    video.preload = 'auto';
-    video.crossOrigin = 'anonymous';
-    videoRef.current = video;
+    const video = videoRef.current;
+    if (!video) return;
 
-    const offscreenCanvas = document.createElement('canvas');
-    const offscreenCtx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
+    video.currentTime = 0.01;
+    video.pause();
 
-    let isCancelled = false;
-
-    const extractFrames = async () => {
-      await new Promise((resolve) => {
-        if (video.readyState >= 1) resolve();
-        else video.addEventListener('loadedmetadata', resolve, { once: true });
-      });
-
-      if (isCancelled || !video.duration) return;
-
-      const duration = video.duration;
-      const width = video.videoWidth || 720;
-      const height = video.videoHeight || 1280;
-      offscreenCanvas.width = width;
-      offscreenCanvas.height = height;
-
-      const extracted = [];
-      const step = duration / TOTAL_FRAMES_TARGET;
-
-      for (let i = 0; i < TOTAL_FRAMES_TARGET; i++) {
-        if (isCancelled) break;
-        const targetTime = i * step;
-
-        await new Promise((resolve) => {
-          const onSeeked = () => {
-            if (isCancelled) {
-              resolve();
-              return;
-            }
-            try {
-              offscreenCtx.drawImage(video, 0, 0, width, height);
-              if ('createImageBitmap' in window) {
-                createImageBitmap(offscreenCanvas).then((bmp) => {
-                  extracted[i] = bmp;
-                  setFramesLoadedCount(extracted.filter(Boolean).length);
-                  resolve();
-                }).catch(() => {
-                  const img = new Image();
-                  img.src = offscreenCanvas.toDataURL('image/jpeg', 0.85);
-                  extracted[i] = img;
-                  setFramesLoadedCount(extracted.filter(Boolean).length);
-                  resolve();
-                });
-              } else {
-                const img = new Image();
-                img.src = offscreenCanvas.toDataURL('image/jpeg', 0.85);
-                extracted[i] = img;
-                setFramesLoadedCount(extracted.filter(Boolean).length);
-                resolve();
-              }
-            } catch {
-              resolve();
-            }
-          };
-
-          video.currentTime = targetTime;
-          video.addEventListener('seeked', onSeeked, { once: true });
-        });
-      }
-
-      if (!isCancelled) {
-        framesRef.current = extracted;
-      }
+    const handleLoadedMetadata = () => {
+      video.pause();
     };
 
-    extractFrames();
-
-    return () => {
-      isCancelled = true;
-      video.remove();
-    };
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    return () => video.removeEventListener('loadedmetadata', handleLoadedMetadata);
   }, []);
 
-  // 2. Draw Current Frame onto Fixed Background Canvas
-  const drawFrame = useCallback((frameIdx) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const width = canvas.width;
-    const height = canvas.height;
-
-    ctx.clearRect(0, 0, width, height);
-
-    const frames = framesRef.current;
-    const currentFrame = frames[frameIdx];
-
-    if (currentFrame) {
-      // Calculate aspect ratio cover/contain
-      const imgW = currentFrame.width || (currentFrame.naturalWidth || 720);
-      const imgH = currentFrame.height || (currentFrame.naturalHeight || 1280);
-      const scale = Math.min(width / imgW, height / imgH) * 0.88;
-
-      const drawW = imgW * scale;
-      const drawH = imgH * scale;
-      const drawX = (width - drawW) / 2;
-      const drawY = (height - drawH) / 2;
-
-      ctx.save();
-      // Subtle golden shadow behind sage
-      ctx.shadowColor = 'rgba(245, 158, 11, 0.45)';
-      ctx.shadowBlur = 35;
-      ctx.drawImage(currentFrame, drawX, drawY, drawW, drawH);
-      ctx.restore();
-    } else if (videoRef.current && videoRef.current.readyState >= 2) {
-      // Fallback: draw directly from video
-      const v = videoRef.current;
-      const imgW = v.videoWidth || 720;
-      const imgH = v.videoHeight || 1280;
-      const scale = Math.min(width / imgW, height / imgH) * 0.88;
-      const drawW = imgW * scale;
-      const drawH = imgH * scale;
-      const drawX = (width - drawW) / 2;
-      const drawY = (height - drawH) / 2;
-
-      ctx.drawImage(v, drawX, drawY, drawW, drawH);
-    }
-  }, []);
-
-  // Resize handler for Canvas resolution
+  // Smooth lerp frame updater loop
   useEffect(() => {
-    const handleResize = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      const totalFrames = framesRef.current.length || TOTAL_FRAMES_TARGET;
-      const targetIdx = Math.min(totalFrames - 1, Math.floor(scrollPercent * (totalFrames - 1)));
-      drawFrame(targetIdx);
+    const video = videoRef.current;
+    if (!video) return;
+
+    const renderLoop = () => {
+      if (isAutoSpin) {
+        if (video.duration) {
+          autoSpinProgressRef.current = (autoSpinProgressRef.current + 0.003) % 1;
+          video.currentTime = autoSpinProgressRef.current * video.duration;
+          setScrollProgress(autoSpinProgressRef.current);
+        }
+      } else if (video.duration) {
+        const current = video.currentTime;
+        const target = targetTimeRef.current;
+        const diff = target - current;
+
+        // Smoothly interpolate towards target time
+        if (Math.abs(diff) > 0.002) {
+          video.currentTime = current + diff * 0.2;
+        }
+      }
+
+      animFrameRef.current = requestAnimationFrame(renderLoop);
     };
 
-    window.addEventListener('resize', handleResize);
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, [drawFrame, scrollPercent]);
-
-  // 3. Scroll Listener to update background spinning frame
-  const handleScroll = useCallback(() => {
-    if (isAutoSpin) return;
-
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-
-    if (docHeight <= 0) return;
-
-    const progress = Math.max(0, Math.min(1, scrollTop / docHeight));
-    setScrollPercent(progress);
-
-    const totalFrames = framesRef.current.length || TOTAL_FRAMES_TARGET;
-    // Map progress to 360 degree spin frame index
-    const frameIndex = Math.min(totalFrames - 1, Math.floor(progress * (totalFrames - 1)));
-    drawFrame(frameIndex);
-  }, [drawFrame, isAutoSpin]);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-
-  // 4. Auto-spin animation loop
-  useEffect(() => {
-    if (!isAutoSpin) return;
-
-    const autoSpinLoop = () => {
-      autoSpinAngleRef.current = (autoSpinAngleRef.current + 0.35) % TOTAL_FRAMES_TARGET;
-      const frameIdx = Math.floor(autoSpinAngleRef.current);
-      drawFrame(frameIdx);
-      animFrameRef.current = requestAnimationFrame(autoSpinLoop);
-    };
-
-    animFrameRef.current = requestAnimationFrame(autoSpinLoop);
-
+    animFrameRef.current = requestAnimationFrame(renderLoop);
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [drawFrame, isAutoSpin]);
+  }, [isAutoSpin]);
+
+  // Comprehensive Scroll Listener: listens to all potential scroll parents + window
+  useEffect(() => {
+    const findScrollableParent = (node) => {
+      let current = node;
+      while (current && current !== document.body && current !== document.documentElement) {
+        const style = window.getComputedStyle(current);
+        const overflowY = style.overflowY;
+        if (overflowY === 'auto' || overflowY === 'scroll') {
+          return current;
+        }
+        current = current.parentElement;
+      }
+      return window;
+    };
+
+    const scrollContainer = findScrollableParent(containerRef.current);
+
+    const handleAnyScroll = () => {
+      if (isAutoSpin) return;
+
+      let scrollTop = 0;
+      let scrollHeight = 0;
+      let clientHeight = 0;
+
+      if (scrollContainer === window) {
+        scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+        clientHeight = window.innerHeight;
+        scrollHeight = document.documentElement.scrollHeight;
+      } else if (scrollContainer) {
+        scrollTop = scrollContainer.scrollTop || 0;
+        clientHeight = scrollContainer.clientHeight;
+        scrollHeight = scrollContainer.scrollHeight;
+      }
+
+      const maxScroll = scrollHeight - clientHeight;
+      if (maxScroll > 0) {
+        const progress = Math.max(0, Math.min(1, scrollTop / maxScroll));
+        setScrollProgress(progress);
+
+        if (videoRef.current && videoRef.current.duration) {
+          targetTimeRef.current = progress * videoRef.current.duration;
+        }
+      }
+    };
+
+    if (scrollContainer && scrollContainer !== window) {
+      scrollContainer.addEventListener('scroll', handleAnyScroll, { passive: true });
+    }
+    window.addEventListener('scroll', handleAnyScroll, { passive: true });
+    document.addEventListener('scroll', handleAnyScroll, { passive: true });
+
+    // Initial calculation
+    handleAnyScroll();
+
+    return () => {
+      if (scrollContainer && scrollContainer !== window) {
+        scrollContainer.removeEventListener('scroll', handleAnyScroll);
+      }
+      window.removeEventListener('scroll', handleAnyScroll);
+      document.removeEventListener('scroll', handleAnyScroll);
+    };
+  }, [isAutoSpin]);
+
+  // Toggle Auto Spin
+  const toggleAutoSpin = () => {
+    setIsAutoSpin((prev) => !prev);
+  };
 
   return (
     <div className="history-page-bg-layout" ref={containerRef}>
 
-      {/* Sticky Fullscreen 3D Background Canvas */}
-      <div className="history-fixed-canvas-container">
-        <canvas ref={canvasRef} className="history-spinning-bg-canvas" />
-        <div className="history-bg-ambient-vignette" />
+      {/* Fixed Fullscreen 3D Background Container */}
+      <div className="history-fixed-bg-stage">
         
-        {/* Floating Spin Control Button */}
+        <div className="history-video-ambient-glow" />
+
+        {/* 3D Spinning Sage Video */}
+        <video
+          ref={videoRef}
+          src="thiruvalluvar_spin.mp4"
+          className="history-bg-spinning-video"
+          playsInline
+          muted
+          preload="auto"
+          tabIndex={-1}
+        />
+
+        {/* Vignette & Soft Gradient Overlay */}
+        <div className="history-bg-ambient-vignette" />
+
+        {/* Floating Rotation Control Badge */}
         <div className="history-floating-spin-pill">
           <div className="spin-dot-indicator" />
-          <span>{isAutoSpin ? 'சுழல்கிறது (Auto 360°)' : `சுழற்சி: ${Math.round(scrollPercent * 360)}°`}</span>
+          <span>{isAutoSpin ? 'சுழல்கிறது (Auto-Spinning)' : `சுழற்சி: ${Math.round(scrollProgress * 360)}°`}</span>
           <button 
             className={`spin-toggle-pill-btn ${isAutoSpin ? 'active' : ''}`}
-            onClick={() => setIsAutoSpin(!isAutoSpin)}
-            title="சுழற்சி முறையை மாற்றவும்"
+            onClick={toggleAutoSpin}
+            title="சுழற்சி முறையை மாற்றவும் (Toggle auto-spin)"
           >
             <RotateCw size={13} className={isAutoSpin ? 'spinning-icon-fast' : ''} />
             <span>{isAutoSpin ? 'நிறுத்து (Stop)' : 'சுழற்று (Spin)'}</span>
           </button>
         </div>
+
       </div>
 
-      {/* Foreground Content Stack (Original Clean Structure) */}
+      {/* Foreground Content Stack (Original Clean Structure with Glassmorphism) */}
       <div className="history-foreground-content">
         
         {/* Hero Banner with Corpus Statistics */}

@@ -179,6 +179,7 @@ body {
 .chat-view-container,
 .library-view,
 .history-view,
+.history-view-wrapper,
 .chapter-view,
 .kural-view {
   flex: 1;
@@ -2452,7 +2453,7 @@ body {
 }
 
 /* =========================================
-   HISTORY VIEW WITH 3D CANVAS BACKGROUND
+   HISTORY VIEW WITH 3D BACKGROUND STAGE
    ========================================= */
 .history-page-bg-layout {
   position: relative;
@@ -2461,7 +2462,7 @@ body {
   padding-bottom: 5rem;
 }
 
-.history-fixed-canvas-container {
+.history-fixed-bg-stage {
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -2470,23 +2471,33 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: radial-gradient(circle at center, #fffbeb 0%, #fef3c7 40%, #f5f5f4 100%);
+  background: radial-gradient(circle at center, #fffbeb 0%, #fef3c7 45%, #f8fafc 100%);
 }
 
-.history-spinning-bg-canvas {
+.history-video-ambient-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.22) 0%, transparent 65%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.history-bg-spinning-video {
   width: 100vw;
   height: 100vh;
+  max-width: 650px;
+  max-height: 85vh;
   object-fit: contain;
   pointer-events: none;
   opacity: 0.95;
-  filter: drop-shadow(0 0 45px rgba(217, 119, 6, 0.35));
+  filter: drop-shadow(0 15px 35px rgba(217, 119, 6, 0.3));
 }
 
 .history-bg-ambient-vignette {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 35%, rgba(255, 251, 235, 0.45) 75%, rgba(254, 243, 199, 0.8) 100%);
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(255, 251, 235, 0.4) 75%, rgba(254, 243, 199, 0.75) 100%);
 }
 
 .history-floating-spin-pill {
