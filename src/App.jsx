@@ -13,6 +13,7 @@ import {
 } from './utils/kuralFeatures';
 import { KuralImage } from './components/KuralImage';
 import { IntroVideo } from './components/IntroVideo';
+import HistoryScrollytelling from './components/HistoryScrollytelling';
 import { findAthigaram } from './utils/athigaramsData.js';
 
 const TAMIL_KEYS = [
@@ -925,77 +926,14 @@ const App = () => {
                    </motion.div>
 
                 ) : (
-                  <motion.div key="history" className="history-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                     <div className="history-hero-v2">
-                        <div className="h-hero-content">
-                           <h2 className="h-title-big">திருக்குறள் வரலாறு</h2>
-                           <p className="h-subtitle-gold">உலகப் பொதுமறை - ஏழே சீர்களில் வாழ்வியல் தத்துவம்</p>
-                           <div className="h-hero-grid">
-                              <div className="h-stat-item"> <strong>133</strong> <span>அதிகாரங்கள்</span> </div>
-                              <div className="h-stat-item"> <strong>1330</strong> <span>குறள்கள்</span> </div>
-                              <div className="h-stat-item"> <strong>3</strong> <span>பால்கள்</span> </div>
-                              <div className="h-stat-item"> <strong>2000+</strong> <span>ஆண்டுகள்</span> </div>
-                           </div>
-                        </div>
-                     </div>
-
-                     <div className="history-sections-stack">
-                        <section className="h-section-card">
-                           <div className="h-section-img"> <img src="thiruvalluvar.jpg" alt="Thiruvalluvar" /> </div>
-                           <div className="h-section-text">
-                              <h3>திருவள்ளுவர் பற்றி</h3>
-                              <p>திருவள்ளுவர் சுமார் 2,000 ஆண்டுகளுக்கு முன்பு வாழ்ந்த ஒரு தமிழ் புலவர் மற்றும் தத்துவஞானி ஆவார். அவர் எந்த ஒரு குறிப்பிட்ட மதத்தையும் சாராதவர், எனவே திருக்குறள் "உலகப் பொதுமறை" என்று போற்றப்படுகிறது.</p>
-                           </div>
-                        </section>
-
-                        <section className="h-section-card statue-focus">
-                           <div className="h-section-text">
-                              <h3>கன்னியாகுமரி திருவள்ளுவர் சிலை</h3>
-                              <p><strong>அமைவிடம்:</strong> இந்தியாவின் தென்கோடி முனையான கன்னியாகுமரியில், மூன்று கடல்கள் சங்கமிக்கும் இடத்திற்கு அருகே கடல் நடுவே அமைந்துள்ள பிரம்மாண்டமான சிலை.</p>
-                              <ul className="statue-details">
-                                 <li><strong>உயரம்:</strong> 133 அடி (133 அதிகாரங்களை உணர்த்துகிறது).</li>
-                                 <li><strong>பீடம்:</strong> 38 அடி உயரம் (அறத்துப்பாலை குறிக்கிறது).</li>
-                                 <li><strong>சிலை:</strong> 95 அடி உயரம் (பொருட்பால் மற்றும் இன்பத்துப்பாலை குறிக்கிறது).</li>
-                                 <li><strong>எடை:</strong> சுமார் 7000 டன் கருங்கற்களால் ஆனது.</li>
-                              </ul>
-                           </div>
-                           <div className="h-section-img"> <img src="statue.png" alt="Valluvar Statue" /> </div>
-                        </section>
-
-                        <section className="h-section-card">
-                           <div className="h-section-img"> <img src="manuscript.png" alt="Ancient Manuscript" /> </div>
-                           <div className="h-section-text">
-                              <h3>நூலின் அமைப்பு</h3>
-                              <p>திருக்குறள் மூன்று பால்களாக பிரிக்கப்பட்டுள்ளது. கீழே உள்ளவற்றைக் கிளிக் செய்து விரிவாக வாசிக்கலாம்:</p>
-                              <div className="history-paal-navigation">
-                                 <button className="h-paal-btn aram" onClick={() => { setActiveTab('list'); setSelectedPaal('அறத்துப்பால்'); window.scrollTo(0, 0); }}>
-                                    <BookOpen size={16} /> அறத்துப்பால் (38)
-                                 </button>
-                                 <button className="h-paal-btn porul" onClick={() => { setActiveTab('list'); setSelectedPaal('பொருட்பால்'); window.scrollTo(0, 0); }}>
-                                    <Briefcase size={16} /> பொருட்பால் (70)
-                                 </button>
-                                 <button className="h-paal-btn inbam" onClick={() => { setActiveTab('list'); setSelectedPaal('காமத்துப்பால்'); window.scrollTo(0, 0); }}>
-                                    <Heart size={16} /> இன்பத்துப்பால் (25)
-                                 </button>
-                              </div>
-                              <p style={{marginTop: '1rem', fontSize: '0.9rem', color: 'rgba(0,0,0,0.6)'}}>133 அதிகாரங்கள் மற்றும் 1330 ஈரடி வெண்பாக்களால் ஆனவை.</p>
-                           </div>
-                        </section>
-
-                        <section className="h-section-card reversed">
-                           <div className="h-section-text">
-                              <h3>உலக அங்கீகாரம்</h3>
-                              <p>லத்தீன், ஜெர்மன், பிரஞ்சு, ஆங்கிலம் உட்பட 100க்கும் மேற்பட்ட மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. மகாத்மா காந்தி போன்ற பல தலைவர்கள் திருக்குறளால் ஈர்க்கப்பட்டனர்.</p>
-                           </div>
-                           <div className="h-section-img"> <img src="translations.png" alt="Global Impact" /> </div>
-                        </section>
-                     </div>
-
-                     <div className="history-quote-v2">
-                        <p>"நான் படித்தவற்றில் மிகவும் உயர்ந்த அறம் சார்ந்த நூல் திருக்குறள். இது உலகிற்கே ஒரு பொதுவான வழிகாட்டி."</p>
-                        <span>- மகாத்மா காந்தி</span>
-                     </div>
-                     <ExternalResources />
+                  <motion.div key="history" className="history-view-wrapper" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                     <HistoryScrollytelling 
+                        onNavigatePaal={(paalName) => {
+                           setActiveTab('list');
+                           setSelectedPaal(paalName);
+                           window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                     />
                   </motion.div>
                )}
             </AnimatePresence>
