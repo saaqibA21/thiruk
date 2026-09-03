@@ -13,7 +13,7 @@ import {
 } from './utils/kuralFeatures';
 import { KuralImage } from './components/KuralImage';
 import { IntroVideo } from './components/IntroVideo';
-import HistoryScrollytelling from './components/HistoryScrollytelling';
+import HistoryView from './components/HistoryView';
 import { findAthigaram } from './utils/athigaramsData.js';
 
 const TAMIL_KEYS = [
@@ -926,9 +926,9 @@ const App = () => {
                    </motion.div>
 
                 ) : (
-                  <motion.div key="history" className="history-view-wrapper" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                     <HistoryScrollytelling 
-                        onNavigatePaal={(paalName) => {
+                   <motion.div key="history" className="history-view-wrapper" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                      <HistoryView 
+                         onNavigatePaal={(paalName) => {
                            setActiveTab('list');
                            setSelectedPaal(paalName);
                            window.scrollTo({ top: 0, behavior: 'smooth' });
