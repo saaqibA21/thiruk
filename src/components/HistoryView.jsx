@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+﻿import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, 
@@ -61,7 +61,7 @@ export default function HistoryView({ onNavigatePaal }) {
     };
   }, []);
 
-  // Comprehensive Scroll Listener: listens to all potential scroll parents + window
+  // Universal Scroll & Wheel Listener: ensures scrolling works anywhere cursor is placed
   useEffect(() => {
     const findScrollableParent = (node) => {
       let current = node;
@@ -77,6 +77,29 @@ export default function HistoryView({ onNavigatePaal }) {
     };
 
     const scrollContainer = findScrollableParent(containerRef.current);
+
+    // Global Wheel forwarding so wheel works anywhere cursor is placed on screen
+    const handleGlobalWheel = (e) => {
+      if (!scrollContainer || scrollContainer === window) return;
+      if (!scrollContainer.contains(e.target)) {
+        scrollContainer.scrollTop += e.deltaY;
+      }
+    };
+
+    // Global keyboard navigation
+    const handleGlobalKeyDown = (e) => {
+      if (!scrollContainer || scrollContainer === window) return;
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+      if (e.key === 'ArrowDown') {
+        scrollContainer.scrollTop += 80;
+      } else if (e.key === 'ArrowUp') {
+        scrollContainer.scrollTop -= 80;
+      } else if (e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)) {
+        scrollContainer.scrollTop += window.innerHeight * 0.75;
+      } else if (e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)) {
+        scrollContainer.scrollTop -= window.innerHeight * 0.75;
+      }
+    };
 
     const handleAnyScroll = () => {
       let scrollTop = 0;
@@ -109,6 +132,8 @@ export default function HistoryView({ onNavigatePaal }) {
     }
     window.addEventListener('scroll', handleAnyScroll, { passive: true });
     document.addEventListener('scroll', handleAnyScroll, { passive: true });
+    window.addEventListener('wheel', handleGlobalWheel, { passive: true });
+    window.addEventListener('keydown', handleGlobalKeyDown);
 
     handleAnyScroll();
 
@@ -118,6 +143,8 @@ export default function HistoryView({ onNavigatePaal }) {
       }
       window.removeEventListener('scroll', handleAnyScroll);
       document.removeEventListener('scroll', handleAnyScroll);
+      window.removeEventListener('wheel', handleGlobalWheel);
+      window.removeEventListener('keydown', handleGlobalKeyDown);
     };
   }, []);
 
@@ -270,7 +297,7 @@ export default function HistoryView({ onNavigatePaal }) {
               </div>
               <h3>உலகளாவிய அங்கீகாரம்</h3>
               <p>
-                லத்தீன், ஆங்கிலம் (ஜி.யு. போப்), ஜெர்மன், பிரஞ்சு, சீனம், உருசியம், அரபு உட்பட உலகெங்கும் <strong>100க்கும் மேற்பட்ட மொழிகளில்</strong> மொழிபெயர்க்கப்பட்டு போற்றப்படுகிறது.
+                லத்தீன், ஆங்கிலம் (ஜி.யு. போப்), ஜெர்மன், பிரஞ்சு, சீனம், உருசியம், அரபு உட்பட உலகெங்கும் <strong>100க்கும் மேற்பட்ட மொழிகளில்</strong> மொழிபெயர்க்கப்பட்டுள்ளது.
               </p>
               <p>
                 மகாத்மா காந்தி, லியோ டால்ஸ்டாய் போன்ற உலகப் பேரறிஞர்கள் பெரிதும் போற்றினர்.
