@@ -1000,30 +1000,6 @@ const App = () => {
                            title={`${allWords.join(' ')} - ${selectedKural.mv || selectedKural.Translation || ''}`} 
                         />
 
-                        {/* Metre & Pronunciation Guide */}
-                        <div className="metre-guide-section">
-                           <div className="metre-guide-title">
-                              <Feather size={16} color="#b45309" />
-                              <span>சீர் & அசை சந்த அமைப்பு (Metre & Pronunciation Guide)</span>
-                           </div>
-                           <div style={{ fontSize: '0.8rem', color: '#475569', marginBottom: '4px' }}>முதல் அடி (4 சீர்கள்):</div>
-                           <div className="metre-seer-row">
-                              {metre.line1Seers.map((s, idx) => (
-                                 <span key={idx} className="seer-pill line1">சீர் {idx + 1}: {s}</span>
-                              ))}
-                           </div>
-                           <div style={{ fontSize: '0.8rem', color: '#475569', margin: '8px 0 4px 0' }}>இரண்டாம் அடி (3 சீர்கள்):</div>
-                           <div className="metre-seer-row">
-                              {metre.line2Seers.map((s, idx) => (
-                                 <span key={idx} className="seer-pill line2">சீர் {idx + 5}: {s}</span>
-                              ))}
-                           </div>
-                           <div className="metre-summary-bar">
-                              <span><strong>யாப்பிலக்கணம்:</strong> குரள் வெண்பா (7 சீர்கள்)</span>
-                              <span><strong>ஈற்றுச் சீர் வாய்பாடு:</strong> {metre.endingVaipaadu}</span>
-                           </div>
-                        </div>
-
                         {/* Explanations Stack */}
                         <div className="m-explanations-stack">
                            {selectedKural.mv && <div className="e-block"> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
