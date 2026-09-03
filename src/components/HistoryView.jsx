@@ -1,11 +1,10 @@
-﻿import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, 
   Briefcase, 
   Heart, 
   Sparkles, 
-  RotateCw, 
   Compass, 
   ScrollText, 
   Feather,
@@ -17,10 +16,8 @@ export default function HistoryView({ onNavigatePaal }) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [isAutoSpin, setIsAutoSpin] = useState(false);
   const animFrameRef = useRef(null);
   const targetTimeRef = useRef(0);
-  const autoSpinProgressRef = useRef(0);
 
   // Initialize video settings
   useEffect(() => {
@@ -38,19 +35,13 @@ export default function HistoryView({ onNavigatePaal }) {
     return () => video.removeEventListener('loadedmetadata', handleLoadedMetadata);
   }, []);
 
-  // Smooth lerp frame updater loop
+  // Smooth lerp frame updater loop based purely on user scroll
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const renderLoop = () => {
-      if (isAutoSpin) {
-        if (video.duration) {
-          autoSpinProgressRef.current = (autoSpinProgressRef.current + 0.003) % 1;
-          video.currentTime = autoSpinProgressRef.current * video.duration;
-          setScrollProgress(autoSpinProgressRef.current);
-        }
-      } else if (video.duration) {
+      if (video.duration) {
         const current = video.currentTime;
         const target = targetTimeRef.current;
         const diff = target - current;
@@ -68,7 +59,7 @@ export default function HistoryView({ onNavigatePaal }) {
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [isAutoSpin]);
+  }, []);
 
   // Comprehensive Scroll Listener: listens to all potential scroll parents + window
   useEffect(() => {
@@ -88,8 +79,6 @@ export default function HistoryView({ onNavigatePaal }) {
     const scrollContainer = findScrollableParent(containerRef.current);
 
     const handleAnyScroll = () => {
-      if (isAutoSpin) return;
-
       let scrollTop = 0;
       let scrollHeight = 0;
       let clientHeight = 0;
@@ -130,12 +119,7 @@ export default function HistoryView({ onNavigatePaal }) {
       window.removeEventListener('scroll', handleAnyScroll);
       document.removeEventListener('scroll', handleAnyScroll);
     };
-  }, [isAutoSpin]);
-
-  // Toggle Auto Spin
-  const toggleAutoSpin = () => {
-    setIsAutoSpin((prev) => !prev);
-  };
+  }, []);
 
   return (
     <div className="history-page-bg-layout" ref={containerRef}>
@@ -158,20 +142,6 @@ export default function HistoryView({ onNavigatePaal }) {
 
         {/* Vignette & Soft Gradient Overlay */}
         <div className="history-bg-ambient-vignette" />
-
-        {/* Floating Rotation Control Badge */}
-        <div className="history-floating-spin-pill">
-          <div className="spin-dot-indicator" />
-          <span>{isAutoSpin ? 'சுழல்கிறது (Auto-Spinning)' : `சுழற்சி: ${Math.round(scrollProgress * 360)}°`}</span>
-          <button 
-            className={`spin-toggle-pill-btn ${isAutoSpin ? 'active' : ''}`}
-            onClick={toggleAutoSpin}
-            title="சுழற்சி முறையை மாற்றவும் (Toggle auto-spin)"
-          >
-            <RotateCw size={13} className={isAutoSpin ? 'spinning-icon-fast' : ''} />
-            <span>{isAutoSpin ? 'நிறுத்து (Stop)' : 'சுழற்று (Spin)'}</span>
-          </button>
-        </div>
 
       </div>
 

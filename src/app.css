@@ -2512,69 +2512,6 @@ body {
   z-index: 2;
 }
 
-.history-floating-spin-pill {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  pointer-events: auto;
-  z-index: 99;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  color: #fef3c7;
-  padding: 8px 16px;
-  border-radius: 9999px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  font-family: 'Outfit', 'Noto Sans Tamil', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.spin-dot-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 10px #22c55e;
-}
-
-.spin-toggle-pill-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  background: rgba(245, 158, 11, 0.25);
-  border: 1px solid rgba(245, 158, 11, 0.5);
-  color: #ffffff;
-  border-radius: 9999px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.spin-toggle-pill-btn:hover {
-  background: #f59e0b;
-}
-
-.spin-toggle-pill-btn.active {
-  background: #f59e0b;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
-}
-
-.spinning-icon-fast {
-  animation: spinContinuous 2.5s linear infinite;
-}
-
-@keyframes spinContinuous {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 .history-foreground-content {
   position: relative;
   z-index: 5;
