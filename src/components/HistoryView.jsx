@@ -208,20 +208,18 @@ export default function HistoryView({ onNavigatePaal }) {
           </div>
         </div>
 
-        {/* Staggered Far-Edge Side Cards */}
+        {/* Staggered Far-Edge Side Cards with Embedded Images */}
         <div className="history-sections-stack">
           
           {/* Card 1 (Far Left): About Thiruvalluvar */}
           <section className="h-section-card glass-card h-side-left">
-            <div className="card-top-icon-row">
+            <div className="h-section-img-wrapper">
+              <img src="thiruvalluvar.jpg" alt="Thiruvalluvar" className="h-card-inner-img" />
+            </div>
+            <div className="h-section-text">
               <div className="card-mini-tag">
                 <Feather size={13} /> ஆசிரியர் வரலாறு
               </div>
-              <div className="card-ambient-icon-badge">
-                <Feather size={18} />
-              </div>
-            </div>
-            <div className="h-section-text">
               <h3>திருவள்ளுவர் பற்றி</h3>
               <p>
                 சுமார் 2,000 ஆண்டுகளுக்கு முன்பு தமிழ் மண்ணில் (மயிலாப்பூர்) வாழ்ந்த தனிப்பெரும் புலவர் மற்றும் மெய்யியலாளர்.
@@ -234,15 +232,13 @@ export default function HistoryView({ onNavigatePaal }) {
 
           {/* Card 2 (Far Right): Structure of Thirukkural & 3 Paals */}
           <section className="h-section-card glass-card h-side-right">
-            <div className="card-top-icon-row">
+            <div className="h-section-img-wrapper">
+              <img src="manuscript.png" alt="Ancient Palm-leaf Manuscript" className="h-card-inner-img" />
+            </div>
+            <div className="h-section-text">
               <div className="card-mini-tag">
                 <ScrollText size={13} /> நூலின் கட்டமைப்பு
               </div>
-              <div className="card-ambient-icon-badge">
-                <ScrollText size={18} />
-              </div>
-            </div>
-            <div className="h-section-text">
               <h3>முப்பால்கள் அமைப்பு</h3>
               <p>
                 திருக்குறள் மனித வாழ்வின் மூன்று உன்னத பரிமாணங்களாகப் பிரிக்கப்பட்டுள்ளது:
@@ -273,15 +269,13 @@ export default function HistoryView({ onNavigatePaal }) {
 
           {/* Card 3 (Far Left): Kanyakumari 133-ft Statue */}
           <section className="h-section-card statue-focus glass-card h-side-left">
-            <div className="card-top-icon-row">
+            <div className="h-section-img-wrapper">
+              <img src="statue.png" alt="Valluvar Statue at Kanyakumari" className="h-card-inner-img" />
+            </div>
+            <div className="h-section-text">
               <div className="card-mini-tag">
                 <Compass size={13} /> சிற்பக்கலை அதிசயம்
               </div>
-              <div className="card-ambient-icon-badge">
-                <Compass size={18} />
-              </div>
-            </div>
-            <div className="h-section-text">
               <h3>கன்னியாகுமரி திருவள்ளுவர் சிலை</h3>
               <p>
                 முக்கடல் சங்கமிக்கும் கன்னியாகுமரியில் அமைந்துள்ள 133 அடி வானுயர்ந்த கருங்கல் சிலை.
@@ -297,18 +291,16 @@ export default function HistoryView({ onNavigatePaal }) {
 
           {/* Card 4 (Far Right): Global Impact & Translations */}
           <section className="h-section-card glass-card h-side-right">
-            <div className="card-top-icon-row">
+            <div className="h-section-img-wrapper">
+              <img src="translations.png" alt="Global Translations of Thirukkural" className="h-card-inner-img" />
+            </div>
+            <div className="h-section-text">
               <div className="card-mini-tag">
                 <Globe size={13} /> சர்வதேசப் புகழ்
               </div>
-              <div className="card-ambient-icon-badge">
-                <Globe size={18} />
-              </div>
-            </div>
-            <div className="h-section-text">
               <h3>உலகளாவிய அங்கீகாரம்</h3>
               <p>
-                லத்தீன், ஆங்கிலம் (ஜி.யு. போப்), ஜெர்மன், பிரஞ்சு, சீனம், உருசியம், அரபு உட்பட உலகெங்கும் <strong>100க்கும் மேற்பட்ட மொழிகளில்</strong> மொழிபெயர்க்கப்பட்டுள்ளது.
+                லத்தீன், ஆங்கிலம் (ஜி.யு. போப்), ஜெர்மன், பிரஞ்சு, சீனம், உருசியம், அரபு உட்பட உலகெங்கும் <strong>100க்கும் மேற்பட்ட மொழிகளில்</strong> மொழிபெயர்க்கப்பட்டு போற்றப்படுகிறது.
               </p>
               <p>
                 மகாத்மா காந்தி, லியோ டால்ஸ்டாய் போன்ற உலகப் பேரறிஞர்கள் பெரிதும் போற்றினர்.

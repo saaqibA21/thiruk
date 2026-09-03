@@ -2635,13 +2635,13 @@ body {
 
 .h-section-card.glass-card {
   width: 100%;
-  max-width: 360px;
+  max-width: 370px;
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: 1.5rem;
-  padding: 1.5rem 1.6rem;
+  border-radius: 1.6rem;
+  padding: 1.4rem 1.6rem;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
@@ -2658,13 +2658,29 @@ body {
 .h-section-card.h-side-left {
   align-self: flex-start;
   margin-right: auto;
-  margin-left: clamp(0.5rem, 3vw, 4rem);
+  margin-left: 0;
 }
 
 .h-section-card.h-side-right {
   align-self: flex-end;
   margin-left: auto;
-  margin-right: clamp(0.5rem, 3vw, 4rem);
+  margin-right: 0;
+}
+
+.h-section-img-wrapper {
+  width: 100%;
+  height: 160px;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  border: 2px solid rgba(245, 158, 11, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.h-card-inner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .card-top-icon-row {
