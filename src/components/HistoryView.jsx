@@ -1,4 +1,4 @@
-﻿import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, 
@@ -8,7 +8,8 @@ import {
   RotateCw, 
   Compass, 
   ScrollText, 
-  Feather
+  Feather,
+  Globe
 } from 'lucide-react';
 import ExternalResources from './ExternalResources';
 
