@@ -1,4 +1,4 @@
-﻿import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, 
@@ -212,6 +212,9 @@ export default function HistoryView({ onNavigatePaal }) {
           <section className="h-section-card glass-card h-side-left">
             <div className="h-section-img-wrapper">
               <img src="thiruvalluvar.jpg" alt="Thiruvalluvar" className="h-card-inner-img" />
+              <div className="h-card-corner-badge">
+                <Sparkles size={11} /> <span>வள்ளுவர்</span>
+              </div>
             </div>
             <div className="h-section-text">
               <div className="card-mini-tag">
@@ -231,6 +234,9 @@ export default function HistoryView({ onNavigatePaal }) {
           <section className="h-section-card glass-card h-side-right">
             <div className="h-section-img-wrapper">
               <img src="manuscript.png" alt="Ancient Palm-leaf Manuscript" className="h-card-inner-img" />
+              <div className="h-card-corner-badge">
+                <Sparkles size={11} /> <span>முப்பால்</span>
+              </div>
             </div>
             <div className="h-section-text">
               <div className="card-mini-tag">
@@ -268,6 +274,9 @@ export default function HistoryView({ onNavigatePaal }) {
           <section className="h-section-card statue-focus glass-card h-side-left">
             <div className="h-section-img-wrapper">
               <img src="statue.png" alt="Valluvar Statue at Kanyakumari" className="h-card-inner-img" />
+              <div className="h-card-corner-badge">
+                <Sparkles size={11} /> <span>133 அடி</span>
+              </div>
             </div>
             <div className="h-section-text">
               <div className="card-mini-tag">
@@ -290,6 +299,9 @@ export default function HistoryView({ onNavigatePaal }) {
           <section className="h-section-card glass-card h-side-right">
             <div className="h-section-img-wrapper">
               <img src="translations.png" alt="Global Translations of Thirukkural" className="h-card-inner-img" />
+              <div className="h-card-corner-badge">
+                <Sparkles size={11} /> <span>100+ மொழிகள்</span>
+              </div>
             </div>
             <div className="h-section-text">
               <div className="card-mini-tag">
