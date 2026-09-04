@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ZoomIn, X, Sparkles } from 'lucide-react';
+import { ZoomIn, X, Sparkles, Share2 } from 'lucide-react';
 
 export const getCandidateImageUrls = (kuralNumber) => {
   if (!kuralNumber) return [];
@@ -33,7 +33,7 @@ export const getCandidateImageUrls = (kuralNumber) => {
   ];
 };
 
-export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnail = false }) => {
+export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnail = false, onShare = null }) => {
   const [candidateIndex, setCandidateIndex] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -126,8 +126,19 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
               </div>
             </div>
             <div className="kural-zoom-footer">
-              <h4>குறள் {kuralNumber} • காட்சி விளக்கம்</h4>
-              {title && <p className="kural-zoom-title">{title}</p>}
+              <div className="kural-zoom-footer-info">
+                <h4>குறள் {kuralNumber} • காட்சி விளக்கம்</h4>
+                {title && <p className="kural-zoom-title">{title}</p>}
+              </div>
+              {onShare && (
+                <button 
+                  className="modal-share-btn" 
+                  onClick={() => onShare(currentSrc)}
+                  title="படம் மற்றும் குறளைப் பகிரவும்"
+                >
+                  <Share2 size={16} /> <span>பகிர் (Share)</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

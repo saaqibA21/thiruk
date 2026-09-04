@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users } from 'lucide-react';
+import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 import {
@@ -12,6 +12,7 @@ import {
    stopTamilSpeech
 } from './utils/kuralFeatures';
 import { KuralImage } from './components/KuralImage';
+import ShareModal from './components/ShareModal';
 import { IntroVideo } from './components/IntroVideo';
 import HistoryView from './components/HistoryView';
 import AboutView from './components/AboutView';
@@ -87,6 +88,8 @@ const App = () => {
    const [libraryMode, setLibraryMode] = useState('paals'); // 'paals' or 'themes'
    const [selectedKural, setSelectedKural] = useState(null);
    const [playingKuralId, setPlayingKuralId] = useState(null);
+   const [sharingKural, setSharingKural] = useState(null);
+   const [sharingCustomImage, setSharingCustomImage] = useState(null);
    const [query, setQuery] = useState('');
    const [messages, setMessages] = useState([
       { role: 'ai', content: 'வணக்கம்! நான் உங்கள் திருக்குறள் நிபுணர். திருக்குறளின் ஆழமான வாழ்வியல் நெறிகளைப் பற்றி நீங்கள் என்னிடம் உரையாடலாம்.', sources: [] }
@@ -909,13 +912,22 @@ const App = () => {
                                          <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
                                             <div className="k-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                <span>குறள் எண்: {k.Number}</span>
-                                               <button 
-                                                  className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
-                                                  onClick={(e) => { e.stopPropagation(); handleToggleAudio(k); }}
-                                                  title="ஒலி வடிவம் (Listen to Kural)"
-                                               >
-                                                  {isPlaying ? <Square size={13} /> : <Volume2 size={15} />}
-                                               </button>
+                                               <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                                                  <button 
+                                                     className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
+                                                     onClick={(e) => { e.stopPropagation(); handleToggleAudio(k); }}
+                                                     title="ஒலி வடிவம் (Listen to Kural)"
+                                                  >
+                                                     {isPlaying ? <Square size={13} /> : <Volume2 size={15} />}
+                                                  </button>
+                                                  <button 
+                                                     className="kural-share-action"
+                                                     onClick={(e) => { e.stopPropagation(); setSharingCustomImage(null); setSharingKural(k); }}
+                                                     title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural & Image)"
+                                                  >
+                                                     <Share2 size={14} />
+                                                  </button>
+                                               </div>
                                             </div>
                                             <p>{allWords.slice(0, 4).join(' ')}</p>
                                             <p>{allWords.slice(4).join(' ')}</p>
@@ -979,13 +991,26 @@ const App = () => {
                                  <span style={{ fontSize: '0.75rem', color: '#92400e' }}>சீர் மற்றும் அசை நிறுத்தங்களுடன் கூடிய தூய உச்சரிப்பு</span>
                               </div>
                            </div>
-                           <button 
-                              className={`audio-play-large-btn ${isPlaying ? 'active' : ''}`}
-                              onClick={() => handleToggleAudio(selectedKural)}
-                           >
-                              {isPlaying ? <Square size={16} /> : <Volume2 size={16} />}
-                              {isPlaying ? 'நிறுத்து (Stop)' : 'கேளுங்கள் (Listen)'}
-                           </button>
+                           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                              <button 
+                                 className={`audio-play-large-btn ${isPlaying ? 'active' : ''}`}
+                                 onClick={() => handleToggleAudio(selectedKural)}
+                              >
+                                 {isPlaying ? <Square size={16} /> : <Volume2 size={16} />}
+                                 {isPlaying ? 'நிறுத்து (Stop)' : 'கேளுங்கள் (Listen)'}
+                              </button>
+                              <button 
+                                 className="modal-share-btn"
+                                 onClick={() => {
+                                    setSharingCustomImage(null);
+                                    setSharingKural(selectedKural);
+                                 }}
+                                 title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural & Image)"
+                              >
+                                 <Share2 size={16} />
+                                 <span>பகிர் (Share)</span>
+                              </button>
+                           </div>
                         </div>
 
                         {/* Verse Display */}
@@ -998,6 +1023,10 @@ const App = () => {
                         <KuralImage 
                            kuralNumber={selectedKural.Number} 
                            title={`${allWords.join(' ')} - ${selectedKural.mv || selectedKural.Translation || ''}`} 
+                           onShare={(imgSrc) => {
+                              setSharingCustomImage(imgSrc);
+                              setSharingKural(selectedKural);
+                           }}
                         />
 
                         {/* Explanations Stack */}
@@ -1011,11 +1040,25 @@ const App = () => {
                );
             })()}
          </AnimatePresence>
+
+         {/* Kural Share Card Modal */}
+         <AnimatePresence>
+            {sharingKural && (
+               <ShareModal 
+                  kural={sharingKural} 
+                  customImageUrl={sharingCustomImage} 
+                  onClose={() => {
+                     setSharingKural(null);
+                     setSharingCustomImage(null);
+                  }} 
+               />
+            )}
+         </AnimatePresence>
       </div>
    );
 };
 
-const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying }) => {
+const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying, onShare }) => {
    const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
    const lifeCat = getKuralLifeCategory(kural.Number);
 
@@ -1052,7 +1095,19 @@ const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying }) => {
                <p>{highlightText(allWords.slice(4).join(' '))}</p>
             </div>
          </div>
-         <ChevronRight className="k-mini-arrow" size={20} onClick={onSelect} style={{ cursor: 'pointer' }} />
+         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button 
+               className="kural-share-action"
+               title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural)"
+               onClick={(e) => {
+                  e.stopPropagation();
+                  if (onShare) onShare(kural);
+               }}
+            >
+               <Share2 size={14} />
+            </button>
+            <ChevronRight className="k-mini-arrow" size={20} onClick={onSelect} style={{ cursor: 'pointer' }} />
+         </div>
       </div>
    );
 };
