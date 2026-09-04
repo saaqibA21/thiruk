@@ -348,25 +348,77 @@ const App = () => {
       }
    };
 
-   // Data & Neural Model Loading
+   // Data & Neural Model Loading with Resilient Multi-Source Fallback
    useEffect(() => {
-      window.onNeuralProgress = (progress) => setInitProgress(progress);
+      let isMounted = true;
+      window.onNeuralProgress = (progress) => {
+         if (isMounted) setInitProgress(progress);
+      };
+
+      const fetchKuralDataset = async () => {
+         const rawBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
+         const baseWithSlash = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+         
+         const candidateSources = [
+            `${baseWithSlash}thirukkural.json`,
+            'thirukkural.json',
+            './thirukkural.json',
+            '/thirukkural.json',
+            '/thiruk/thirukkural.json',
+            'https://raw.githubusercontent.com/saaqibA21/thiruk/main/public/thirukkural.json',
+            'https://cdn.jsdelivr.net/gh/saaqibA21/thiruk@main/public/thirukkural.json'
+         ];
+
+         for (const sourceUrl of candidateSources) {
+            const fetchUrl = sourceUrl.startsWith('http') ? sourceUrl : `${sourceUrl}${sourceUrl.includes('?') ? '&' : '?'}v=${Date.now()}`;
+            for (let attempt = 1; attempt <= 2; attempt++) {
+               try {
+                  const controller = new AbortController();
+                  const timeoutId = setTimeout(() => controller.abort(), 7000);
+                  const res = await fetch(fetchUrl, { signal: controller.signal });
+                  clearTimeout(timeoutId);
+                  if (res.ok) {
+                     const data = await res.json();
+                     if (data && Array.isArray(data.kural) && data.kural.length > 0) {
+                        return data.kural;
+                     }
+                  }
+               } catch (e) {
+                  console.warn(`Fallback fetch notice (${sourceUrl}, try ${attempt}):`, e?.message || e);
+                  await new Promise(r => setTimeout(r, 300));
+               }
+            }
+         }
+         throw new Error("Failed to load Thirukkural dataset from all candidate sources.");
+      };
+
       const loadData = async () => {
          if (initRef.current) return;
-         initRef.current = true;
          try {
-            const res = await fetch(`thirukkural.json?v=${Date.now()}`);
-            const data = await res.json();
-            setKuralData(data.kural);
-            const engine = new KuralAI(data.kural);
+            const kurals = await fetchKuralDataset();
+            if (!isMounted) return;
+            initRef.current = true;
+            setKuralData(kurals);
+            const engine = new KuralAI(kurals);
             await engine.init(apiKey);
-            setAiEngine(engine);
+            if (isMounted) {
+               setAiEngine(engine);
+            }
          } catch (err) {
-            console.error(err);
+            console.error("Dataset loading error:", err);
             initRef.current = false;
+            // Retry automatically if still mounted
+            if (isMounted) {
+               setTimeout(loadData, 2500);
+            }
          }
       };
+
       loadData();
+
+      return () => {
+         isMounted = false;
+      };
    }, [apiKey]);
 
    // Real-time Phonetic Translation
