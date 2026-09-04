@@ -4458,6 +4458,44 @@ body {
   }
 }
 
+/* =========================================
+   VOICE MICROPHONE RECORDING ANIMATIONS
+   ========================================= */
+.kb-toggle-v2.voice-mic-btn.recording-active {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+  animation: micActivePulse 1.4s infinite ease-in-out;
+}
+
+@keyframes micActivePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+  }
+  50% {
+    transform: scale(1.12);
+    box-shadow: 0 0 22px rgba(239, 68, 68, 0.9);
+  }
+}
+
+.tamil-input-box-v2.recording-mode {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.25) !important;
+}
+
+.input-recording-active::placeholder {
+  color: #ef4444 !important;
+  font-weight: 700;
+  animation: phBlink 1.5s infinite ease-in-out;
+}
+
+@keyframes phBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+
 
 
 

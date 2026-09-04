@@ -266,16 +266,25 @@ const App = () => {
          return;
       }
 
+      // Stop any active TTS recitation before listening
+      if (playingKuralId) {
+         stopTamilSpeech(() => setPlayingKuralId(null));
+      }
+
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-         alert("உங்கள் உலாவியில் குரல் உள்ளீடு (Speech Recognition) ஆதரிக்கப்படவில்லை. தயவுசெய்து Google Chrome அல்லது Microsoft Edge உலாவியைப் பயன்படுத்தவும்.");
+         alert("உங்கள் உலாவியில் குரல் உள்ளீடு (Speech Recognition) ஆதரிக்கப்படவில்லை. Google Chrome, Microsoft Edge அல்லது Safari உலாவியைப் பயன்படுத்தவும்.");
          return;
       }
 
       try {
+         if (recognitionRef.current) {
+            try { recognitionRef.current.abort(); } catch (e) { }
+         }
+
          const recognition = new SpeechRecognition();
          recognition.lang = 'ta-IN';
-         recognition.continuous = false;
+         recognition.continuous = true;
          recognition.interimResults = true;
          recognition.maxAlternatives = 1;
 
@@ -284,18 +293,33 @@ const App = () => {
          };
 
          recognition.onresult = (event) => {
-            let currentTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-               currentTranscript += event.results[i][0].transcript;
+            let finalTranscript = '';
+            let interimTranscript = '';
+            for (let i = 0; i < event.results.length; i++) {
+               const transcript = event.results[i][0]?.transcript || '';
+               if (event.results[i].isFinal) {
+                  finalTranscript += transcript + ' ';
+               } else {
+                  interimTranscript += transcript;
+               }
             }
-            if (currentTranscript) {
-               setQuery(currentTranscript);
+            const combined = (finalTranscript + interimTranscript).trim();
+            if (combined) {
+               setQuery(combined);
             }
          };
 
          recognition.onerror = (event) => {
             console.warn("Speech recognition notice:", event.error);
-            setIsRecording(false);
+            if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+               alert("மைக் அனுமதி (Microphone Permission) தேவை. உங்கள் உலாவி அமைப்புகளில் மைக் அனுமதியை இயக்கிவிட்டு மீண்டும் முயற்சிக்கவும்.");
+               setIsRecording(false);
+            } else if (event.error === 'network') {
+               console.warn("Speech recognition network error");
+               setIsRecording(false);
+            } else if (event.error !== 'no-speech') {
+               setIsRecording(false);
+            }
          };
 
          recognition.onend = () => {
