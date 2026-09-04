@@ -80,89 +80,50 @@ const UsageInstructions = () => (
 
 
 
+const PAGE_FLIP_VARIANTS = {
+   enter: (dir) => ({
+      x: dir > 0 ? 60 : -60,
+      rotateY: dir > 0 ? 30 : -30,
+      opacity: 0,
+      scale: 0.96,
+      transformPerspective: 1200
+   }),
+   center: {
+      x: 0,
+      rotateY: 0,
+      opacity: 1,
+      scale: 1,
+      transformPerspective: 1200,
+      transition: {
+         x: { type: "spring", stiffness: 350, damping: 32 },
+         rotateY: { duration: 0.35, ease: [0.25, 1, 0.5, 1] },
+         opacity: { duration: 0.22 }
+      }
+   },
+   exit: (dir) => ({
+      x: dir > 0 ? -60 : 60,
+      rotateY: dir > 0 ? -30 : 30,
+      opacity: 0,
+      scale: 0.96,
+      transformPerspective: 1200,
+      transition: {
+         duration: 0.2
+      }
+   })
+};
+
 const App = () => {
+   // Core Navigation & State
    const [activeTab, setActiveTab] = useState('ask');
    const [selectedPaal, setSelectedPaal] = useState(null);
    const [selectedChapter, setSelectedChapter] = useState(null);
    const [selectedTheme, setSelectedTheme] = useState(null);
-   const [libraryMode, setLibraryMode] = useState('paals'); // 'paals' or 'themes'
+   const [libraryMode, setLibraryMode] = useState('paals');
    const [selectedKural, setSelectedKural] = useState(null);
    const [playingKuralId, setPlayingKuralId] = useState(null);
    const [sharingKural, setSharingKural] = useState(null);
    const [sharingCustomImage, setSharingCustomImage] = useState(null);
    const [pageDirection, setPageDirection] = useState(1);
-
-   const handleNextKural = (e) => {
-      if (e) e.stopPropagation();
-      if (!selectedKural || !kuralData) return;
-      const currentNum = Number(selectedKural.Number);
-      const totalKurals = kuralData?.length || 1330;
-      if (currentNum >= totalKurals) return;
-      const nextK = kuralData.find(k => Number(k.Number) === currentNum + 1);
-      if (nextK) {
-         if (playingKuralId) stopTamilSpeech(() => setPlayingKuralId(null));
-         setPageDirection(1);
-         setSelectedKural(nextK);
-      }
-   };
-
-   const handlePrevKural = (e) => {
-      if (e) e.stopPropagation();
-      if (!selectedKural || !kuralData) return;
-      const currentNum = Number(selectedKural.Number);
-      if (currentNum <= 1) return;
-      const prevK = kuralData.find(k => Number(k.Number) === currentNum - 1);
-      if (prevK) {
-         if (playingKuralId) stopTamilSpeech(() => setPlayingKuralId(null));
-         setPageDirection(-1);
-         setSelectedKural(prevK);
-      }
-   };
-
-   useEffect(() => {
-      if (!selectedKural) return;
-      const handleKeyDown = (e) => {
-         if (e.key === 'ArrowRight') {
-            handleNextKural();
-         } else if (e.key === 'ArrowLeft') {
-            handlePrevKural();
-         }
-      };
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-   }, [selectedKural, kuralData, playingKuralId]);
-
-   const pageFlipVariants = {
-      enter: (dir) => ({
-         x: dir > 0 ? 60 : -60,
-         rotateY: dir > 0 ? 30 : -30,
-         opacity: 0,
-         scale: 0.96,
-         transformPerspective: 1200
-      }),
-      center: {
-         x: 0,
-         rotateY: 0,
-         opacity: 1,
-         scale: 1,
-         transformPerspective: 1200,
-         transition: {
-            x: { type: "spring", stiffness: 350, damping: 32 },
-            rotateY: { duration: 0.35, ease: [0.25, 1, 0.5, 1] },
-            opacity: { duration: 0.22 }
-         }
-      },
-      exit: (dir) => ({
-         x: dir > 0 ? -60 : 60,
-         rotateY: dir > 0 ? -30 : 30,
-         opacity: 0,
-         scale: 0.96,
-         transformPerspective: 1200,
-         transition: {
-            duration: 0.2
-         }
-      })
-   };
    const [query, setQuery] = useState('');
    const [messages, setMessages] = useState([
       { role: 'ai', content: 'வணக்கம்! நான் உங்கள் திருக்குறள் நிபுணர். திருக்குறளின் ஆழமான வாழ்வியல் நெறிகளைப் பற்றி நீங்கள் என்னிடம் உரையாடலாம்.', sources: [] }
@@ -181,7 +142,67 @@ const App = () => {
    const [isRecording, setIsRecording] = useState(false);
    const fileInputRef = useRef(null);
    const recognitionRef = useRef(null);
+   const chatEndRef = useRef(null);
+   const initRef = useRef(false);
+   const lastTranslatedRef = useRef('');
 
+   const getInitialKey = () => {
+      try {
+         const envKey = import.meta.env.VITE_OPENAI_API_KEY;
+         if (envKey && envKey.length > 20 && envKey.startsWith('sk-')) return envKey;
+      } catch (e) { }
+      return '';
+   };
+
+   const [apiKey, setApiKey] = useState(getInitialKey());
+   const [showSettings, setShowSettings] = useState(false);
+   const [showIntro, setShowIntro] = useState(() => {
+      return !sessionStorage.getItem('thirukural_intro_seen');
+   });
+
+   // Kural Modal Page Turning Navigation Handlers
+   const handleNextKural = (e) => {
+      if (e) e.stopPropagation();
+      if (!selectedKural || !kuralData || kuralData.length === 0) return;
+      const currentNum = Number(selectedKural.Number);
+      const totalKurals = kuralData.length || 1330;
+      if (currentNum >= totalKurals) return;
+      const nextK = kuralData.find(k => Number(k.Number) === currentNum + 1);
+      if (nextK) {
+         if (playingKuralId) stopTamilSpeech(() => setPlayingKuralId(null));
+         setPageDirection(1);
+         setSelectedKural(nextK);
+      }
+   };
+
+   const handlePrevKural = (e) => {
+      if (e) e.stopPropagation();
+      if (!selectedKural || !kuralData || kuralData.length === 0) return;
+      const currentNum = Number(selectedKural.Number);
+      if (currentNum <= 1) return;
+      const prevK = kuralData.find(k => Number(k.Number) === currentNum - 1);
+      if (prevK) {
+         if (playingKuralId) stopTamilSpeech(() => setPlayingKuralId(null));
+         setPageDirection(-1);
+         setSelectedKural(prevK);
+      }
+   };
+
+   // Keyboard Navigation (Arrow Keys)
+   useEffect(() => {
+      if (!selectedKural) return;
+      const handleKeyDown = (e) => {
+         if (e.key === 'ArrowRight') {
+            handleNextKural();
+         } else if (e.key === 'ArrowLeft') {
+            handlePrevKural();
+         }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+   }, [selectedKural, kuralData, playingKuralId]);
+
+   // Voice Recognition Toggle
    const handleToggleVoice = () => {
       if (isRecording) {
          try {
@@ -199,7 +220,7 @@ const App = () => {
 
       try {
          const recognition = new SpeechRecognition();
-         recognition.lang = 'ta-IN'; // Tamil (India)
+         recognition.lang = 'ta-IN';
          recognition.continuous = false;
          recognition.interimResults = true;
          recognition.maxAlternatives = 1;
@@ -235,6 +256,7 @@ const App = () => {
       }
    };
 
+   // Audio Toggle
    const handleToggleAudio = (kural) => {
       if (playingKuralId === kural.Number) {
          stopTamilSpeech(() => setPlayingKuralId(null));
@@ -248,22 +270,7 @@ const App = () => {
       }
    };
 
-   const getInitialKey = () => {
-      try {
-         const envKey = import.meta.env.VITE_OPENAI_API_KEY;
-         if (envKey && envKey.length > 20 && envKey.startsWith('sk-')) return envKey;
-      } catch (e) { }
-      return '';
-   };
-
-   const [apiKey, setApiKey] = useState(getInitialKey());
-   const [showSettings, setShowSettings] = useState(false);
-   const [showIntro, setShowIntro] = useState(() => {
-      return !sessionStorage.getItem('thirukural_intro_seen');
-   });
-   const chatEndRef = useRef(null);
-   const initRef = useRef(false);
-
+   // Data & Neural Model Loading
    useEffect(() => {
       window.onNeuralProgress = (progress) => setInitProgress(progress);
       const loadData = async () => {
@@ -284,8 +291,7 @@ const App = () => {
       loadData();
    }, [apiKey]);
 
-   const lastTranslatedRef = useRef('');
-
+   // Real-time Phonetic Translation
    useEffect(() => {
       if (!query.trim()) return;
 
@@ -311,168 +317,36 @@ const App = () => {
                const res = await fetch(url);
                const data = await res.json();
                if (data && data[0]) {
-                  translatedValue = data[0].map(x => x[0]).join('');
-                  if (translatedValue && query === currentQuery) {
-                     setQuery(translatedValue);
-                  }
+                  translatedValue = data[0].map(item => item[0]).join('');
                }
             } else {
-               const match = query.match(/(\b[a-zA-Z\s']+\b)([\s,]$)$/);
-               if (!match) return;
-
-               const segmentToTranslate = match[1];
-               const boundary = match[2];
-               const startIndex = match.index;
-
-               const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ta&dt=t&q=${encodeURIComponent(segmentToTranslate)}`;
-               const res = await fetch(url);
-               const data = await res.json();
-
-               if (data && data[0]) {
-                  const translated = data[0].map(x => x[0]).join('');
-                  if (translated && translated.toLowerCase() !== segmentToTranslate.toLowerCase() && query === currentQuery) {
-                     const newQuery = query.substring(0, startIndex) + translated + boundary;
-                     setQuery(newQuery);
+               const match = query.match(/([a-zA-Z]+)[\s,]$/);
+               if (match) {
+                  const englishWord = match[1];
+                  const url = `https://inputtools.google.com/request?text=${encodeURIComponent(englishWord)}&itc=ta-t-i0-und&num=1`;
+                  const res = await fetch(url);
+                  const data = await res.json();
+                  if (data && data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
+                     const tamilWord = data[1][0][1][0];
+                     const trailingPunctuation = query.slice(match.index + englishWord.length);
+                     const prefix = query.slice(0, match.index);
+                     translatedValue = prefix + tamilWord + trailingPunctuation;
                   }
                }
             }
+
+            if (translatedValue && translatedValue !== currentQuery) {
+               setQuery(translatedValue);
+            }
          } catch (err) {
-            console.error("Translation error:", err);
+            console.warn("Translation API error, falling back:", err);
          } finally {
             setIsTranslating(false);
          }
-      }, 300);
+      }, 250);
 
       return () => clearTimeout(timer);
    }, [query]);
-
-   const ATHIGARAMS = ["கடவுள் வாழ்த்து", "வான் சிறப்பு", "நீத்தார் பெருமை", "அறன் வலியுறுத்தல்", "இல்வாழ்க்கை", "வாழ்க்கைத் துணைநலம்", "மக்கட்பேறு", "அன்புடைமை", "விருந்தோம்பல்", "இனியவை கூறல்", "செய்ந்நன்றியறிதல்", "நடுவுநிலைமை", "அடக்கமுடைமை", "ஒழுக்கமுடைமை", "பிறனில் விழையாமை", "பொறையுடைமை", "அழுக்காறாமை", "வெஃகாமை", "புறங்கூறாமை", "பயனில சொல்லாமை", "தீவினையச்சம்", "ஒப்புரவறிதல்", "ஈகை", "புகழ்", "அருளுடைமை", "புலால் மறுத்தல்", "தவம்", "கூடாஒழுக்கம்", "கள்ளாமை", "வாய்மை", "வெகுளாமை", "இன்னா செய்யாமை", "கொல்லாமை", "நிலையாமை", "துறவு", "மெய்யுணர்தல்", "அவாவறுத்தல்", "ஊழ்", "இறைமாட்சி", "கல்வி", "கல்லாமை", "கேள்வி", "அறிவுடைமை", "குற்றங்கடிதல்", "பெரியாரைத் துணைக்கோடல்", "சிற்றினம் சேராமை", "தெரிந்துசெயல்வகை", "வலியறிதல்", "காலமறிதல்", "இடனறிதல்", "தெரிந்துதெளிதல்", "தெரிந்துவினையாடல்", "சுற்றந்தழால்", "பொச்சாவாமை", "செங்கோன்மை", "கொடுங்கோன்மை", "வெருவந்த செய்யாமை", "கண்ணோட்டம்", "ஒற்றாடல்", "ஊக்கமுடைமை", "மடியின்மை", "ஆள்வினையுடைமை", "இடுக்கண் அழியாமை", "அமைச்சு", "சொல்வன்மை", "வினைத்தூய்மை", "வினைத்திட்பம்", "வினைசெயல்வகை", "தூது", "மன்னரைச் சேர்ந்தொழுகல்", "குறிப்பறிதல்", "அவையறிதல்", "அவையஞ்சாமை", "நாடு", "அரண்", "பொருள்செயல்வகை", "படைமாட்சி", "படைச்செருக்கு", "நட்பு", "நட்பாராய்தல்", "பழைமை", "தீய நட்பு", "கூடா நட்பு", "பேதைமை", "புல்லறிவாண்மை", "இகல்", "பகைமாட்சி", "பகைத்திறந்தெரிதல்", "உட்பகை", "பெரியாரைப் பிழையாமை", "பெண்வழிச் சேறல்", "வரைவின் மகளிர்", "கள்ளுண்ணாமை", "சூது", "மருந்து", "குடிமை", "மானம்", "பெருமை", "சான்றாண்மை", "பண்புடைமை", "நன்றியில் செல்வம்", "நாணுடைமை", "குடிசெயல்வகை", "உழவு", "நல்குரவு", "இரவு", "இரவச்சம்", "கயமை", "தகையணங்குறுத்தல்", "குறிப்பறிதல்", "புணர்ச்சி மகிழ்தல்", "நலம்புனைந்துரைத்தல்", "காதல் சிறப்புரைத்தல்", "நாணுத்துறவுரைத்தல்", "அலரறிவுறுத்தல்", "பிரிவாற்றாமை", "படர்மெலிந்திரங்கல்", "கண்விதுப்பழிதல்", "பசப்புறு பருவரல்", "தனிப்படர் மிகுதி", "நினைந்தவர் புலம்பல்", "கனவுநிலை உரைத்தல்", "பொழுதுகண்டு இரங்கல்", "உறுப்புநலன் அழிதல்", "நெஞ்சொடு கிளத்தல்", "நிறையழிதல்", "அவர்வயின் விதும்பல்", "குறிப்பறிவுறுத்தல்", "புணர்ச்சி விதும்பல்", "நெஞ்சொடு புலத்தல்", "புலவி", "புலவி நுணுக்கம்", "ஊடலுவகை"];
-
-   const dragCounter = useRef(0);
-
-   const processImageFile = (file, autoSend = false) => {
-      if (!file) return;
-      const isImg = (file.type && file.type.startsWith('image/')) || /\.(jpe?g|png|gif|webp|bmp)$/i.test(file.name);
-      
-      if (isImg) {
-         const reader = new FileReader();
-         reader.onloadend = () => {
-            if (autoSend) {
-               handleAsk("", reader.result);
-            } else {
-               setSelectedImage(reader.result);
-            }
-         };
-         reader.readAsDataURL(file);
-      }
-   };
-
-   const handleImageUpload = (e) => {
-      const file = e.target.files[0];
-      processImageFile(file);
-   };
-
-   const handlePaste = (e) => {
-      const items = e.clipboardData.items;
-      for (let i = 0; i < items.length; i++) {
-         if (items[i].type.indexOf('image') !== -1) {
-            const blob = items[i].getAsFile();
-            processImageFile(blob);
-         }
-      }
-   };
-
-   const dropRef = useRef({});
-   
-   useEffect(() => {
-      dropRef.current = { handleGlobalDrop, activeTab };
-   });
-
-   useEffect(() => {
-      const isFileDrag = (e) => {
-         const types = e.dataTransfer.types;
-         if (!types) return false;
-         const typeArray = Array.from(types);
-         return typeArray.some(t => t.toLowerCase() === 'files' || t.toLowerCase() === 'application/x-moz-file');
-      };
-
-      const onDragOver = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
-         if (dropRef.current.activeTab === 'ask' && isFileDrag(e)) {
-            e.dataTransfer.dropEffect = 'copy';
-         } else {
-            e.dataTransfer.dropEffect = 'none';
-         }
-      };
-
-      const onDragEnter = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
-         if (dropRef.current.activeTab === 'ask' && isFileDrag(e)) {
-            dragCounter.current++;
-            setIsDragging(true);
-         }
-      };
-
-      const onDragLeave = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
-         if (dropRef.current.activeTab === 'ask' && isFileDrag(e)) {
-            dragCounter.current--;
-            if (dragCounter.current <= 0) {
-               dragCounter.current = 0;
-               setIsDragging(false);
-            }
-         }
-      };
-
-      const onDrop = (e) => {
-         e.preventDefault();
-         e.stopPropagation();
-         setIsDragging(false);
-         dragCounter.current = 0;
-         if (dropRef.current.activeTab === 'ask') {
-            dropRef.current.handleGlobalDrop(e);
-         }
-      };
-
-      // Use document level and capturing phase for maximum override
-      document.addEventListener('dragenter', onDragEnter, true);
-      document.addEventListener('dragover', onDragOver, true);
-      document.addEventListener('dragleave', onDragLeave, true);
-      document.addEventListener('drop', onDrop, true);
-
-      return () => {
-         dragCounter.current = 0;
-         document.removeEventListener('dragenter', onDragEnter, true);
-         document.removeEventListener('dragover', onDragOver, true);
-         document.removeEventListener('dragleave', onDragLeave, true);
-         document.removeEventListener('drop', onDrop, true);
-      };
-   }, []); // Empty dependency array ensures we only bind once, dropRef handles stale state
-
-   const handleGlobalDrop = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-      dragCounter.current = 0;
-      
-      const files = e.dataTransfer.files;
-      if (files && files.length > 0) {
-         processImageFile(files[0], true);
-      } else {
-         const items = e.dataTransfer.items;
-         if (items) {
-            for (let i = 0; i < items.length; i++) {
-               if (items[i].kind === 'file') {
-                  processImageFile(items[i].getAsFile(), true);
-                  break;
-               }
-            }
-         }
-      }
-   };
 
    const handleAsk = async (text, imageOverride = null) => {
       const currentImage = imageOverride || selectedImage;
@@ -1097,7 +971,7 @@ const App = () => {
                                <motion.div 
                                   key={selectedKural.Number} 
                                   custom={pageDirection} 
-                                  variants={pageFlipVariants} 
+                                  variants={PAGE_FLIP_VARIANTS} 
                                   initial="enter" 
                                   animate="center" 
                                   exit="exit" 
