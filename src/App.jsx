@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users } from 'lucide-react';
+import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 import {
@@ -90,6 +90,79 @@ const App = () => {
    const [playingKuralId, setPlayingKuralId] = useState(null);
    const [sharingKural, setSharingKural] = useState(null);
    const [sharingCustomImage, setSharingCustomImage] = useState(null);
+   const [pageDirection, setPageDirection] = useState(1);
+
+   const handleNextKural = (e) => {
+      if (e) e.stopPropagation();
+      if (!selectedKural || !kuralData) return;
+      const currentNum = Number(selectedKural.Number);
+      const totalKurals = kuralData?.length || 1330;
+      if (currentNum >= totalKurals) return;
+      const nextK = kuralData.find(k => Number(k.Number) === currentNum + 1);
+      if (nextK) {
+         if (playingKuralId) stopTamilSpeech(() => setPlayingKuralId(null));
+         setPageDirection(1);
+         setSelectedKural(nextK);
+      }
+   };
+
+   const handlePrevKural = (e) => {
+      if (e) e.stopPropagation();
+      if (!selectedKural || !kuralData) return;
+      const currentNum = Number(selectedKural.Number);
+      if (currentNum <= 1) return;
+      const prevK = kuralData.find(k => Number(k.Number) === currentNum - 1);
+      if (prevK) {
+         if (playingKuralId) stopTamilSpeech(() => setPlayingKuralId(null));
+         setPageDirection(-1);
+         setSelectedKural(prevK);
+      }
+   };
+
+   useEffect(() => {
+      if (!selectedKural) return;
+      const handleKeyDown = (e) => {
+         if (e.key === 'ArrowRight') {
+            handleNextKural();
+         } else if (e.key === 'ArrowLeft') {
+            handlePrevKural();
+         }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+   }, [selectedKural, kuralData, playingKuralId]);
+
+   const pageFlipVariants = {
+      enter: (dir) => ({
+         x: dir > 0 ? 60 : -60,
+         rotateY: dir > 0 ? 30 : -30,
+         opacity: 0,
+         scale: 0.96,
+         transformPerspective: 1200
+      }),
+      center: {
+         x: 0,
+         rotateY: 0,
+         opacity: 1,
+         scale: 1,
+         transformPerspective: 1200,
+         transition: {
+            x: { type: "spring", stiffness: 350, damping: 32 },
+            rotateY: { duration: 0.35, ease: [0.25, 1, 0.5, 1] },
+            opacity: { duration: 0.22 }
+         }
+      },
+      exit: (dir) => ({
+         x: dir > 0 ? -60 : 60,
+         rotateY: dir > 0 ? -30 : 30,
+         opacity: 0,
+         scale: 0.96,
+         transformPerspective: 1200,
+         transition: {
+            duration: 0.2
+         }
+      })
+   };
    const [query, setQuery] = useState('');
    const [messages, setMessages] = useState([
       { role: 'ai', content: 'வணக்கம்! நான் உங்கள் திருக்குறள் நிபுணர். திருக்குறளின் ஆழமான வாழ்வியல் நெறிகளைப் பற்றி நீங்கள் என்னிடம் உரையாடலாம்.', sources: [] }
@@ -965,81 +1038,156 @@ const App = () => {
          </main>
 
          <AnimatePresence>
-            {selectedKural && (() => {
-               const allWords = `${selectedKural.Line1} ${selectedKural.Line2}`.trim().split(/\s+/);
-               const lifeCat = getKuralLifeCategory(selectedKural.Number);
-               const metre = getMetreDetails(selectedKural);
-               const isPlaying = playingKuralId === selectedKural.Number;
+             {selectedKural && (() => {
+                const allWords = `${selectedKural.Line1} ${selectedKural.Line2}`.trim().split(/\s+/);
+                const lifeCat = getKuralLifeCategory(selectedKural.Number);
+                const metre = getMetreDetails(selectedKural);
+                const isPlaying = playingKuralId === selectedKural.Number;
+                const currentNum = Number(selectedKural.Number);
+                const totalKurals = kuralData?.length || 1330;
 
-               return (
-                  <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
-                     <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal" onClick={e => e.stopPropagation()}>
-                        <header className="m-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
-                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                              <span className="m-badge">குறள் {selectedKural.Number}</span>
-                              <span className="life-tag-badge">{lifeCat.icon} {lifeCat.name}</span>
-                           </div>
-                           <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button>
-                        </header>
+                return (
+                   <div className="tamil-modal-overlay" onClick={() => setSelectedKural(null)}>
+                      <div className="tamil-modal-wrapper-with-nav" onClick={e => e.stopPropagation()}>
+                         
+                         {/* Floating Side Page Turn - Previous Button */}
+                         <button 
+                            className="modal-side-page-turn-btn prev"
+                            onClick={handlePrevKural}
+                            disabled={currentNum <= 1}
+                            title={currentNum > 1 ? `முந்தைய குறள் ${currentNum - 1}` : "முதல் குறள்"}
+                            aria-label="Previous Kural"
+                         >
+                            <ChevronLeft size={26} />
+                            <span className="side-btn-kural-label">குறள் {Math.max(1, currentNum - 1)}</span>
+                         </button>
 
-                        {/* Audio Recitation Bar */}
-                        <div className="modal-audio-player-bar">
-                           <div className="audio-player-info">
-                              <Headphones size={20} color="#b45309" />
-                              <div>
-                                 <strong style={{ fontSize: '0.9rem', color: '#78350f', display: 'block' }}>திருக்குறள் வெண்பா ஒலி வடிவம்</strong>
-                                 <span style={{ fontSize: '0.75rem', color: '#92400e' }}>சீர் மற்றும் அசை நிறுத்தங்களுடன் கூடிய தூய உச்சரிப்பு</span>
-                              </div>
-                           </div>
-                           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                              <button 
-                                 className={`audio-play-large-btn ${isPlaying ? 'active' : ''}`}
-                                 onClick={() => handleToggleAudio(selectedKural)}
-                              >
-                                 {isPlaying ? <Square size={16} /> : <Volume2 size={16} />}
-                                 {isPlaying ? 'நிறுத்து (Stop)' : 'கேளுங்கள் (Listen)'}
-                              </button>
-                              <button 
-                                 className="modal-share-btn"
-                                 onClick={() => {
-                                    setSharingCustomImage(null);
-                                    setSharingKural(selectedKural);
-                                 }}
-                                 title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural & Image)"
-                              >
-                                 <Share2 size={16} />
-                                 <span>பகிர் (Share)</span>
-                              </button>
-                           </div>
-                        </div>
+                         {/* Floating Side Page Turn - Next Button */}
+                         <button 
+                            className="modal-side-page-turn-btn next"
+                            onClick={handleNextKural}
+                            disabled={currentNum >= totalKurals}
+                            title={currentNum < totalKurals ? `அடுத்த குறள் ${currentNum + 1}` : "கடைசி குறள்"}
+                            aria-label="Next Kural"
+                         >
+                            <ChevronRight size={26} />
+                            <span className="side-btn-kural-label">குறள் {Math.min(totalKurals, currentNum + 1)}</span>
+                         </button>
 
-                        {/* Verse Display */}
-                        <div className="m-verse-box">
-                           <h3>{allWords.slice(0, 4).join(' ')}</h3>
-                           <h3>{allWords.slice(4).join(' ')}</h3>
-                        </div>
+                         <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal">
+                            <header className="m-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.2rem 1.5rem 0.6rem' }}>
+                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                  <span className="m-badge">குறள் {selectedKural.Number}</span>
+                                  <div className="m-header-stepper">
+                                     <button onClick={handlePrevKural} disabled={currentNum <= 1} title="முந்தைய குறள்">
+                                        <ChevronLeft size={16} />
+                                     </button>
+                                     <span>{selectedKural.Number} / {totalKurals}</span>
+                                     <button onClick={handleNextKural} disabled={currentNum >= totalKurals} title="அடுத்த குறள்">
+                                        <ChevronRight size={16} />
+                                     </button>
+                                  </div>
+                                  <span className="life-tag-badge">{lifeCat.icon} {lifeCat.name}</span>
+                               </div>
+                               <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button>
+                            </header>
 
-                        {/* Kural Visual Representation Image */}
-                        <KuralImage 
-                           kuralNumber={selectedKural.Number} 
-                           title={`${allWords.join(' ')} - ${selectedKural.mv || selectedKural.Translation || ''}`} 
-                           onShare={(imgSrc) => {
-                              setSharingCustomImage(imgSrc);
-                              setSharingKural(selectedKural);
-                           }}
-                        />
+                            {/* Page Sheet Container with 3D Page Turn Animation */}
+                            <AnimatePresence initial={false} custom={pageDirection} mode="wait">
+                               <motion.div 
+                                  key={selectedKural.Number} 
+                                  custom={pageDirection} 
+                                  variants={pageFlipVariants} 
+                                  initial="enter" 
+                                  animate="center" 
+                                  exit="exit" 
+                                  className="tamil-modal-page-sheet"
+                               >
+                                  {/* Audio Recitation Bar */}
+                                  <div className="modal-audio-player-bar">
+                                     <div className="audio-player-info">
+                                        <Headphones size={20} color="#b45309" />
+                                        <div>
+                                           <strong style={{ fontSize: '0.9rem', color: '#78350f', display: 'block' }}>திருக்குறள் வெண்பா ஒலி வடிவம்</strong>
+                                           <span style={{ fontSize: '0.75rem', color: '#92400e' }}>சீர் மற்றும் அசை நிறுத்தங்களுடன் கூடிய தூய உச்சரிப்பு</span>
+                                        </div>
+                                     </div>
+                                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                        <button 
+                                           className={`audio-play-large-btn ${isPlaying ? 'active' : ''}`}
+                                           onClick={() => handleToggleAudio(selectedKural)}
+                                        >
+                                           {isPlaying ? <Square size={16} /> : <Volume2 size={16} />}
+                                           {isPlaying ? 'நிறுத்து (Stop)' : 'கேளுங்கள் (Listen)'}
+                                        </button>
+                                        <button 
+                                           className="modal-share-btn"
+                                           onClick={() => {
+                                              setSharingCustomImage(null);
+                                              setSharingKural(selectedKural);
+                                           }}
+                                           title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural & Image)"
+                                        >
+                                           <Share2 size={16} />
+                                           <span>பகிர் (Share)</span>
+                                        </button>
+                                     </div>
+                                  </div>
 
-                        {/* Explanations Stack */}
-                        <div className="m-explanations-stack">
-                           {selectedKural.mv && <div className="e-block"> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
-                           {selectedKural.sp && <div className="e-block"> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
-                           {selectedKural.mk && <div className="e-block"> <h5>மு. கருணாநிதி உரை</h5> <p>{selectedKural.mk}</p> </div>}
-                        </div>
-                     </motion.div>
-                  </div>
-               );
-            })()}
-         </AnimatePresence>
+                                  {/* Verse Display */}
+                                  <div className="m-verse-box">
+                                     <h3>{allWords.slice(0, 4).join(' ')}</h3>
+                                     <h3>{allWords.slice(4).join(' ')}</h3>
+                                  </div>
+
+                                  {/* Kural Visual Representation Image */}
+                                  <KuralImage 
+                                     kuralNumber={selectedKural.Number} 
+                                     title={`${allWords.join(' ')} - ${selectedKural.mv || selectedKural.Translation || ''}`} 
+                                     onShare={(imgSrc) => {
+                                        setSharingCustomImage(imgSrc);
+                                        setSharingKural(selectedKural);
+                                     }}
+                                  />
+
+                                  {/* Explanations Stack */}
+                                  <div className="m-explanations-stack">
+                                     {selectedKural.mv && <div className="e-block"> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
+                                     {selectedKural.sp && <div className="e-block"> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
+                                     {selectedKural.mk && <div className="e-block"> <h5>மு. கருணாநிதி உரை</h5> <p>{selectedKural.mk}</p> </div>}
+                                  </div>
+
+                                  {/* Bottom Page Turn Navigation Bar */}
+                                  <div className="modal-bottom-page-turn-bar">
+                                     <button 
+                                        className="bottom-turn-btn prev"
+                                        onClick={handlePrevKural}
+                                        disabled={currentNum <= 1}
+                                     >
+                                        <ChevronLeft size={18} />
+                                        <span>முந்தைய குறள்</span>
+                                     </button>
+                                     <span className="bottom-page-indicator">
+                                        📖 குறள் {selectedKural.Number} / {totalKurals}
+                                     </span>
+                                     <button 
+                                        className="bottom-turn-btn next"
+                                        onClick={handleNextKural}
+                                        disabled={currentNum >= totalKurals}
+                                     >
+                                        <span>அடுத்த குறள்</span>
+                                        <ChevronRight size={18} />
+                                     </button>
+                                  </div>
+
+                               </motion.div>
+                            </AnimatePresence>
+                         </motion.div>
+                      </div>
+                   </div>
+                );
+             })()}
+          </AnimatePresence>
 
          {/* Kural Share Card Modal */}
          <AnimatePresence>
