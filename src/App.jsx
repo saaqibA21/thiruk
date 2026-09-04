@@ -402,6 +402,71 @@ const App = () => {
       return () => clearTimeout(timer);
    }, [query]);
 
+   const dragCounter = useRef(0);
+
+   const processImageFile = (file) => {
+      if (file && file.type && file.type.startsWith('image/')) {
+         const reader = new FileReader();
+         reader.onloadend = () => {
+            setSelectedImage(reader.result);
+         };
+         reader.readAsDataURL(file);
+      }
+   };
+
+   const handleImageUpload = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) {
+         processImageFile(file);
+      }
+   };
+
+   const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+         if (items[i].type && items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            if (blob) processImageFile(blob);
+         }
+      }
+   };
+
+   const handleDragEnter = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter.current++;
+      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+         setIsDragging(true);
+      }
+   };
+
+   const handleDragOver = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+   };
+
+   const handleDragLeave = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter.current--;
+      if (dragCounter.current <= 0) {
+         setIsDragging(false);
+         dragCounter.current = 0;
+      }
+   };
+
+   const handleDrop = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      dragCounter.current = 0;
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+         processImageFile(files[0]);
+      }
+   };
+
    const handleAsk = async (text, imageOverride = null) => {
       const currentImage = imageOverride || selectedImage;
       if (!text.trim() && !currentImage) return;
