@@ -190,35 +190,24 @@ export const stopTamilSpeech = (onStop) => {
   if (onStop) onStop();
 };
 
-// Candidate Image URL Generator
+// Available Curated Kural Artwork Images (1 to 10 currently uploaded)
+export const AVAILABLE_KURAL_IMAGES = new Set([
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+]);
+
+export const hasKuralImage = (kuralNumber) => {
+  const num = Number(kuralNumber);
+  return AVAILABLE_KURAL_IMAGES.has(num);
+};
+
+// Targeted Image URL Generator (Only queries authentic existing paths)
 export const getCandidateImageUrls = (kuralNumber) => {
-  if (!kuralNumber) return [];
+  const num = Number(kuralNumber);
+  if (!num || !hasKuralImage(num)) return [];
   const rawBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
   const base = rawBase.endsWith('/') ? rawBase : (rawBase + '/');
-  const numStr = String(kuralNumber);
-  const pad3 = numStr.padStart(3, '0');
-  const pad4 = numStr.padStart(4, '0');
   return [
-    base + 'kural_images/' + numStr + '.jpg',
-    base + 'kural_images/' + numStr + '.png',
-    base + 'thiruk_image/' + numStr + '.jpg',
-    base + 'thiruk_image/' + numStr + '.png',
-    base + 'kural_images/' + numStr + '.jpeg',
-    base + 'kural_images/' + numStr + '.webp',
-    base + 'kural_images/kural_' + numStr + '.png',
-    base + 'kural_images/kural_' + numStr + '.jpg',
-    base + 'kural_images/kural_' + numStr + '.jpeg',
-    base + 'kural_images/kural_' + numStr + '.webp',
-    base + 'kural_images/kural-' + numStr + '.png',
-    base + 'kural_images/kural-' + numStr + '.jpg',
-    base + 'kural_images/' + pad3 + '.png',
-    base + 'kural_images/' + pad3 + '.jpg',
-    base + 'kural_images/' + pad4 + '.png',
-    base + 'kural_images/' + pad4 + '.jpg',
-    base + 'images/kurals/' + numStr + '.png',
-    base + 'images/kurals/' + numStr + '.jpg',
-    base + 'images/kurals/' + numStr + '.webp',
-    base + 'images/kurals/kural_' + numStr + '.png',
-    base + 'images/kurals/kural_' + numStr + '.jpg'
+    `${base}kural_images/${num}.jpg`,
+    `${base}thiruk_image/${num}.jpg`
   ];
 };
