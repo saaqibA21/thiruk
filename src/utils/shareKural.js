@@ -1,4 +1,4 @@
-﻿import { getCandidateImageUrls } from '../components/KuralImage';
+﻿import { getCandidateImageUrls } from './kuralFeatures';
 
 /**
  * Get formatted text for sharing a Kural

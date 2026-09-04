@@ -1,37 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ZoomIn, X, Sparkles, Share2 } from 'lucide-react';
+import { getCandidateImageUrls } from '../utils/kuralFeatures';
 
-export const getCandidateImageUrls = (kuralNumber) => {
-  if (!kuralNumber) return [];
-  const rawBase = import.meta.env.BASE_URL || '/';
-  const base = rawBase.endsWith('/') ? rawBase : (rawBase + '/');
-  const numStr = String(kuralNumber);
-  const pad3 = numStr.padStart(3, '0');
-  const pad4 = numStr.padStart(4, '0');
-  return [
-    base + 'kural_images/' + numStr + '.jpg',
-    base + 'kural_images/' + numStr + '.png',
-    base + 'thiruk_image/' + numStr + '.jpg',
-    base + 'thiruk_image/' + numStr + '.png',
-    base + 'kural_images/' + numStr + '.jpeg',
-    base + 'kural_images/' + numStr + '.webp',
-    base + 'kural_images/kural_' + numStr + '.png',
-    base + 'kural_images/kural_' + numStr + '.jpg',
-    base + 'kural_images/kural_' + numStr + '.jpeg',
-    base + 'kural_images/kural_' + numStr + '.webp',
-    base + 'kural_images/kural-' + numStr + '.png',
-    base + 'kural_images/kural-' + numStr + '.jpg',
-    base + 'kural_images/' + pad3 + '.png',
-    base + 'kural_images/' + pad3 + '.jpg',
-    base + 'kural_images/' + pad4 + '.png',
-    base + 'kural_images/' + pad4 + '.jpg',
-    base + 'images/kurals/' + numStr + '.png',
-    base + 'images/kurals/' + numStr + '.jpg',
-    base + 'images/kurals/' + numStr + '.webp',
-    base + 'images/kurals/kural_' + numStr + '.png',
-    base + 'images/kurals/kural_' + numStr + '.jpg'
-  ];
-};
+export { getCandidateImageUrls };
 
 export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnail = false, onShare = null }) => {
   const [candidateIndex, setCandidateIndex] = useState(0);
@@ -57,7 +28,6 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
 
   const handleImageLoad = () => {
     setIsLoaded(true);
-    setHasError(false);
   };
 
   if (hasError || candidates.length === 0) {

@@ -112,6 +112,60 @@ const PAGE_FLIP_VARIANTS = {
    })
 };
 
+const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying, onShare }) => {
+   const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
+   const lifeCat = getKuralLifeCategory(kural.Number);
+
+   const highlightText = (text) => {
+      if (!highlight || highlight.length === 0) return text;
+      let highlighted = text;
+      highlight.forEach(term => {
+         const regex = new RegExp(`(${term})`, 'gi');
+         highlighted = highlighted.replace(regex, '<mark>$1</mark>');
+      });
+      return <span dangerouslySetInnerHTML={{ __html: highlighted }} />;
+   };
+
+   return (
+      <div className="kural-mini-card">
+         <button 
+            className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
+            title={isPlaying ? "நிறுத்து (Stop)" : "குறள் ஒலி வடிவம் (Listen to Kural)"}
+            onClick={(e) => {
+               e.stopPropagation();
+               if (onPlayAudio) onPlayAudio(kural);
+            }}
+         >
+            {isPlaying ? <Square size={14} /> : <Volume2 size={16} />}
+         </button>
+         <KuralImage kuralNumber={kural.Number} isThumbnail={true} />
+         <div className="k-mini-info" onClick={onSelect} style={{ flex: 1, cursor: 'pointer' }}>
+            <div className="k-mini-num" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+               <span>குறள் எண்: {kural.Number}</span>
+               <span className="life-tag-badge mini">{lifeCat.icon} {lifeCat.nameEn}</span>
+            </div>
+            <div className="k-mini-lines">
+               <p>{highlightText(allWords.slice(0, 4).join(' '))}</p>
+               <p>{highlightText(allWords.slice(4).join(' '))}</p>
+            </div>
+         </div>
+         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button 
+               className="kural-share-action"
+               title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural)"
+               onClick={(e) => {
+                  e.stopPropagation();
+                  if (onShare) onShare(kural);
+               }}
+            >
+               <Share2 size={14} />
+            </button>
+            <ChevronRight className="k-mini-arrow" size={20} onClick={onSelect} style={{ cursor: 'pointer' }} />
+         </div>
+      </div>
+   );
+};
+
 const App = () => {
    // Core Navigation & State
    const [activeTab, setActiveTab] = useState('ask');
@@ -1080,58 +1134,5 @@ const App = () => {
    );
 };
 
-const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying, onShare }) => {
-   const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
-   const lifeCat = getKuralLifeCategory(kural.Number);
-
-   const highlightText = (text) => {
-      if (!highlight || highlight.length === 0) return text;
-      let highlighted = text;
-      highlight.forEach(term => {
-         const regex = new RegExp(`(${term})`, 'gi');
-         highlighted = highlighted.replace(regex, '<mark>$1</mark>');
-      });
-      return <span dangerouslySetInnerHTML={{ __html: highlighted }} />;
-   };
-
-   return (
-      <div className="kural-mini-card">
-         <button 
-            className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
-            title={isPlaying ? "நிறுத்து (Stop)" : "குறள் ஒலி வடிவம் (Listen to Kural)"}
-            onClick={(e) => {
-               e.stopPropagation();
-               if (onPlayAudio) onPlayAudio(kural);
-            }}
-         >
-            {isPlaying ? <Square size={14} /> : <Volume2 size={16} />}
-         </button>
-         <KuralImage kuralNumber={kural.Number} isThumbnail={true} />
-         <div className="k-mini-info" onClick={onSelect} style={{ flex: 1, cursor: 'pointer' }}>
-            <div className="k-mini-num" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-               <span>குறள் எண்: {kural.Number}</span>
-               <span className="life-tag-badge mini">{lifeCat.icon} {lifeCat.nameEn}</span>
-            </div>
-            <div className="k-mini-lines">
-               <p>{highlightText(allWords.slice(0, 4).join(' '))}</p>
-               <p>{highlightText(allWords.slice(4).join(' '))}</p>
-            </div>
-         </div>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <button 
-               className="kural-share-action"
-               title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural)"
-               onClick={(e) => {
-                  e.stopPropagation();
-                  if (onShare) onShare(kural);
-               }}
-            >
-               <Share2 size={14} />
-            </button>
-            <ChevronRight className="k-mini-arrow" size={20} onClick={onSelect} style={{ cursor: 'pointer' }} />
-         </div>
-      </div>
-   );
-};
 
 export default App;
