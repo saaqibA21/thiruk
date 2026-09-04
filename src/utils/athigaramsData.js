@@ -1951,3 +1951,5 @@ export function findAthigaram(query) {
 
   return null;
 }
+
+export const ATHIGARAMS = ALL_ATHIGARAMS.map(a => a.name);

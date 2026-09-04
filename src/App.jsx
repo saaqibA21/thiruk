@@ -16,7 +16,7 @@ import ShareModal from './components/ShareModal';
 import { IntroVideo } from './components/IntroVideo';
 import HistoryView from './components/HistoryView';
 import AboutView from './components/AboutView';
-import { findAthigaram } from './utils/athigaramsData.js';
+import { findAthigaram, ATHIGARAMS, ALL_ATHIGARAMS } from './utils/athigaramsData.js';
 
 const TAMIL_KEYS = [
    ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ'],
