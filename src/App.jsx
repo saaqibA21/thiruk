@@ -561,17 +561,14 @@ const App = () => {
             const kural = kuralData.find(k => k.Number === num);
             if (kural) {
                return (
-                  <div key={idx} className="chat-kural-link" onClick={() => setSelectedKural(kural)}>
-                     <div className="link-meta">குறள் {num} <ExternalLink size={14} /></div>
-                     {(() => {
-                        const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
-                        return (
-                           <div className="link-text">
-                              <p>{allWords.slice(0, 4).join(' ')}</p>
-                              <p>{allWords.slice(4).join(' ')}</p>
-                           </div>
-                        );
-                     })()}
+                  <div key={idx} className="kural-card-wrapper" style={{ margin: '0.85rem 0' }}>
+                     <KuralCard
+                        kural={kural}
+                        onSelect={() => setSelectedKural(kural)}
+                        onPlayAudio={handleToggleAudio}
+                        isPlaying={playingKuralId === kural.Number}
+                        onShare={(k) => setSharingKural(k)}
+                     />
                   </div>
                );
             }
@@ -778,13 +775,13 @@ const App = () => {
                                           <div className="kural-source-cards">
                                              {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
                                                 <div key={idx} className="kural-card-wrapper">
-
                                                    <KuralCard
                                                       kural={s}
                                                       highlight={m.searchTerms}
                                                       onSelect={() => setSelectedKural(s)}
                                                       onPlayAudio={handleToggleAudio}
                                                       isPlaying={playingKuralId === s.Number}
+                                                      onShare={(k) => setSharingKural(k)}
                                                    />
                                                 </div>
                                              ))}
@@ -955,13 +952,22 @@ const App = () => {
                                         <div key={k.Number} className="kural-item-card" onClick={() => setSelectedKural(k)}>
                                            <div className="k-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                               <span>குறள் எண்: {k.Number}</span>
-                                              <button 
-                                                 className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
-                                                 onClick={(e) => { e.stopPropagation(); handleToggleAudio(k); }}
-                                                 title="ஒலி வடிவம் (Listen to Kural)"
-                                              >
-                                                 {isPlaying ? <Square size={13} /> : <Volume2 size={15} />}
-                                              </button>
+                                              <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                                                 <button 
+                                                    className={`kural-audio-action ${isPlaying ? 'playing' : ''}`}
+                                                    onClick={(e) => { e.stopPropagation(); handleToggleAudio(k); }}
+                                                    title="ஒலி வடிவம் (Listen to Kural)"
+                                                 >
+                                                    {isPlaying ? <Square size={13} /> : <Volume2 size={15} />}
+                                                 </button>
+                                                 <button 
+                                                    className="kural-share-action"
+                                                    onClick={(e) => { e.stopPropagation(); setSharingCustomImage(null); setSharingKural(k); }}
+                                                    title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural & Image)"
+                                                 >
+                                                    <Share2 size={14} />
+                                                 </button>
+                                              </div>
                                            </div>
                                            <p>{allWords.slice(0, 4).join(' ')}</p>
                                            <p>{allWords.slice(4).join(' ')}</p>

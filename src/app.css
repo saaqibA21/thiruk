@@ -481,67 +481,71 @@ body {
 
 /* Chat Kural Links */
 .chat-kural-link {
-  background: #f1f5f9;
-  border: 1.5px solid var(--border);
-  border-radius: 1rem;
-  padding: 1rem;
+  background: #fff7ed;
+  border: 1.5px solid #ffedd5;
+  border-radius: 1.25rem;
+  padding: 1.1rem 1.4rem;
   margin: 0.75rem 0;
   cursor: pointer;
   transition: 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .chat-kural-link:hover {
-  background: #e2e8f0;
+  background: #ffedd5;
   border-color: var(--primary);
   transform: translateX(5px);
 }
 
 .link-meta {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 900;
   color: var(--primary);
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
 .link-text {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--text);
   margin: 0 !important;
+  line-height: 1.45;
 }
 
 /* Verse Styling */
 .tamil-verse {
   margin: 1.5rem 0;
   padding-left: 1.5rem;
-  border-left: 3px solid var(--primary);
+  border-left: 3.5px solid var(--primary);
 }
 
 .verse-line-1,
 .verse-line-2 {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--text);
-  line-height: 1.4;
+  line-height: 1.5;
   margin: 0;
 }
 
 .tamil-exp {
-  background: #fdf2f8;
+  background: #fff7ed;
   padding: 1.25rem;
   border-radius: 1rem;
-  border-left: 4px solid #db2777;
+  border: 1px solid #ffedd5;
+  border-left: 4px solid var(--primary);
   margin-top: 1rem;
 }
 
 .tamil-exp strong {
-  color: #db2777;
+  color: var(--primary);
   display: block;
   margin-bottom: 4px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 /* Chapter Grid */
