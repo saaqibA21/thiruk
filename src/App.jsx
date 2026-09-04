@@ -371,7 +371,7 @@ const App = () => {
 
    // Real-time Phonetic Translation
    useEffect(() => {
-      if (!query.trim()) return;
+      if (!query.trim() || isRecording) return;
 
       const hasEnglish = /[a-z]/i.test(query);
       const endsWithSentenceBoundary = /[.!?;]$/.test(query);
@@ -492,6 +492,10 @@ const App = () => {
    };
 
    const handleAsk = async (text, imageOverride = null) => {
+      if (isRecording || recognitionRef.current) {
+         try { recognitionRef.current?.stop(); } catch (e) { }
+         setIsRecording(false);
+      }
       const currentImage = imageOverride || selectedImage;
       if (!text.trim() && !currentImage) return;
       if (!aiEngine) {
@@ -857,11 +861,31 @@ const App = () => {
                                     placeholder={isRecording ? "🎙️ பேசவும் (Listening...)" : "எதையும் கேளுங்கள்..."}
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleAsk(query)}
+                                    onKeyDown={(e) => {
+                                       if (e.key === 'Enter' && !e.shiftKey) {
+                                          e.preventDefault();
+                                          if (isRecording || recognitionRef.current) {
+                                             try { recognitionRef.current?.stop(); } catch (err) { }
+                                             setIsRecording(false);
+                                          }
+                                          handleAsk(query);
+                                       }
+                                    }}
                                     onPaste={handlePaste}
                                     className={isRecording ? "input-recording-active" : ""}
                                  />
-                                 <button onClick={() => handleAsk(query)} disabled={loading || !aiEngine} className="send-btn-v2" title={!aiEngine ? "தயாராகிறது..." : "அனுப்பு"}>
+                                 <button 
+                                    onClick={() => {
+                                       if (isRecording || recognitionRef.current) {
+                                          try { recognitionRef.current?.stop(); } catch (err) { }
+                                          setIsRecording(false);
+                                       }
+                                       handleAsk(query);
+                                    }} 
+                                    disabled={loading || !aiEngine} 
+                                    className="send-btn-v2" 
+                                    title={!aiEngine ? "தயாராகிறது..." : "அனுப்பு"}
+                                 >
                                     {isTranslating ? <div className="mini-loader"></div> : !aiEngine ? <div className="mini-loader-orange"></div> : <Send size={20} />}
                                  </button>
                               </div>
