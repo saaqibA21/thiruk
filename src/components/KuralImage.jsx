@@ -9,8 +9,10 @@ export const getCandidateImageUrls = (kuralNumber) => {
   const pad3 = numStr.padStart(3, '0');
   const pad4 = numStr.padStart(4, '0');
   return [
-    base + 'kural_images/' + numStr + '.png',
     base + 'kural_images/' + numStr + '.jpg',
+    base + 'kural_images/' + numStr + '.png',
+    base + 'thiruk_image/' + numStr + '.jpg',
+    base + 'thiruk_image/' + numStr + '.png',
     base + 'kural_images/' + numStr + '.jpeg',
     base + 'kural_images/' + numStr + '.webp',
     base + 'kural_images/kural_' + numStr + '.png',
