@@ -4505,3 +4505,160 @@ body {
 
 
 
+
+/* =========================================
+   THIRUKKURAL COMMENTATORS SECTION STYLES
+   ========================================= */
+.commentators-section {
+  width: 100%;
+  margin: 3rem 0 2rem;
+  background: rgba(255, 253, 248, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(180, 83, 9, 0.2);
+  border-radius: 28px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 12px 35px rgba(180, 83, 9, 0.07);
+}
+
+.commentators-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.commentators-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 0.75rem;
+}
+
+.commentators-header h2 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #78350f;
+  margin-bottom: 0.5rem;
+}
+
+.commentators-header p {
+  font-size: 0.95rem;
+  color: #78716c;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.commentators-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+.commentator-card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-radius: 22px;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.commentator-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(180, 83, 9, 0.15);
+  border-color: #f59e0b;
+}
+
+.commentator-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  background: #fef3c7;
+}
+
+.commentator-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.5s ease;
+}
+
+.commentator-card:hover .commentator-img {
+  transform: scale(1.06);
+}
+
+.commentator-tag {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #b45309 0%, #78350f 100%);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.commentator-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.commentator-content h3 {
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: #78350f;
+  margin-bottom: 4px;
+}
+
+.commentator-role {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.commentator-content p {
+  font-size: 0.92rem;
+  color: #44403c;
+  line-height: 1.55;
+  margin-bottom: 14px;
+  flex: 1;
+}
+
+.commentator-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 10px;
+  border: 1px solid #ffedd5;
+  width: fit-content;
+}
+
+@media (max-width: 900px) {
+  .commentators-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .commentator-img-wrap {
+    height: 220px;
+  }
+}

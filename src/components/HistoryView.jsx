@@ -319,6 +319,76 @@ export default function HistoryView({ onNavigatePaal }) {
 
         </div>
 
+        
+        {/* Eminent Thirukkural Commentators / உரையாசிரியர்கள் */}
+        <div className="h-side-center">
+          <section className="commentators-section">
+            <div className="commentators-header">
+              <span className="commentators-badge">
+                <Feather size={14} /> உரையாசிரியர்கள்
+              </span>
+              <h2>புகழ்பெற்ற திருக்குறள் உரையாசிரியர்கள்</h2>
+              <p>திருக்குறளின் ஆழமான வாழ்வியல் கருத்துக்களை எளிய நடையில் உலகிற்கு எடுத்துரைத்த பெருமக்கள்</p>
+            </div>
+
+            <div className="commentators-grid">
+              {/* 1. Dr. Mu. Varadarajan */}
+              <div className="commentator-card">
+                <div className="commentator-img-wrap">
+                  <img src="mu_va.jpg" alt="Dr. Mu. Varadarajan" className="commentator-img" />
+                  <div className="commentator-tag">மு.வ. உரை</div>
+                </div>
+                <div className="commentator-content">
+                  <h3>டாக்டர் மு. வரதராசனார்</h3>
+                  <span className="commentator-role">பேராசிரியர் & தமிழறிஞர் (1912 - 1974)</span>
+                  <p>
+                    மிகவும் எளிய, தெளிவான மற்றும் தமிழ் மாணவர்களிடையே உலகளவில் அதிகம் வாசிக்கப்படும் முதன்மைத் திருக்குறள் உரை ஆசிரியர்.
+                  </p>
+                  <div className="commentator-pill">
+                    <span>📚 எளிய தெளிவுரை</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Solomon Pappaiah */}
+              <div className="commentator-card">
+                <div className="commentator-img-wrap">
+                  <img src="solomon_pappaiah.jpg" alt="Prof. Solomon Pappaiah" className="commentator-img" />
+                  <div className="commentator-tag">பாப்பையா உரை</div>
+                </div>
+                <div className="commentator-content">
+                  <h3>பேராசிரியர் சாலமன் பாப்பையா</h3>
+                  <span className="commentator-role">தமிழறிஞர் & பட்டிமன்ற நடுவர் (பத்மஸ்ரீ)</span>
+                  <p>
+                    பாமர மக்களும் அன்றாட வாழ்வில் திருக்குறளின் அர்த்தத்தை எளிதில் உணரும் வண்ணம் எளிய நடைமுறை வாழ்வியல் சொல்லாடல்களில் உரை வழங்கியவர்.
+                  </p>
+                  <div className="commentator-pill">
+                    <span>✨ வாழ்வியல் உரை</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Kalaignar M. Karunanidhi */}
+              <div className="commentator-card">
+                <div className="commentator-img-wrap">
+                  <img src="kalaignar.jpg" alt="Kalaignar M. Karunanidhi" className="commentator-img" />
+                  <div className="commentator-tag">கலைஞர் உரை</div>
+                </div>
+                <div className="commentator-content">
+                  <h3>முத்தமிழறிஞர் மு. கருணாநிதி</h3>
+                  <span className="commentator-role">எழுத்தாளர் & தமிழக முன்னாள் முதல்வர் (1924 - 2018)</span>
+                  <p>
+                    தமிழ் நயமும் அடுக்கு மொழியும் நிறைந்த இலக்கியச் சுவைமிக்க 'குறளோவியம்' மற்றும் நவீன கால கலைஞர் உரை தந்தவர்.
+                  </p>
+                  <div className="commentator-pill">
+                    <span>🎨 குறளோவியம் & இலக்கிய உரை</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
         {/* Bottom Section: Gandhi Tribute & Resources */}
         <div className="h-side-center">
           <div className="history-quote-v2 glass-quote">
