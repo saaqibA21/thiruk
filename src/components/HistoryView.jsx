@@ -318,10 +318,8 @@ export default function HistoryView({ onNavigatePaal }) {
           </section>
 
         </div>
-
-        
-        {/* Eminent Thirukkural Commentators / உரையாசிரியர்கள் */}
-        <div className="h-side-center">
+        {/* Eminent Thirukkural Commentators / உரையாசிரியர்கள் (Spacious Showcase) */}
+        <div className="history-commentators-wrapper">
           <section className="commentators-section">
             <div className="commentators-header">
               <span className="commentators-badge">
