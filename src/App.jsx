@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users } from 'lucide-react';
+import { Box, Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI } from './ai-engine';
 import {
@@ -16,6 +16,7 @@ import ShareModal from './components/ShareModal';
 import { IntroVideo } from './components/IntroVideo';
 import HistoryView from './components/HistoryView';
 import AboutView from './components/AboutView';
+import Thiruvalluvar3DModal from './components/Thiruvalluvar3DModal';
 import { findAthigaram, ATHIGARAMS, ALL_ATHIGARAMS } from './utils/athigaramsData.js';
 
 const TAMIL_KEYS = [
@@ -210,6 +211,7 @@ const App = () => {
 
    const [apiKey, setApiKey] = useState(getInitialKey());
    const [showSettings, setShowSettings] = useState(false);
+   const [show3DModal, setShow3DModal] = useState(false);
    const [showIntro, setShowIntro] = useState(() => {
       return !sessionStorage.getItem('thirukural_intro_seen');
    });
@@ -721,6 +723,9 @@ const App = () => {
                       </button>
                    </div>
                   {/* Desktop Nav */}
+                  <button className="header-3d-btn" onClick={() => setShow3DModal(true)} title="3D திருவள்ளுவர் காட்சி">
+                     <Box size={16} /> <span>3D வள்ளுவர்</span>
+                  </button>
                   <nav className="header-nav-tabs desktop-only">
                      <button className={activeTab === 'ask' ? 'active' : ''} onClick={() => setActiveTab('ask')}> <Cpu size={16} /> <span>AI நிபுணர்</span> </button>
                      <button className={activeTab === 'list' ? 'active' : ''} onClick={() => setActiveTab('list')}> <BookOpen size={16} /> <span>நூலகம்</span> </button>
@@ -741,6 +746,7 @@ const App = () => {
                               exit={{ opacity: 0, y: -10 }}
                               className="mobile-dropdown-menu"
                            >
+                              <button onClick={() => { setShow3DModal(true); setShowMobileMenu(false); }} style={{ color: '#b45309', fontWeight: 800 }}> <Box size={18} /> 3D வள்ளுவர் காட்சி </button>
                               <button onClick={() => { setActiveTab('ask'); setShowMobileMenu(false); }}> <Cpu size={18} /> AI நிபுணர் </button>
                               <button onClick={() => { setActiveTab('list'); setShowMobileMenu(false); }}> <BookOpen size={18} /> நூலகம் </button>
                               <button onClick={() => { setActiveTab('history'); setShowMobileMenu(false); }}> <HistoryIcon size={18} /> வரலாறு </button>
@@ -1290,7 +1296,8 @@ const App = () => {
 
          {/* Kural Share Card Modal */}
          <AnimatePresence>
-            {sharingKural && (
+            <Thiruvalluvar3DModal isOpen={show3DModal} onClose={() => setShow3DModal(false)} />
+         {sharingKural && (
                <ShareModal 
                   kural={sharingKural} 
                   customImageUrl={sharingCustomImage} 

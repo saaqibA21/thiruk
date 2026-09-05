@@ -4505,3 +4505,190 @@ body {
 
 
 
+
+/* =========================================
+   3D THIRUVALLUVAR COMPONENT & MODAL STYLES
+   ========================================= */
+.header-3d-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1.5px solid #f59e0b;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+  margin-right: 8px;
+}
+
+.header-3d-btn:hover {
+  background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%);
+  color: #78350f;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+}
+
+.thiruvalluvar-3d-modal-container {
+  background: linear-gradient(180deg, #fffdf8 0%, #fff8ec 100%);
+  width: 92%;
+  max-width: 680px;
+  max-height: 90vh;
+  border-radius: 24px;
+  border: 2px solid #f59e0b;
+  box-shadow: 0 25px 60px rgba(120, 53, 15, 0.35), 0 0 40px rgba(245, 158, 11, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  z-index: 10001;
+}
+
+.thiruvalluvar-3d-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.75rem;
+  background: rgba(254, 243, 199, 0.6);
+  border-bottom: 1.5px solid #fde68a;
+}
+
+.thiruvalluvar-3d-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.thiruvalluvar-3d-title-group h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #78350f;
+  margin: 0;
+}
+
+.thiruvalluvar-3d-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #b45309;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.thiruvalluvar-3d-close-btn {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #fcd34d;
+  color: #78350f;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.thiruvalluvar-3d-close-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  transform: scale(1.1);
+}
+
+.thiruvalluvar-3d-canvas-wrap {
+  width: 100%;
+  height: 420px;
+  min-height: 360px;
+  position: relative;
+  background: radial-gradient(circle at center, rgba(254, 243, 199, 0.5) 0%, rgba(251, 191, 36, 0.08) 70%, transparent 100%);
+}
+
+.thiruvalluvar-3d-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.thiruvalluvar-3d-footer {
+  padding: 1.25rem 1.75rem;
+  background: rgba(254, 243, 199, 0.4);
+  border-top: 1.5px solid #fde68a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.thiruvalluvar-3d-detail-info p {
+  margin: 2px 0;
+  font-size: 0.84rem;
+  color: #78350f;
+  line-height: 1.4;
+}
+
+.thiruvalluvar-3d-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #b45309;
+  border: 1.5px solid #f59e0b;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.thiruvalluvar-3d-action-btn.active {
+  background: #b45309;
+  color: #ffffff;
+  border-color: #92400e;
+}
+
+.thiruvalluvar-3d-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(180, 83, 9, 0.2);
+}
+
+@media (max-width: 640px) {
+  .thiruvalluvar-3d-canvas-wrap {
+    height: 320px;
+  }
+  .thiruvalluvar-3d-footer {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .thiruvalluvar-3d-hint {
+    font-size: 0.72rem;
+    padding: 4px 10px;
+    width: 90%;
+    text-align: center;
+    justify-content: center;
+  }
+}
