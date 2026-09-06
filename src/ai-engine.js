@@ -32,11 +32,190 @@ export function normalizeTamil(text) {
   return (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·'`"“”‘’\s]+/g, ' ').trim();
 }
 
-export function getTamilStem(word) {
-  let w = normalizeTamil(word);
-  // Strip common Tamil nominal/verbal inflection suffixes & case markers
-  w = w.replace(/(?:ங்களை|ங்கள்|த்தின்|த்தில்|த்தோடு|த்த|ுக்கு|ிற்கு|ற்கு|க்கு|ோடு|ுடன்|ஆல்|இல்|இன்|ஐ|ம்|ன்|ு|்)$/, '');
-  return w;
+export const TRANSLITERATION_MAP = {
+  'anbu': 'அன்பு',
+  'anbil': 'அன்பு',
+  'anbodu': 'அன்பு',
+  'anbudaimai': 'அன்புடைமை',
+  'aram': 'அறம்',
+  'aran': 'அறம்',
+  'porul': 'பொருள்',
+  'inbam': 'இன்பம்',
+  'kaamam': 'காமம்',
+  'natpu': 'நட்பு',
+  'kalvi': 'கல்வி',
+  'arivu': 'அறிவு',
+  'thuppu': 'துப்பு',
+  'eegai': 'ஈகை',
+  'pugazh': 'புகழ்',
+  'arul': 'அருள்',
+  'thavam': 'தவம்',
+  'vaaimai': 'வாய்மை',
+  'ozhukkam': 'ஒழுக்கம்',
+  'porai': 'பொறை',
+  'manam': 'மனம்',
+  'kan': 'கண்',
+  'marunthu': 'மருந்து',
+  'ookkam': 'ஊக்கம்',
+  'madi': 'மடி',
+  'kaalam': 'காலம்',
+  'irai': 'இறை',
+  'pagai': 'பகை',
+  'saandraanmai': 'சான்றாண்மை',
+  'kayamai': 'கயமை',
+  'panbu': 'பண்பு',
+  'selvam': 'செல்வம்',
+  'uzhavu': 'உழவு',
+  'iravu': 'இரவு',
+  'naan': 'நாண்',
+  'thuravu': 'துறவு',
+  'mei': 'மெய்',
+  'avaa': 'அவா',
+  'oozh': 'ஊழ்',
+  'sol': 'சொல்',
+  'soll': 'சொல்',
+  'vinai': 'வினை',
+  'vali': 'வலி',
+  'sutram': 'சுற்றம்',
+  'naadu': 'நாடு',
+  'aran': 'அரண்',
+  'padai': 'படை',
+  'kadavul': 'கடவுள்',
+  'mazhai': 'மழை',
+  'thaai': 'தாய்',
+  'thandhai': 'தந்தை',
+  'illaram': 'இல்லறம்',
+  'makkal': 'மக்கள்',
+  'virundhu': 'விருந்து',
+  'insoL': 'இன்சொல்',
+  'nandri': 'நன்றி',
+  'naduvu': 'நடுவு'
+};
+
+export const CONTEXTUAL_CORE_DATABASE = {
+  // அன்பு (Love / Compassion / Affection)
+  71: { word: 'அன்பு', meaning: 'உள்ளத்தில் அடைத்து வைக்க முடியாத, பிறர் துன்பம் கண்டு கண்ணீராகப் பொங்கி வழியும் தூய பாச உணர்வு.' },
+  72: { word: 'அன்பு', meaning: 'தம் உடம்பையும் பொருளையும் பிறர்க்கு அர்ப்பணிக்கும் தன்னலமற்ற தியாகப் பண்பு (Selfless Devotion).' },
+  73: { word: 'அன்பு', meaning: 'உயிரும் உடலும் கூடி வாழும் மானுடப் பிறவியின் தலையாய குறிக்கோளும் பயனாகும் வாழ்வியல் நெறி.' },
+  74: { word: 'அன்பு', meaning: 'அனைவரிடமும் எல்லையற்ற உலகளாவிய நட்பையும் பாசத்தையும் உருவாக்கும் மூல வித்து.' },
+  75: { word: 'அன்பு', meaning: 'இம்மை மறுமை இன்பங்களையும் பெருமைகளையும் வாரி வழங்கும் நல்வாழ்வின் அடித்தளம்.' },
+  76: { word: 'அன்பு', meaning: 'அறவழியை மட்டுமல்லாமல், வீரத்தையும் தீமையை அழிக்கும் மறத்தையும் இயக்கும் உள்ளார்ந்த ஆற்றல்.' },
+  77: { word: 'அன்பு', meaning: 'உயிரைக் காக்கும் எலும்பைப் போன்ற, வாழ்வின் அத்தியாவசிய ஆன்மப் பாதுகாப்பு (அன்பில்லாதவரை அறம் சுட்டு வருத்தும்).' },
+  78: { word: 'அன்பு', meaning: 'மனதை வாழ வைக்கும் ஜீவ நதி — அன்பில்லாத அக வாழ்க்கை பாலைவனப் பட்டமரத்திற்கு ஒப்பானது.' },
+  79: { word: 'அன்பு', meaning: 'புற உறுப்புகளுக்கு உண்மையான அழகையும் உயிரோட்டத்தையும் தரும் உள்ளத்து மெய்யுணர்வு.' },
+  80: { word: 'அன்பு', meaning: 'உயிருள்ள மனித உடலை வெறும் எலும்புக் கூட்டிலிருந்து வேறுபடுத்தும் ஜீவ நாடி.' },
+
+  // துப்பு (Rain / Sustenance / Water)
+  12: { word: 'துப்பு', meaning: '1. உண்பவருக்கு உணவுப் பொருள்களை விளைவித்துத் தருதல், 2. பருகுவார்க்குத் தானே உணவாகி உதவுதல்.' },
+
+  // அறம் (Virtue / Righteousness)
+  31: { word: 'அறம்', meaning: 'மனிதனுக்குச் சிறப்பையும் உலகச் செல்வத்தையும் ஒருங்கே தரும் ஒப்பற்ற வாழ்வியல் நெறி.' },
+  32: { word: 'அறம்', meaning: 'ஒருவனது ஆக்கத்திற்கு அறத்தை விடச் சிறந்ததும் இல்லை; அதை மறப்பதை விடக் கேடானதும் இல்லை.' },
+  33: { word: 'அறம்', meaning: 'மனம், வாக்கு, காயம் என்னும் மூன்றாலும் இயன்றவரை இடைவிடாது செய்யப்படும் நற்செயல்கள்.' },
+  34: { word: 'அறம்', meaning: 'மனதில் எவ்விதக் குற்றமும் அழுக்கும் இல்லாமல் தூய எண்ணத்தோடு வாழ்வதே தலையாய அறம்.' },
+  35: { word: 'அறம்', meaning: 'அழுக்காறு (பொறாமை), அவா (பேராசை), வெகுளி (கோபம்), இன்னாச்சொல் (கடுஞ்சொல்) ஆகிய நான்கையும் நீக்கி வாழ்வது.' },
+
+  // கல்வி (Education / True Learning)
+  391: { word: 'கல்வி', meaning: 'குற்றமறக் கற்று, கற்ற கல்விக்குத் தக்கவாறு நன்னெறியில் நின்று வாழும் தூய அறிவு.' },
+  392: { word: 'கல்வி', meaning: 'எண்ணும் எழுத்தும் ஆகிய இரு கண்களைப் போன்ற மனித வாழ்வின் பார்வைத்திறன்.' },
+  393: { word: 'கல்வி', meaning: 'உண்மையான கண் போன்றது (கற்காதவரின் கண்கள் முகத்தில் உள்ள இரு புண்கள்).' },
+  400: { word: 'கல்வி', meaning: 'ஒருவனுக்கு அழியாத ஒப்பற்ற சிறந்த செல்வம்.' },
+
+  // நட்பு (Friendship)
+  781: { word: 'நட்பு', meaning: 'அடைவதற்கு அரிய பாதுகாப்பு அரணாகவும், வினையை முடிக்கும் சிறந்த துணையாகவும் விளங்கும் உன்னத உறவு.' },
+  782: { word: 'நட்பு', meaning: 'வளர்பிறை போல நாளுக்கு நாள் மேன்மேலும் வளரும் நற்பண்புடையோரின் உறவு.' },
+  784: { word: 'நட்பு', meaning: 'முகம் மட்டும் மலர்வது நட்பன்று; உள்ளம் மலர்ந்து நெஞ்சார நேசிப்பதே உண்மையான நட்பு.' },
+  788: { word: 'நட்பு', meaning: 'உடுக்கை இழந்தவன் கை போல, துன்பம் வந்த காலத்தில் விரைந்து சென்று உதவும் உடனடிப் பாதுகாப்பு.' },
+
+  // ஒழுக்கம் (Discipline / Conduct)
+  131: { word: 'ஒழுக்கம்', meaning: 'உயிரை விட மேலானதாகப் போற்றிக் காக்கப்பட வேண்டிய மனித மாண்பு.' },
+
+  // வாய்மை (Truthfulness)
+  291: { word: 'வாய்மை', meaning: 'மற்றவர்க்கு எள்முனையளவும் தீமை தராத நன்மையான சொற்களைப் பேசுவது.' },
+
+  // மருந்து (Medicine / Health)
+  941: { word: 'மருந்து', meaning: 'முன் உண்ட உணவு செரித்ததை அறிந்து அளவோடு உண்பதே உடலுக்கு மருந்தாகும்.' },
+
+  // ஊக்கம் (Enthusiasm / Drive)
+  591: { word: 'ஊக்கம்', meaning: 'ஒருவனுக்கு உண்மையான உடைமை உள்ளத்து ஊக்கமே; மற்ற செல்வங்கள் நிலைக்காது.' }
+};
+
+export function getContextualWordMeaning(kural, targetWord) {
+  if (!kural) return null;
+
+  let queryWord = (targetWord || "").trim();
+  if (!queryWord) return null;
+
+  // Check Transliteration
+  const lowerQuery = queryWord.toLowerCase();
+  if (TRANSLITERATION_MAP[lowerQuery]) {
+    queryWord = TRANSLITERATION_MAP[lowerQuery];
+  }
+
+  // 1. Direct match in curated high-value database
+  if (CONTEXTUAL_CORE_DATABASE[kural.Number]) {
+    const entry = CONTEXTUAL_CORE_DATABASE[kural.Number];
+    const entryStem = getTamilStem(entry.word);
+    const queryStem = getTamilStem(queryWord);
+    if (entry.word.includes(queryWord) || queryWord.includes(entry.word) || (entryStem && entryStem === queryStem)) {
+      return {
+        word: entry.word,
+        meaning: entry.meaning,
+        source: 'curated'
+      };
+    }
+  }
+
+  // 2. Dynamic Semantic NLP Extraction from Scholar Commentaries (mv, sp, mk)
+  const normTarget = normalizeTamil(queryWord);
+  const stem = getTamilStem(queryWord);
+
+  const commentaries = [
+    { author: 'mv', text: kural.mv },
+    { author: 'sp', text: kural.sp },
+    { author: 'mk', text: kural.mk }
+  ].filter(c => c.text && typeof c.text === 'string');
+
+  if (commentaries.length === 0 && kural.explanation) {
+    return {
+      word: queryWord,
+      meaning: kural.explanation,
+      source: 'explanation'
+    };
+  }
+
+  // Find sentences/clauses containing the target word or stem
+  for (const { text } of commentaries) {
+    const rawClauses = text.split(/[.;!?]/).map(s => s.trim()).filter(s => s.length > 5);
+    
+    // Look for definition-style patterns
+    for (const clause of rawClauses) {
+      const normClause = normalizeTamil(clause);
+      if (normClause.includes(normTarget) || (stem.length >= 2 && normClause.includes(stem))) {
+        // Clean and refine the clause
+        let refined = clause
+          .replace(/^\((.*?)\)\s*/, '')
+          .replace(/^(ஆகையால்|ஆதலால்|எனவே|ஆனால்|மேலும்|அதாவது)\s*,?\s*/i, '')
+          .trim();
+
+        if (refined.length > 15) {
+          return {
+            word: queryWord,
+            meaning: refined,
+            source: 'commentary'
+          };
+        }
+      }
+    }
+  }
+
+  // Fallback: If no single clause isolated, use the concise commentary directly
+  const fallback = kural.mv || kural.sp || kural.mk || kural.Translation;
+  return {
+    word: queryWord,
+    meaning: fallback,
+    source: 'full-commentary'
+  };
 }
 
 // 1. Specific Athigaram Lookup (Exact, sandhi, English/Tamil by name or number)
@@ -328,21 +507,25 @@ export class KuralAI {
     }
 
     async search(query, isImageSearch = false) {
-        if (!query) return { results: [], searchTerms: [] };
+        if (!query) return { results: [], searchTerms: [], targetWord: '' };
         
         // 1. If query is a pure number (e.g. "40", "1", "1330"), return ONLY that specific Kural
         const pureNum = parseInt(query.trim(), 10);
         if (/^\d{1,4}$/.test(query.trim()) && pureNum >= 1 && pureNum <= 1330) {
             const exactKural = this.dataset.find(k => k.Number === pureNum);
             if (exactKural) {
-                return { results: [exactKural], searchTerms: [pureNum.toString()] };
+                return { results: [exactKural], searchTerms: [pureNum.toString()], targetWord: '' };
             }
         }
 
         // 2. Check if query is targeting a specific Athigaram (e.g. "அதிகாரம் 40", "chapter 40", "கல்வி")
         const athigaram = getAthigaramDetails(query, this.dataset);
         if (athigaram) {
-            return { results: athigaram.kurals, searchTerms: [athigaram.chapterName] };
+            const enrichedChapterKurals = athigaram.kurals.map(k => {
+                const ctx = getContextualWordMeaning(k, athigaram.chapterName);
+                return ctx ? { ...k, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : k;
+            });
+            return { results: enrichedChapterKurals, searchTerms: [athigaram.chapterName], targetWord: athigaram.chapterName };
         }
 
         const cleanQuery = normalizeTamil(query);
@@ -354,10 +537,20 @@ export class KuralAI {
         const isEndsWith = endKeywords.some(kw => cleanQuery.includes(kw));
         
         const allWords = cleanQuery.split(/\s+/);
-        const ignoreWords = [...startKeywords, ...endKeywords, 'குறள்', 'திருக்குறள்', 'என்று', 'என', 'என்னா', 'என்னும்', 'என்ற', 'சொல்', 'வார்த்தை'];
+        const ignoreWords = [...startKeywords, ...endKeywords, 'குறள்', 'திருக்குறள்', 'என்று', 'என', 'என்னா', 'என்னும்', 'என்ற', 'சொல்', 'வார்த்தை', 'பொருள்', 'விளக்கம்', 'என்ன', 'கூறு', 'சொல்லுங்கள்'];
         const searchTerms = allWords.filter(t => !ignoreWords.includes(t) && t.length > 1);
         const target = searchTerms[0] || allWords[0];
         const targetPhrase = searchTerms.join(' ');
+
+        let resolvedTarget = target;
+        if (target) {
+            const low = target.toLowerCase();
+            if (TRANSLITERATION_MAP[low]) {
+                resolvedTarget = TRANSLITERATION_MAP[low];
+            }
+        }
+
+        const targetStem = resolvedTarget ? getTamilStem(resolvedTarget) : '';
 
         const scoredResults = this.dataset.map(k => {
             let score = 0;
@@ -370,21 +563,26 @@ export class KuralAI {
                 const targetRoot = target.endsWith('ம்') ? target.slice(0, -1) : target;
                 if (targetPhrase && l1.startsWith(targetPhrase)) {
                     score += 3000000;
-                } else if (l1.startsWith(target) || words[0].startsWith(target)) {
+                } else if (l1.startsWith(target) || words[0].startsWith(target) || (resolvedTarget && l1.startsWith(resolvedTarget))) {
                     score += 2000000;
                 } else if (l1.startsWith(targetRoot) || words[0].startsWith(targetRoot)) {
                     score += 1000000;
                 } else if (target.length >= 4 && (l1.startsWith(target.slice(0, 4)) || words[0].startsWith(target.slice(0, 4)))) {
                     score += 800000;
-                } else if (l1.includes(target)) {
+                } else if (l1.includes(target) || (resolvedTarget && l1.includes(resolvedTarget))) {
                     score += 500000;
-                } else if (v.includes(target)) {
+                } else if (v.includes(target) || (resolvedTarget && v.includes(resolvedTarget))) {
                     score += 200000;
                 }
             } else if (isEndsWith && target) {
-                if (l2.endsWith(target) || words[words.length-1].endsWith(target)) score += 2000000;
-                else if (l2.includes(target)) score += 500000;
+                if (l2.endsWith(target) || words[words.length-1].endsWith(target) || (resolvedTarget && l2.endsWith(resolvedTarget))) score += 2000000;
+                else if (l2.includes(target) || (resolvedTarget && l2.includes(resolvedTarget))) score += 500000;
             } else {
+                if (resolvedTarget) {
+                    if (words.some(w => normalizeTamil(w) === normalizeTamil(resolvedTarget))) score += 8000;
+                    else if (v.includes(resolvedTarget)) score += 5000;
+                    else if (targetStem && targetStem.length >= 2 && v.includes(targetStem)) score += 3000;
+                }
                 searchTerms.forEach(t => {
                     if (words.includes(t)) score += 5000;
                     else if (v.includes(t)) score += 1000;
@@ -397,8 +595,25 @@ export class KuralAI {
             return { ...k, score };
         }).filter(r => r.score > 0).sort((a, b) => b.score - a.score);
 
+        // Attach universal contextual word meaning
+        const enrichedResults = scoredResults.map(k => {
+            if (resolvedTarget) {
+                const ctx = getContextualWordMeaning(k, resolvedTarget);
+                if (ctx && ctx.meaning) {
+                    return { ...k, contextMeaning: ctx.meaning, contextTargetWord: ctx.word || resolvedTarget };
+                }
+            }
+            return k;
+        });
+
+        const finalSearchTerms = resolvedTarget ? [resolvedTarget, ...searchTerms.filter(t => t !== target && t !== resolvedTarget)] : searchTerms;
+
         // Unlimited results for search (single result for image searches)
-        return { results: isImageSearch ? scoredResults.slice(0, 1) : scoredResults, searchTerms };
+        return { 
+            results: isImageSearch ? enrichedResults.slice(0, 1) : enrichedResults, 
+            searchTerms: finalSearchTerms,
+            targetWord: resolvedTarget || target
+        };
     }
 
     async ask(question, imageBase64 = null, isDirect = false) {
@@ -446,21 +661,26 @@ export class KuralAI {
         if (kuralWordOcc) {
             const { kural, targetWord, count, matches } = kuralWordOcc;
             if (count > 0) {
+                const ctx = getContextualWordMeaning(kural, targetWord);
+                const enrichedKural = ctx ? { ...kural, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : kural;
                 let text = `📖 **குறள் எண் ${kural.Number}ல் "${targetWord}" என்ற சொல் ஆய்வு:**\n\n` +
                            `• **இக்குறளில் "${targetWord}" என்ற சொல் மொத்தம் ${count} முறை வந்துள்ளது.**\n\n` +
                            `**குறள்:**\n` +
                            `"${kural.Line1}\n${kural.Line2}"\n\n` +
                            `**இடம்பெற்றுள்ள சீர்கள்:**\n` +
                            matches.map(m => `• சீர் ${m.seerNum}: **${m.word}**`).join('\n') + `\n\n` +
+                           (ctx ? `💡 **இக்குறளில் '${targetWord}' குறிப்பது:** ${ctx.meaning}\n\n` : '') +
                            `**உரை விளக்கம்:**\n${kural.mv || kural.sp || kural.mk}`;
                 return {
                     answer: text,
-                    sources: [kural]
+                    sources: [enrichedKural],
+                    searchTerms: [targetWord]
                 };
             } else {
                 return {
                     answer: `குறள் எண் ${kural.Number}ல் "${targetWord}" என்ற சொல் இடம்பெறவில்லை.\n\n**குறள் ${kural.Number}:**\n"${kural.Line1}\n${kural.Line2}"`,
-                    sources: [kural]
+                    sources: [kural],
+                    searchTerms: [targetWord]
                 };
             }
         }
@@ -470,6 +690,10 @@ export class KuralAI {
         if (corpusFreq) {
             const { targetWord, rootOccurrences, totalKurals, aramCount, porulCount, inbamCount, firstKural, lastKural, matchingKurals } = corpusFreq;
             if (rootOccurrences > 0) {
+                const enrichedMatching = matchingKurals.map(k => {
+                    const ctx = getContextualWordMeaning(k, targetWord);
+                    return ctx ? { ...k, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : k;
+                });
                 let text = `📊 **திருக்குறள் சொல் பயன்பாட்டு ஆய்வு (Corpus Frequency Analysis):**\n\n` +
                            `• **ஆய்வு செய்யப்பட்ட சொல்:** "${targetWord}"\n` +
                            `• **திருக்குறளில் மொத்தம் வந்துள்ள எண்ணிக்கை:** **${rootOccurrences} முறை**\n` +
@@ -480,15 +704,17 @@ export class KuralAI {
                            `• காமத்துப்பால்: **${inbamCount} குறள்கள்**\n\n` +
                            (firstKural ? `• **முதல் தோற்றம்:** குறள் ${firstKural.Number} ("${firstKural.Line1}...")\n` : '') +
                            (lastKural ? `• **இறுதித் தோற்றம்:** குறள் ${lastKural.Number} ("${lastKural.Line1}...")\n\n` : '\n') +
-                           `இதோ இச்சொல் இடம்பெற்றுள்ள முதன்மை குறட்பாக்கள்:`;
+                           `இதோ இச்சொல் இடம்பெற்றுள்ள முதன்மை குறட்பாக்கள் மற்றும் அவற்றின் சூழல் பொருள்:`;
                 return {
                     answer: text,
-                    sources: matchingKurals
+                    sources: enrichedMatching,
+                    searchTerms: [targetWord]
                 };
             } else {
                 return {
                     answer: `திருக்குறளின் 1,330 பாடல்களில் **"${targetWord}"** என்ற சொல் எங்கும் நேரடியாகப் பயன்படுத்தப்படவில்லை.`,
-                    sources: []
+                    sources: [],
+                    searchTerms: [targetWord]
                 };
             }
         }
@@ -522,7 +748,8 @@ export class KuralAI {
                              (kural.Translation ? `\n• **English Translation:** ${kural.Translation}\n` : '');
                 return {
                     answer: text.trim(),
-                    sources: [kural]
+                    sources: [kural],
+                    searchTerms: []
                 };
             }
         }
@@ -530,6 +757,10 @@ export class KuralAI {
         // Step 5: Specific Athigaram Query Handler (by Name, Sandhi, English, or Explicit Chapter Number)
         const athigaram = getAthigaramDetails(question, this.dataset) || getAthigaramDetails(queryForSearch, this.dataset);
         if (athigaram) {
+            const enrichedKurals = athigaram.kurals.map(k => {
+                const ctx = getContextualWordMeaning(k, athigaram.chapterName);
+                return ctx ? { ...k, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : k;
+            });
             const answer = `📜 **அதிகாரம் ${athigaram.chapterNumber}: ${athigaram.chapterName} (${athigaram.chapterEnglish})**\n\n` +
                            `• **பால்:** ${athigaram.paal} (${athigaram.paalEn})\n` +
                            `• **இயல்:** ${athigaram.iyal} (${athigaram.iyalEn})\n` +
@@ -537,7 +768,8 @@ export class KuralAI {
                            `இதோ **${athigaram.chapterName}** அதிகாரத்தின் 10 திருக்குறள்களும் அவற்றின் முழுமையான உரை விளக்கங்களும்:`;
             return {
                 answer,
-                sources: athigaram.kurals
+                sources: enrichedKurals,
+                searchTerms: [athigaram.chapterName]
             };
         }
 
@@ -570,24 +802,43 @@ export class KuralAI {
         }
 
         let finalSources = [];
+        let finalSearchTerms = [];
+        let finalTargetWord = '';
         const questionWords = ['என்ன', 'ஏன்', 'எப்படி', 'விளக்கம்', 'explain', 'what', 'why', 'how', '?', 'சொல்', 'கூறு'];
         const isQuestion = questionWords.some(w => queryForSearch.includes(w));
 
         // Semantic Search
         if (!isDirect || imageBase64) {
-            const { results } = await this.search(queryForSearch, !!imageBase64);
-            finalSources = results;
+            const searchRes = await this.search(queryForSearch, !!imageBase64);
+            finalSources = searchRes.results;
+            finalSearchTerms = searchRes.searchTerms;
+            finalTargetWord = searchRes.targetWord;
 
             const startKeywords = ['தொடங்கும்', 'துடங்கும்', 'starting', 'start', 'தொடக்கம்'];
             const isStructural = startKeywords.some(kw => queryForSearch.includes(kw));
 
             if (!isDirect && (isStructural || (!isQuestion && finalSources.length > 0)) && !imageBase64) {
                 const count = finalSources.length;
-                return { 
-                    answer: count > 1 
+                const topSources = finalSources.slice(0, 5);
+                const hasContextWord = finalTargetWord && finalTargetWord.length > 1;
+
+                let customAnswer = '';
+                if (hasContextWord) {
+                    customAnswer = `🔍 **'${finalTargetWord}' என்ற சொல்லின் வாழ்வியல் சூழல் ஆய்வு (Contextual Word Analysis):**\n\n` +
+                                   `திருக்குறளில் **'${finalTargetWord}'** என்ற சொல் சூழலுக்கு ஏற்ப தனித்துவமான ஆழமான பொருளைக் குறிக்கிறது (கண்டறியப்பட்ட குறள்கள்: **${count}**):\n\n` +
+                                   topSources.map(k => `• **குறள் ${k.Number}:** 💡 இக்குறளில் '${finalTargetWord}' குறிப்பது: **${k.contextMeaning || k.mv || k.sp || ''}**`).join('\n') +
+                                   (count > 5 ? `\n\n*(மேலும் கீழேயுள்ள குறள் அட்டைகளில் விரிவான உரை விளக்கங்களைக் காணலாம்)*` : '');
+                } else {
+                    customAnswer = count > 1 
                         ? `🔍 **தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
-                        : `இதோ நீங்கள் கேட்ட குறள்:`, 
-                    sources: finalSources 
+                        : `இதோ நீங்கள் கேட்ட குறள்:`;
+                }
+
+                return { 
+                    answer: customAnswer, 
+                    sources: finalSources,
+                    searchTerms: finalSearchTerms,
+                    targetWord: finalTargetWord
                 };
             }
         }
@@ -597,19 +848,34 @@ export class KuralAI {
         if (!isValidKey) {
             if (finalSources.length > 0) {
                 const count = finalSources.length;
-                return { 
-                    answer: count > 1 
+                const topSources = finalSources.slice(0, 5);
+                const hasContextWord = finalTargetWord && finalTargetWord.length > 1;
+
+                let customAnswer = '';
+                if (hasContextWord) {
+                    customAnswer = `🔍 **'${finalTargetWord}' என்ற சொல்லின் வாழ்வியல் சூழல் ஆய்வு (Contextual Word Analysis):**\n\n` +
+                                   `திருக்குறளில் **'${finalTargetWord}'** என்ற சொல் சூழலுக்கு ஏற்ப தனித்துவமான ஆழமான பொருளைக் குறிக்கிறது (கண்டறியப்பட்ட குறள்கள்: **${count}**):\n\n` +
+                                   topSources.map(k => `• **குறள் ${k.Number}:** 💡 இக்குறளில் '${finalTargetWord}' குறிப்பது: **${k.contextMeaning || k.mv || k.sp || ''}**`).join('\n') +
+                                   (count > 5 ? `\n\n*(மேலும் கீழேயுள்ள குறள் அட்டைகளில் விரிவான உரை விளக்கங்களைக் காணலாம்)*` : '');
+                } else {
+                    customAnswer = count > 1 
                         ? `🔍 **தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
-                        : `இதோ நீங்கள் கேட்ட குறள்:`, 
-                    sources: finalSources 
+                        : `இதோ நீங்கள் கேட்ட குறள்:`;
+                }
+
+                return { 
+                    answer: customAnswer, 
+                    sources: finalSources,
+                    searchTerms: finalSearchTerms,
+                    targetWord: finalTargetWord
                 };
             }
-            return { answer: "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை.", sources: [] };
+            return { answer: "மன்னிக்கவும், இது குறித்த குறள்கள் கிடைக்கவில்லை.", sources: [], searchTerms: [] };
         }
 
         try {
             const contextSources = imageBase64 ? finalSources.slice(0, 1) : finalSources;
-            const context = contextSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}`).join('\n\n');
+            const context = contextSources.map(k => `Kural #${k.Number}: ${k.Line1} / ${k.Line2}\nContext Meaning of searched term: ${k.contextMeaning || k.mv}`).join('\n\n');
             
             const messages = [
                 { 
@@ -630,6 +896,9 @@ export class KuralAI {
                     - Words 'தமிழ்' and 'கடவுள்' NEVER appear in the 1330 couplets directly.
                     - Born: 31 BC (Mylapore). First printed: 1812. Translations: 107 languages.
                     
+                    ### CONTEXTUAL WORD MEANING REQUIREMENT:
+                    - When analyzing Kurals matching a specific concept or word (e.g. அன்பு, அறம், கல்வி, துப்பு, நட்பு, etc.), explicitly explain what that word refers to / signifies in the context of EACH Kural (e.g., '💡 இக்குறளில் [சொல்] குறிப்பது: ...').
+                    
                     ### VERIFICATION RULES:
                     1. Never hallucinate or invent word occurrence counts. Calculate exact facts.
                     2. Use ONLY exact classical Thirukkural texts and authenticated scholar commentaries (Mu. Va, Solomon Pappaiah, M. Karunanidhi).
@@ -644,10 +913,15 @@ export class KuralAI {
             const response = await this.openai.chat.completions.create({ model: "gpt-4o", messages: messages, temperature: 0 });
             const rawOutput = response.choices[0].message.content.trim();
             const sanitized = sanitizeResponse(rawOutput);
-            return { answer: sanitized, sources: sanitized === OFF_TOPIC_RESPONSE ? [] : finalSources };
+            return { 
+                answer: sanitized, 
+                sources: sanitized === OFF_TOPIC_RESPONSE ? [] : finalSources,
+                searchTerms: finalSearchTerms,
+                targetWord: finalTargetWord
+            };
         } catch (err) {
             console.error("AI Error:", err);
-            return { answer: "மன்னிக்கவும், பதிலளிப்பதில் சிக்கல் ஏற்பட்டது.", sources: finalSources };
+            return { answer: "மன்னிக்கவும், பதிலளிப்பதில் சிக்கல் ஏற்பட்டது.", sources: finalSources, searchTerms: finalSearchTerms };
         }
     }
 }

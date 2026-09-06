@@ -120,11 +120,15 @@ const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying, onShare
       if (!highlight || highlight.length === 0) return text;
       let highlighted = text;
       highlight.forEach(term => {
+         if (!term || term.length < 2) return;
          const regex = new RegExp(`(${term})`, 'gi');
          highlighted = highlighted.replace(regex, '<mark>$1</mark>');
       });
       return <span dangerouslySetInnerHTML={{ __html: highlighted }} />;
    };
+
+   const contextWord = kural.contextTargetWord || (highlight && highlight[0]);
+   const contextMeaning = kural.contextMeaning;
 
    return (
       <div className="kural-mini-card">
@@ -148,6 +152,15 @@ const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying, onShare
                <p>{highlightText(allWords.slice(0, 4).join(' '))}</p>
                <p>{highlightText(allWords.slice(4).join(' '))}</p>
             </div>
+            {contextMeaning && (
+               <div className="kural-context-meaning-box">
+                  <span className="context-meaning-label">
+                     <Sparkles size={13} className="context-sparkle-icon" /> 
+                     இக்குறளில் '{contextWord || 'இச்சொல்'}' குறிப்பது:
+                  </span>
+                  <span className="context-meaning-text">{contextMeaning}</span>
+               </div>
+            )}
          </div>
          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <button 
@@ -587,7 +600,12 @@ const App = () => {
          //    });
          // }
 
-         setMessages(prev => [...prev, { role: 'ai', content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", sources: result.sources || [] }]);
+         setMessages(prev => [...prev, { 
+            role: 'ai', 
+            content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", 
+            sources: result.sources || [],
+            searchTerms: result.searchTerms || (result.targetWord ? [result.targetWord] : [])
+         }]);
       } catch (error) {
          console.error("Chat Error:", error);
          setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பதிலைத் தேடுவதில் தொழில்நுட்பக் கோளாறு ஏற்பட்டுள்ளது. மீண்டும் ஒருமுறை முயற்சி செய்யுங்கள்.", sources: [] }]);
@@ -1248,6 +1266,17 @@ const App = () => {
                                         setSharingKural(selectedKural);
                                      }}
                                   />
+
+                                  {/* Contextual Meaning Callout (if present) */}
+                                  {selectedKural.contextMeaning && (
+                                     <div className="modal-context-meaning-banner">
+                                        <div className="modal-context-header">
+                                           <Sparkles size={16} color="#b45309" />
+                                           <strong>இக்குறளில் '{selectedKural.contextTargetWord || 'இச்சொல்'}' உணர்த்தும் தனித்துவப் பொருள்:</strong>
+                                        </div>
+                                        <p className="modal-context-body">{selectedKural.contextMeaning}</p>
+                                     </div>
+                                  )}
 
                                   {/* Explanations Stack */}
                                   <div className="m-explanations-stack">
