@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
 import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { KuralAI } from './ai-engine';
+import { KuralAI, getContextualWordMeaning } from './ai-engine';
 import {
    MODERN_LIFE_CATEGORIES,
    WHISPER_PROMPTS,
@@ -128,7 +128,13 @@ const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying, onShare
    };
 
    const contextWord = kural.contextTargetWord || (highlight && highlight[0]);
-   const contextMeaning = kural.contextMeaning;
+   let contextMeaning = kural.contextMeaning;
+   if (!contextMeaning && contextWord) {
+      const ctx = getContextualWordMeaning(kural, contextWord);
+      if (ctx && ctx.meaning) {
+         contextMeaning = ctx.meaning;
+      }
+   }
 
    return (
       <div className="kural-mini-card">
@@ -861,7 +867,7 @@ const App = () => {
                                                 <div key={idx} className="kural-card-wrapper">
                                                    <KuralCard
                                                       kural={s}
-                                                      highlight={m.searchTerms}
+                                                      highlight={m.searchTerms && m.searchTerms.length > 0 ? m.searchTerms : (s.contextTargetWord ? [s.contextTargetWord] : [])}
                                                       onSelect={() => setSelectedKural(s)}
                                                       onPlayAudio={handleToggleAudio}
                                                       isPlaying={playingKuralId === s.Number}
