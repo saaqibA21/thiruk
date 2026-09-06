@@ -3,16 +3,16 @@ const CHAPTER_INDEX = [
 ];
 
 const TRIVIA_KNOWLEDGE = {
-    "இயல்": "திருக்குறளில் மொத்தம் 9 இயல்கள் உள்ளன. (அறத்துப்பால்-4, பொருட்பால்-7, இன்பத்துப்பால்-2).",
-    "பால்": "திருக்குறளில் மொத்தம் 3 பால்கள் உள்ளன. அவை: 1. அறத்துப்பால் (38 அதிகாரங்கள், 380 குறள்கள்), 2. பொருட்பால் (70 அதிகாரங்கள், 700 குறள்கள்), 3. காமத்துப்பால் (25 அதிகாரங்கள், 250 குறள்கள்).",
-    "எழுத்து": "திருக்குறளில் உள்ள மொத்த எழுத்துக்கள்: 42,194. பயன்படுத்தப்பட்ட தமிழ் எழுத்துக்கள்: 37. அதிகம் பயன்படுத்தப்பட்ட எழுத்து 'னி' (1,705 முறை). பயன்படுத்தப்படாத உயிர் எழுத்து 'ஔ'.",
-    "சொல்": "திருக்குறளில் உள்ள மொத்த சொற்கள்: 14,000.",
-    "அதிகாரம்": "திருக்குறளில் மொத்தம் 133 அதிகாரங்கள் உள்ளன. ஒவ்வொரு அதிகாரத்திற்கும் 10 குறள்கள் வீதம் மொத்தம் 1,330 குறட்பாக்கள்.",
-    "குறள்": "திருக்குறளில் மொத்தம் 1,330 ஈரடி வெண்பாக்கள் உள்ளன. முதல் அடியில் 4 சீர்களும், இரண்டாம் அடியில் 3 சீர்களும் என மொத்தம் 7 சீர்கள் உள்ளன.",
+    "இயல்": "📜 **திருக்குறள் இயல்கள் விவரம்:**\n\nதிருக்குறளில் மொத்தம் **9 இயல்கள்** உள்ளன:\n• **அறத்துப்பால் (4 இயல்கள்):** பாயிரவியல், இல்லறவியல், துறவறவியல், ஊழியல்\n• **பொருட்பால் (7 இயல்கள்):** அரசியல், அமைச்சியல், அரணியல், கூழியல், படையியல், நட்பியல், குடியியல்\n• **காமத்துப்பால் (2 இயல்கள்):** களவியல், கற்பியல்",
+    "பால்": "📖 **திருக்குறள் பால்கள் விவரம்:**\n\nதிருக்குறளில் மொத்தம் **3 பால்கள்** உள்ளன:\n1. **அறத்துப்பால்:** 38 அதிகாரங்கள் (குறள் 1 - 380)\n2. **பொருட்பால்:** 70 அதிகாரங்கள் (குறள் 381 - 1080)\n3. **காமத்துப்பால்:** 25 அதிகாரங்கள் (குறள் 1081 - 1330)",
+    "எழுத்து": "🔤 **திருக்குறள் எழுத்துக்கள் புள்ளிவிவரம்:**\n\n• **மொத்த எழுத்துக்கள்:** **42,194**\n• **பயன்படுத்தப்பட்ட தமிழ் எழுத்துக்கள்:** **37**\n• **அதிகம் பயன்படுத்தப்பட்ட எழுத்து:** **'னி'** (1,705 முறை)\n• **பயன்படுத்தப்படாத ஒரே உயிர் எழுத்து:** **'ஔ'**\n• **முதல் எழுத்து:** **'அ'** (குறள் 1)\n• **கடைசி எழுத்து:** **'ன்'** (குறள் 1330)",
+    "சொல்": "📊 **திருக்குறள் சொல் மற்றும் சீர் புள்ளிவிவரங்கள்:**\n\n• **மொத்த சீர்கள் (Metrical Words / Seers):** **9,310 சீர்கள்** (1,330 குறள்கள் × 7 சீர்கள்)\n• **மொத்த சொற்கள் (Lexical / Grammatical Words):** **சுமார் 14,000 சொற்கள்** (சொல் புணர்ச்சிகளைப் பிரித்து இலக்கணப்படி கணக்கிடும்போது)\n• **ஒரு குறளுக்கு:** முதல் அடியில் 4 சீர்கள், இரண்டாம் அடியில் 3 சீர்கள் என மொத்தம் 7 சீர்கள்.",
+    "அதிகாரம்": "🏛️ **திருக்குறள் அதிகாரங்கள்:**\n\nதிருக்குறளில் மொத்தம் **133 அதிகாரங்கள்** உள்ளன. ஒவ்வொரு அதிகாரத்திற்கும் 10 குறள்கள் வீதம் மொத்தம் **1,330 குறட்பாக்கள்** உள்ளன.",
+    "குறள்": "📖 **திருக்குறள் பாடல்கள் அமைப்பு:**\n\nதிருக்குறளில் மொத்தம் **1,330 ஈரடி வெண்பாக்கள்** உள்ளன. முதல் அடியில் 4 சீர்களும், இரண்டாம் அடியில் 3 சீர்களும் என மொத்தம் 7 சீர்கள் கொண்டு அமைக்கப்பட்டவை.",
     "பெற்றோர்": "திருவள்ளுவரின் பெற்றோர் ஆதி மற்றும் பகவன் என்று நம்பப்படுகிறது.",
     "மனைவி": "திருவள்ளுவரின் மனைவி வாசுகி அம்மையார்.",
-    "ஆண்டு": "திருக்குறள் முதன்முதலில் 1812-ம் ஆண்டு தஞ்சையில் அச்சிடப்பட்டது. திருவள்ளுவர் கி.மு. 31-ம் ஆண்டு பிறந்தவராகக் கருதப்படுகிறது.",
-    "மொழிபெயர்ப்பு": "திருக்குறள் 107-க்கும் மேற்பட்ட உலக மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. ஆங்கிலத்தில் ஜி.யு. போப் முதன்முதலில் முழுமையாக மொழிபெயர்த்தார்.",
+    "ஆண்டு": "திருக்குறள் முதன்முதலில் 1812-ம் ஆண்டு தஞ்சையில் அச்சிடப்பட்டது. திருவள்ளுவர் கி.மு. 31-ம் ஆண்டு பிறந்தவராகக் தமிழ்நாடு அரசால் ஏற்கப்பட்டுள்ளது.",
+    "மொழிபெயர்ப்பு": "திருக்குறள் உலகளவில் 107-க்கும் மேற்பட்ட மொழிகளில் மொழிபெயர்க்கப்பட்டுள்ளது. ஆங்கிலத்தில் ஜி.யு. போப் முதன்முதலில் முழுமையாக மொழிபெயர்த்தார்.",
     "மலர்": "திருக்குறளில் இடம்பெற்றுள்ள மலர்கள்: அனிச்சம் மற்றும் குவளை.",
     "மரம்": "திருக்குறளில் இடம்பெற்றுள்ள மரங்கள்: பனை மற்றும் மூங்கில்.",
     "விதை": "திருக்குறளில் இடம்பெற்றுள்ள விதை: குன்றிமணி.",
@@ -774,28 +774,50 @@ export class KuralAI {
         }
 
         // Step 6: Deterministic Trivia Shield
-        const isCountQuery = ['எத்தனை', 'மொத்தம்', 'how many', 'total', 'count', 'யார்', 'பெயர்', 'எப்போது', 'ஆண்டு'].some(w => queryForSearch.includes(w));
+        const isCountQuery = ['எத்தனை', 'மொத்தம்', 'how many', 'total', 'count', 'யார்', 'பெயர்', 'எப்போது', 'ஆண்டு', 'who', 'when', 'what is', 'number of'].some(w => queryForSearch.includes(w));
         
-        if (isCountQuery || queryForSearch.length < 15) {
-            if ((queryForSearch.includes("அதிகாரம்") || queryForSearch.includes("அதிகாரங்கள்")) && (isCountQuery || queryForSearch === "அதிகாரம்" || queryForSearch === "அதிகாரங்கள்")) {
-                return { answer: TRIVIA_KNOWLEDGE["அதிகாரம்"], sources: [] };
-            }
-            if ((queryForSearch.includes("பால்") || queryForSearch.includes("பால்கள்")) && (isCountQuery || queryForSearch === "பால்" || queryForSearch === "பால்கள்")) {
-                return { answer: TRIVIA_KNOWLEDGE["பால்"], sources: [] };
-            }
-            if ((queryForSearch.includes("இயல்") || queryForSearch.includes("இயல்கள்")) && (isCountQuery || queryForSearch === "இயல்" || queryForSearch === "இயல்கள்")) {
-                return { answer: TRIVIA_KNOWLEDGE["இயல்"], sources: [] };
-            }
-            if ((queryForSearch.includes("எழுத்து") || queryForSearch.includes("எழுத்துக்கள்")) && (isCountQuery || queryForSearch.includes("முதல் எழுத்து") || queryForSearch === "எழுத்து")) {
-                return { answer: TRIVIA_KNOWLEDGE["எழுத்து"], sources: [] };
-            }
-            if ((queryForSearch.includes("சொல்") || queryForSearch.includes("சொற்கள்")) && isCountQuery) {
+        if (isCountQuery || queryForSearch.length < 30) {
+            // Words / Seers count
+            if ((queryForSearch.includes("சொல்") || queryForSearch.includes("சொற்கள்") || queryForSearch.includes("word") || queryForSearch.includes("words") || queryForSearch.includes("seer") || queryForSearch.includes("சீர்")) && (isCountQuery || queryForSearch.includes("all kural") || queryForSearch.includes("thirukkural") || queryForSearch.includes("total") || queryForSearch.includes("எத்தனை"))) {
                 return { answer: TRIVIA_KNOWLEDGE["சொல்"], sources: [] };
             }
+            // Chapters count
+            if ((queryForSearch.includes("அதிகாரம்") || queryForSearch.includes("அதிகாரங்கள்") || queryForSearch.includes("chapter") || queryForSearch.includes("chapters")) && (isCountQuery || queryForSearch === "அதிகாரம்" || queryForSearch === "அதிகாரங்கள்" || queryForSearch === "chapters")) {
+                return { answer: TRIVIA_KNOWLEDGE["அதிகாரம்"], sources: [] };
+            }
+            // Paals count
+            if ((queryForSearch.includes("பால்") || queryForSearch.includes("பால்கள்") || queryForSearch.includes("paal") || queryForSearch.includes("paals") || queryForSearch.includes("section")) && (isCountQuery || queryForSearch === "பால்" || queryForSearch === "பால்கள்")) {
+                return { answer: TRIVIA_KNOWLEDGE["பால்"], sources: [] };
+            }
+            // Iyals count
+            if ((queryForSearch.includes("இயல்") || queryForSearch.includes("இயல்கள்") || queryForSearch.includes("iyal") || queryForSearch.includes("iyals")) && (isCountQuery || queryForSearch === "இயல்" || queryForSearch === "இயல்கள்")) {
+                return { answer: TRIVIA_KNOWLEDGE["இயல்"], sources: [] };
+            }
+            // Letters count
+            if ((queryForSearch.includes("எழுத்து") || queryForSearch.includes("எழுத்துக்கள்") || queryForSearch.includes("letter") || queryForSearch.includes("letters")) && (isCountQuery || queryForSearch.includes("முதல் எழுத்து") || queryForSearch === "எழுத்து" || queryForSearch.includes("total"))) {
+                return { answer: TRIVIA_KNOWLEDGE["எழுத்து"], sources: [] };
+            }
+            // Kurals count
+            if ((queryForSearch.includes("குறள்") || queryForSearch.includes("குறள்கள்") || queryForSearch.includes("kural") || queryForSearch.includes("kurals") || queryForSearch.includes("couplet") || queryForSearch.includes("verses")) && (isCountQuery || queryForSearch.includes("how many") || queryForSearch.includes("total"))) {
+                return { answer: TRIVIA_KNOWLEDGE["குறள்"], sources: [] };
+            }
             
-            const otherTriviaKeys = ["பெற்றோர்", "மனைவி", "ஆண்டு", "மொழிபெயர்ப்பு", "மலர்", "மரம்", "விதை", "பழம்", "தமிழ்", "கடவுள்", "தினம்", "முதல்", "கடைசி"];
-            for (const key of otherTriviaKeys) {
-                if (queryForSearch.includes(key)) {
+            const otherTriviaKeys = [
+                { key: "பெற்றோர்", match: ["பெற்றோர்", "தந்தை", "தாய்", "parents", "father", "mother"] },
+                { key: "மனைவி", match: ["மனைவி", "வாசுகி", "wife"] },
+                { key: "ஆண்டு", match: ["ஆண்டு", "பிறந்த", "அச்சிடப்பட்ட", "year", "born", "printed"] },
+                { key: "மொழிபெயர்ப்பு", match: ["மொழிபெயர்ப்பு", "மொழிகளில்", "translation", "languages", "pope"] },
+                { key: "மலர்", match: ["மலர்", "மலர்கள்", "பூ", "flower", "flowers"] },
+                { key: "மரம்", match: ["மரம்", "மரங்கள்", "tree", "trees"] },
+                { key: "விதை", match: ["விதை", "விதைகள்", "seed", "seeds"] },
+                { key: "பழம்", match: ["பழம்", "பழங்கள்", "fruit", "fruits"] },
+                { key: "தமிழ்", match: ["தமிழ் என்ற சொல்", "தமிழ் சொல்", "tamil word"] },
+                { key: "கடவுள்", match: ["கடவுள் என்ற சொல்", "கடவுள் சொல்"] },
+                { key: "தினம்", match: ["தினம்", "திருவள்ளுவர் தினம்", "day", "thiruvalluvar day"] }
+            ];
+
+            for (const { key, match } of otherTriviaKeys) {
+                if (match.some(m => queryForSearch.includes(m))) {
                     return { answer: TRIVIA_KNOWLEDGE[key], sources: [] };
                 }
             }
