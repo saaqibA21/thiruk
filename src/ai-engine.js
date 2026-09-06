@@ -32,6 +32,13 @@ export function normalizeTamil(text) {
   return (text || "").normalize('NFC').toLowerCase().replace(/[.,!?;:"\-_…·'`"“”‘’\s]+/g, ' ').trim();
 }
 
+export function getTamilStem(word) {
+  let w = normalizeTamil(word);
+  // Strip common Tamil nominal/verbal inflection suffixes & case markers
+  w = w.replace(/(?:ங்களை|ங்கள்|த்தின்|த்தில்|த்தோடு|த்த|ுக்கு|ிற்கு|ற்கு|க்கு|ோடு|ுடன்|ஆல்|இல்|இன்|ஐ|ம்|ன்|ு|்)$/, '');
+  return w;
+}
+
 export const TRANSLITERATION_MAP = {
   'anbu': 'அன்பு',
   'anbil': 'அன்பு',

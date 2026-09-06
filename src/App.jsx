@@ -619,28 +619,40 @@ const App = () => {
       setQuery(prev => prev + char);
    };
 
-   const parseFormattedContent = (content) => {
+   const parseFormattedContent = (content, msgSources = [], searchTerms = []) => {
       if (!content || !content.trim()) return null;
       const lines = content.split('\n').filter(l => l.trim() !== '');
       if (lines.length === 0) return null;
 
       return lines.map((line, idx) => {
-         const kuralMatch = line.match(/(?:குறள்|குறள் எண்|Kural)\s+#?(\d+)/i);
-         if (kuralMatch) {
-            const num = parseInt(kuralMatch[1]);
-            const kural = kuralData.find(k => k.Number === num);
-            if (kural) {
-               return (
-                  <div key={idx} className="kural-card-wrapper" style={{ margin: '0.85rem 0' }}>
-                     <KuralCard
-                        kural={kural}
-                        onSelect={() => setSelectedKural(kural)}
-                        onPlayAudio={handleToggleAudio}
-                        isPlaying={playingKuralId === kural.Number}
-                        onShare={(k) => setSharingKural(k)}
-                     />
-                  </div>
-               );
+         // If line contains analytical bullet or contextual phrase, format as clean readable text
+         if (line.includes('💡') || line.startsWith('• **குறள்') || line.startsWith('• குறள்') || line.includes('இக்குறளில்') || line.startsWith('•') || line.startsWith('*')) {
+            const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>');
+            return (
+               <div key={idx} className="analysis-bullet-line" style={{ margin: '0.45rem 0', lineHeight: '1.6' }} dangerouslySetInnerHTML={{ __html: formatted }} />
+            );
+         }
+
+         // Only render standalone KuralCard if msgSources is empty and line is a solitary Kural reference header
+         if ((!msgSources || msgSources.length === 0) && line.match(/^(?:குறள்|குறள் எண்|Kural)\s+#?\d+$/i)) {
+            const kuralMatch = line.match(/(?:குறள்|குறள் எண்|Kural)\s+#?(\d+)/i);
+            if (kuralMatch) {
+               const num = parseInt(kuralMatch[1]);
+               const kural = kuralData.find(k => k.Number === num);
+               if (kural) {
+                  return (
+                     <div key={idx} className="kural-card-wrapper" style={{ margin: '0.85rem 0' }}>
+                        <KuralCard
+                           kural={kural}
+                           highlight={searchTerms}
+                           onSelect={() => setSelectedKural(kural)}
+                           onPlayAudio={handleToggleAudio}
+                           isPlaying={playingKuralId === kural.Number}
+                           onShare={(k) => setSharingKural(k)}
+                        />
+                     </div>
+                  );
+               }
             }
          }
 
@@ -657,7 +669,9 @@ const App = () => {
          if (line.includes('**Philosophical Meaning:**')) {
             return <div key={idx} className="tamil-exp"><strong>பொருள்:</strong> {line.replace('**Philosophical Meaning:**', '')}</div>;
          }
-         return <p key={idx}>{line.replace(/\*\*/g, '')}</p>;
+         
+         const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+         return <p key={idx} style={{ margin: '0.35rem 0' }} dangerouslySetInnerHTML={{ __html: formattedLine }} />;;
       });
    };
 
@@ -839,7 +853,7 @@ const App = () => {
                                           </div>
                                        )}
                                        {m.content && (
-                                          <div className="bubble-text">{parseFormattedContent(m.content)}</div>
+                                          <div className="bubble-text">{parseFormattedContent(m.content, m.sources, m.searchTerms)}</div>
                                        )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
