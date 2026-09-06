@@ -4702,6 +4702,10 @@ body {
 }
 
 /* Universal Contextual Word Meaning Callouts */
+.kural-mini-card {
+  align-items: flex-start !important;
+}
+
 .kural-context-meaning-box {
   margin-top: 10px;
   background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
