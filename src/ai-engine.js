@@ -497,20 +497,244 @@ function sanitizeResponse(rawAnswer) {
     return rawAnswer;
 }
 
+export function isSpeechRequest(query) {
+    if (!query) return false;
+    const q = query.toLowerCase();
+    const speechKeywords = [
+        'பேச்சு', 'மேடைப் பேச்சு', 'மேடை பேச்சு', 'உரை', 'பேச்சுப் போட்டி', 'பேச்சுப்போட்டி', 
+        'சொற்பொழிவு', 'சொற்ப்பொழிவு', 'உரையாற்ற', 'பேச வேண்டும்', 'உரை தயார்', 'பேச்சு தயார்',
+        'speech', 'oratory', 'stage speech', 'speech on', 'talk on', 'elocution',
+        'குறள் சேர்த்து', 'குறள்களை இணைத்து', 'குறள் சேர்க்க', 'add kural', 'insert kural', 'enhance speech',
+        'பொருத்தமான குறள்'
+    ];
+    return speechKeywords.some(kw => q.includes(kw));
+}
+
+export function isEnhanceSpeechRequest(query) {
+    if (!query) return false;
+    const q = query.toLowerCase();
+    const enhanceKeywords = [
+        'குறள் சேர்த்து', 'குறள்களை இணைத்து', 'குறள் சேர்க்க', 'add kural', 'insert kural', 
+        'enhance speech', 'இந்த உரையில்', 'இவ்வுரையில்', 'என் பேச்சில்', 'vibe'
+    ];
+    return enhanceKeywords.some(kw => q.includes(kw)) || (query.length > 120 && (q.includes('குறள்') || q.includes('kural')));
+}
+
+export function buildDeterministicTamilSpeech(topic, kurals) {
+    const title = topic.replace(/(?:பற்றி|பற்றிய|ஒரு|மேடை|மேடைப்|பேச்சு|உரை|தயார்|செய்து|தாருங்கள்|வேண்டும்|speech|on)+/gi, '').trim() || 'வாழ்வியல் நெறிகள்';
+    
+    let speech = `🎙️ **செந்தமிழ் மேடைப் பேச்சு: ${title}**\n\n` +
+                 `**அவையடக்கம் & தொடக்க வணக்கம்:**\n` +
+                 `அவைக்கு முதற்கண் என் பணிவான செந்தமிழ் வணக்கங்கள்!\n` +
+                 `மேடையில் வீற்றிருக்கும் அறிஞர் பெருமக்களே, நடுவர் பெருந்தகைகளே, என் நெஞ்சில் குடியிருக்கும் தமிழன்பர்களே!\n\n` +
+                 `இன்றைய நன்னாளில், **"${title}"** என்ற உன்னதமான தலைப்பில் சில சிந்தனைகளை உங்கள் முன் வைப்பதில் மட்டற்ற மகிழ்ச்சியும் பெருமிதமும் அடைகிறேன்.\n\n` +
+                 `**முன்னுரை:**\n` +
+                 `மனிதன் விலங்கினத்தினின்று வேறுபட்டு, பண்பட்ட சமூகமாக வாழ்வதற்கு வழிகாட்டும் கலங்கரை விளக்கம் தான் நன்னெறி. அத்தகைய வாழ்வியல் நெறியை இரண்டாயிரத்து நூறு ஆண்டுகளுக்கு முன்பே உலகுக்குத் தந்தவர் தெய்வப்புலவர் திருவள்ளுவர். உலகப் பொதுமறையாம் திருக்குறளின் வெளிச்சத்தில் நாம் ${title} பற்றிச் சிந்திப்பது காலத்தின் கட்டாயமாகும்.\n\n` +
+                 `**மையக் கருத்து & குறள் மணிமாலை:**\n\n`;
+
+    kurals.slice(0, 3).forEach((k, idx) => {
+        speech += `📌 **சிந்தனை ${idx + 1}:**\n` +
+                  `வள்ளுவப் பேராசான் இக்கருத்தை மிகத் தெளிவாக எடுத்துரைக்கிறார்:\n\n` +
+                  `> *"**${k.Line1}**\n` +
+                  `> **${k.Line2}**"*\n\n` +
+                  `💡 **விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n` +
+                  `இக்குறள் சுட்டிக்காட்டுவது போல, நாம் வெறும் வார்த்தைகளால் வாழாமல், வள்ளுவர் காட்டிய நெறிமுறைகளை நமது அன்றாட வாழ்வில் நடைமுறைப்படுத்த வேண்டும்.\n\n`;
+    });
+
+    speech += `**நடைமுறை வாழ்வியல் & சிந்தனை எழுச்சி:**\n` +
+              `இன்றைய அறிவியல் யுகத்தில், தொழில்நுட்ப வளர்ச்சி வானளவிற்கு உயர்ந்திருந்தாலும், மனித மனங்களில் அறமும் ஒழுக்கமும் நிலவ வேண்டியது மிக இன்றியமையாதது. நம் முன்னோர்கள் கற்றுத்தந்த பெருமைமிகு விழுமியங்களை நாம் பற்றிக்கொண்டு முன்னேற வேண்டும்.\n\n` +
+              `**நிறைவுரை:**\n` +
+              `குறள் வழி நிற்போம்! குறைவிலா வாழ்வு காண்போம்! தமிழால் இணைவோம்! தரணியை வெல்வோம்!\n\n` +
+              `இத்தகைய அருமையான வாய்ப்பை எனக்கு நல்கிய அவையோர் அனைவருக்கும் என் நெஞ்சார்ந்த நன்றியைக் கூறி விடைபெறுகிறேன்.\n\n` +
+              `**நன்றி! வணக்கம்! வாழ்க தமிழ்! வெல்க பாரதம்!**`;
+
+    return speech;
+}
+
+export function buildDeterministicEnhancedSpeech(originalText, kurals) {
+    const cleanUserText = originalText
+        .replace(/(?:இந்த\s+உரையில்\s+பொருத்தமான\s+குறள்களைச்?\s*சேர்க்கவும்|குறள்களை\s+இணைத்துத்\s*தாருங்கள்|add\s+kural\s+to\s+this\s+speech|insert\s+kural)/gi, '')
+        .trim();
+
+    const paragraphs = cleanUserText.split(/\n+/).filter(p => p.trim().length > 0);
+    
+    let enhanced = `✨ **திருக்குறள் மேற்கோள்களுடன் செப்பனிடப்பட்ட செந்தமிழ் மேடை உரை:**\n\n`;
+    
+    if (paragraphs.length <= 1) {
+        enhanced += `${cleanUserText}\n\n`;
+        kurals.slice(0, 2).forEach((k) => {
+            enhanced += `இக்கருத்தை மெய்ப்பிக்கும் வண்ணம் தெய்வப்புலவர் திருவள்ளுவர் அழகுற இயம்புகிறார்:\n\n` +
+                        `> *"**${k.Line1}**\n` +
+                        `> **${k.Line2}**"*\n\n` +
+                        `💡 **பொருள் விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n`;
+        });
+        enhanced += `ஆகவே, குறள் காட்டும் வழியில் நின்று பெருவாழ்வு வாழ்வோம்!\n\n**நன்றி! வணக்கம்! வாழ்க தமிழ்!**`;
+        return enhanced;
+    }
+
+    paragraphs.forEach((p, idx) => {
+        enhanced += `${p}\n\n`;
+        if (idx < kurals.length && idx < 3) {
+            const k = kurals[idx];
+            enhanced += `இதனைத் தான் பொய்யாமொழிப் புலவர் திருவள்ளுவர் அழகுறக் குறிப்பிடுகிறார்:\n\n` +
+                        `> *"**${k.Line1}**\n` +
+                        `> **${k.Line2}**"*\n\n` +
+                        `💡 **உரை விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n`;
+        }
+    });
+
+    enhanced += `\n**நன்றி! வணக்கம்! வாழ்க செந்தமிழ்!**`;
+    return enhanced;
+}
+
 export class KuralAI {
     constructor(dataset) {
         this.dataset = dataset;
         this.openai = null;
+        this.geminiKey = null;
         this.aiHistory = [];
     }
 
     async init(apiKey) {
         const cleanKey = apiKey?.trim();
-        if (cleanKey && cleanKey.startsWith('sk-')) {
-            const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-            const baseURL = isLocal ? 'http://localhost:5174/api-openai/v1' : 'https://api.openai.com/v1';
-            this.openai = new OpenAI({ apiKey: cleanKey, dangerouslyAllowBrowser: true, baseURL });
+        if (cleanKey) {
+            if (cleanKey.startsWith('sk-')) {
+                const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+                const baseURL = isLocal ? 'http://localhost:5174/api-openai/v1' : 'https://api.openai.com/v1';
+                this.openai = new OpenAI({ apiKey: cleanKey, dangerouslyAllowBrowser: true, baseURL });
+            } else {
+                this.geminiKey = cleanKey;
+            }
         }
+        if (!this.geminiKey && typeof import.meta !== 'undefined' && import.meta.env) {
+            this.geminiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
+        }
+    }
+
+    async callGemini(prompt, systemInstruction = '') {
+        const key = this.geminiKey || (typeof import.meta !== 'undefined' && import.meta.env ? (import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY) : null);
+        if (!key) return null;
+
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }]
+            };
+            if (systemInstruction) {
+                payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+            }
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                console.warn('Gemini API call failed with status:', res.status);
+                return null;
+            }
+
+            const data = await res.json();
+            if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                return data.candidates[0].content.parts[0].text.trim();
+            }
+        } catch (e) {
+            console.error('Gemini API Error:', e);
+        }
+        return null;
+    }
+
+    async handleSpeechRequest(question, queryForSearch) {
+        const isEnhance = isEnhanceSpeechRequest(question) || isEnhanceSpeechRequest(queryForSearch);
+        
+        // Extract meaningful search terms for Kural matching
+        const cleanForSearch = queryForSearch
+            .replace(/(?:மேடைப்\s*பேச்சு|மேடை\s*பேச்சு|பேச்சுப்\s*போட்டி|பேச்சுப்போட்டி|பேச்சு|உரை|தயார்\s*செய்து\s*தாருங்கள்|வேண்டும்|பற்றி|பற்றிய|speech\s*on|speech|talk\s*on|oratory|குறள்\s*சேர்த்து|குறள்களை\s*இணைத்து|add\s*kural|insert\s*kural|enhance\s*speech)+/gi, ' ')
+            .trim();
+
+        const searchRes = await this.search(cleanForSearch || queryForSearch);
+        const matchingKurals = (searchRes.results && searchRes.results.length > 0)
+            ? searchRes.results.slice(0, 4)
+            : this.dataset.slice(0, 3);
+
+        const enrichedKurals = matchingKurals.map(k => {
+            const ctx = getContextualWordMeaning(k, searchRes.targetWord || cleanForSearch);
+            return ctx ? { ...k, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : k;
+        });
+
+        const kuralContext = enrichedKurals.map(k => 
+            `குறள் எண் ${k.Number}:
+"${k.Line1}
+${k.Line2}"
+மு.வ உரை: ${k.mv || ''}
+பாப்பையா உரை: ${k.sp || ''}`
+        ).join('\n\n');
+
+        const systemInstruction = `You are a world-renowned, legendary Tamil Orator (செந்தமிழ் மேடைப் பேச்சாளர்) and Master Thirukkural Scholar.
+
+YOUR SACRED DUTY:
+${isEnhance 
+  ? 'Enhance the user\'s speech draft by weaving the provided authentic Thirukkurals seamlessly into their flow with classical rhetorical flair, elevating its impact and vibe.'
+  : 'Compose an inspiring, detailed, structured, and magnificent classical Tamil stage speech (மேடைப் பேச்சு) on the requested topic with the provided Thirukkurals woven in naturally.'}
+
+CRITICAL RULES:
+1. 100% PURE TAMIL ONLY: The output MUST be entirely in eloquent, classical Tamil (செந்தமிழ் மேடைத் தமிழ்). Absolutely NO ENGLISH words, headings, notes, or translations anywhere in the output!
+2. KURAL WEAVING: You must use the provided authenticated Thirukkurals in between paragraphs using classical transition phrases (e.g., 'இதனைத் தான் பொய்யாமை பொய்யாமை ஆற்றின்... என்று தெய்வப்புலவர் வள்ளுவர் அழகுற வகுத்துரைக்கிறார்...').
+3. ELOQUENT STRUCTURE:
+   - 🎙️ அவையடக்கம் & கம்பீரமான தொடக்க வணக்கம்
+   - 📜 பொருட்பெட்டக முன்னுரை (அடுக்குமொழி, எதுகை மோனைத் தமிழ்)
+   - 💡 மையக்கருத்து & குறள் மணிமாலை (குறள்களை மேற்கோள் காட்டி வாழ்வியல் விளக்கம்)
+   - 🌟 நடைமுறை வாழ்வியல் பயன்பாடு & சிந்தனை எழுச்சி
+   - 🔥 எழுச்சியூட்டும் நிறைவுரை (நன்றி, வணக்கம், வாழ்க தமிழ்)
+4. AUTHENTIC TEXTS ONLY: Never invent or hallucinate fake verses. Use ONLY the exact Thirukkurals provided.`;
+
+        const userPrompt = `கீழே கொடுக்கப்பட்டுள்ள தலைப்பு/உரைக்கு ஏற்ப, வழங்கப்பட்டுள்ள உண்மைத் திருக்குறள்களை இடைஇடையே பொருத்தி, 100% தூய செந்தமிழில் ஒரு கம்பீரமான மேடைப் பேச்சைத் தயார் செய்து தாருங்கள். எந்தவொரு ஆங்கிலச் சொல்லும் இருக்கக் கூடாது.\n\nபொருத்தமான திருக்குறள்கள்:\n${kuralContext}\n\nபயனர் கோரிக்கை / உரை:\n${question}`;
+
+        // 1. Try Gemini
+        const geminiOutput = await this.callGemini(userPrompt, systemInstruction);
+        if (geminiOutput && geminiOutput.length > 100) {
+            return {
+                answer: geminiOutput.trim(),
+                sources: enrichedKurals,
+                searchTerms: searchRes.searchTerms
+            };
+        }
+
+        // 2. Try OpenAI
+        if (this.openai) {
+            try {
+                const response = await this.openai.chat.completions.create({
+                    model: "gpt-4o",
+                    messages: [
+                        { role: "system", content: systemInstruction },
+                        { role: "user", content: userPrompt }
+                    ],
+                    temperature: 0.3
+                });
+                const openAiOutput = response.choices[0].message.content.trim();
+                if (openAiOutput && openAiOutput.length > 100) {
+                    return {
+                        answer: openAiOutput,
+                        sources: enrichedKurals,
+                        searchTerms: searchRes.searchTerms
+                    };
+                }
+            } catch (err) {
+                console.error("OpenAI Speech Error:", err);
+            }
+        }
+
+        // 3. High-Quality Deterministic Oratorical Synthesizer (Offline Fallback)
+        const fallbackSpeech = isEnhance
+            ? buildDeterministicEnhancedSpeech(question, enrichedKurals)
+            : buildDeterministicTamilSpeech(cleanForSearch || question, enrichedKurals);
+
+        return {
+            answer: fallbackSpeech,
+            sources: enrichedKurals,
+            searchTerms: searchRes.searchTerms
+        };
     }
 
     async search(query, isImageSearch = false) {
@@ -644,6 +868,11 @@ export class KuralAI {
                 });
                 queryForSearch = normalizeTamil(ocr.choices[0].message.content.trim());
             } catch (e) { console.error("OCR Error:", e); }
+        }
+
+        // Step 1.5: Tamil Speech Generation & Enhancement Handler (100% Pure Tamil, Kural-Integrated Oratory)
+        if (isSpeechRequest(question) || isSpeechRequest(queryForSearch)) {
+            return await this.handleSpeechRequest(question, queryForSearch);
         }
 
         // Step 2: Polysemy / Same Word Different Meanings Query Handler
