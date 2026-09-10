@@ -190,20 +190,16 @@ export const stopTamilSpeech = (onStop) => {
   if (onStop) onStop();
 };
 
-// Available Curated Kural Artwork Images (1 to 10 currently uploaded)
-export const AVAILABLE_KURAL_IMAGES = new Set([
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-]);
-
+// Kural Artwork Images (Supports all 1,330 Kurals with graceful fallback)
 export const hasKuralImage = (kuralNumber) => {
   const num = Number(kuralNumber);
-  return AVAILABLE_KURAL_IMAGES.has(num);
+  return num >= 1 && num <= 1330;
 };
 
-// Targeted Image URL Generator (Only queries authentic existing paths)
+// Targeted Image URL Generator (Checks kural_images and thiruk_image directories)
 export const getCandidateImageUrls = (kuralNumber) => {
   const num = Number(kuralNumber);
-  if (!num || !hasKuralImage(num)) return [];
+  if (!num || num < 1 || num > 1330) return [];
   const rawBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
   const base = rawBase.endsWith('/') ? rawBase : (rawBase + '/');
   return [
