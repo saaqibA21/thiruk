@@ -678,18 +678,19 @@ ${isEnhance
   ? 'Enhance the user\'s speech draft by weaving the provided authentic Thirukkurals seamlessly into their flow with classical rhetorical flair, elevating its impact and vibe.'
   : 'Compose an inspiring, detailed, structured, and magnificent classical Tamil stage speech (மேடைப் பேச்சு) on the requested topic with the provided Thirukkurals woven in naturally.'}
 
-CRITICAL RULES:
+CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
 1. 100% PURE TAMIL ONLY: The output MUST be entirely in eloquent, classical Tamil (செந்தமிழ் மேடைத் தமிழ்). Absolutely NO ENGLISH words, headings, notes, or translations anywhere in the output!
-2. KURAL WEAVING: You must use the provided authenticated Thirukkurals in between paragraphs using classical transition phrases (e.g., 'இதனைத் தான் பொய்யாமை பொய்யாமை ஆற்றின்... என்று தெய்வப்புலவர் வள்ளுவர் அழகுற வகுத்துரைக்கிறார்...').
-3. ELOQUENT STRUCTURE:
+2. ZERO FABRICATION: You MUST NEVER invent fake couplets, fake Kural numbers, distorted quotes, or false historical stories.
+3. USE ONLY PROVIDED KURALS: Quote ONLY the exact Thirukkurals provided in the context. Do not invent other verses.
+4. KURAL WEAVING: You must use the provided authenticated Thirukkurals in between paragraphs using classical transition phrases (e.g., 'இதனைத் தான்... என்று தெய்வப்புலவர் வள்ளுவர் அழகுற வகுத்துரைக்கிறார்...').
+5. ELOQUENT STRUCTURE:
    - 🎙️ அவையடக்கம் & கம்பீரமான தொடக்க வணக்கம்
    - 📜 பொருட்பெட்டக முன்னுரை (அடுக்குமொழி, எதுகை மோனைத் தமிழ்)
-   - 💡 மையக்கருத்து & குறள் மணிமாலை (குறள்களை மேற்கோள் காட்டி வாழ்வியல் விளக்கம்)
+   - 💡 மையக்கருத்து & குறள் மணிமாலை (குறள்களை மேற்கோள் காட்டி உண்மை வாழ்வியல் விளக்கம்)
    - 🌟 நடைமுறை வாழ்வியல் பயன்பாடு & சிந்தனை எழுச்சி
-   - 🔥 எழுச்சியூட்டும் நிறைவுரை (நன்றி, வணக்கம், வாழ்க தமிழ்)
-4. AUTHENTIC TEXTS ONLY: Never invent or hallucinate fake verses. Use ONLY the exact Thirukkurals provided.`;
+   - 🔥 எழுச்சியூட்டும் நிறைவுரை (நன்றி, வணக்கம், வாழ்க தமிழ்)`;
 
-        const userPrompt = `கீழே கொடுக்கப்பட்டுள்ள தலைப்பு/உரைக்கு ஏற்ப, வழங்கப்பட்டுள்ள உண்மைத் திருக்குறள்களை இடைஇடையே பொருத்தி, 100% தூய செந்தமிழில் ஒரு கம்பீரமான மேடைப் பேச்சைத் தயார் செய்து தாருங்கள். எந்தவொரு ஆங்கிலச் சொல்லும் இருக்கக் கூடாது.\n\nபொருத்தமான திருக்குறள்கள்:\n${kuralContext}\n\nபயனர் கோரிக்கை / உரை:\n${question}`;
+        const userPrompt = `கீழே கொடுக்கப்பட்டுள்ள தலைப்பு/உரைக்கு ஏற்ப, வழங்கப்பட்டுள்ள உண்மைத் திருக்குறள்களை இடைஇடையே பொருத்தி, 100% தூய செந்தமிழில் ஒரு கம்பீரமான மேடைப் பேச்சைத் தயார் செய்து தாருங்கள். எந்தவொரு போலித் தகவலோ அல்லது ஆங்கிலச் சொல்லோ இருக்கக் கூடாது.\n\nபொருத்தமான உண்மைத் திருக்குறள்கள்:\n${kuralContext}\n\nபயனர் கோரிக்கை / உரை:\n${question}`;
 
         // 1. Try Gemini
         const geminiOutput = await this.callGemini(userPrompt, systemInstruction);
@@ -710,7 +711,7 @@ CRITICAL RULES:
                         { role: "system", content: systemInstruction },
                         { role: "user", content: userPrompt }
                     ],
-                    temperature: 0.3
+                    temperature: 0.1
                 });
                 const openAiOutput = response.choices[0].message.content.trim();
                 if (openAiOutput && openAiOutput.length > 100) {
@@ -725,7 +726,7 @@ CRITICAL RULES:
             }
         }
 
-        // 3. High-Quality Deterministic Oratorical Synthesizer (Offline Fallback)
+        // 3. High-Quality Deterministic Oratorical Synthesizer (Offline Fallback - 100% Guaranteed Authentic)
         const fallbackSpeech = isEnhance
             ? buildDeterministicEnhancedSpeech(question, enrichedKurals)
             : buildDeterministicTamilSpeech(cleanForSearch || question, enrichedKurals);
