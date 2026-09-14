@@ -96,7 +96,29 @@ export const TRANSLITERATION_MAP = {
   'virundhu': 'விருந்து',
   'insoL': 'இன்சொல்',
   'nandri': 'நன்றி',
-  'naduvu': 'நடுவு'
+  'naduvu': 'நடுவு',
+  'kindness': 'அருளுடைமை',
+  'கிண்டன்ஸ்': 'அருளுடைமை',
+  'கைண்ட்னஸ்': 'அருளுடைமை',
+  'கிடன்ஸ்': 'அருளுடைமை',
+  'guidance': 'வழிகாட்டல்',
+  'speech': 'பேச்சு',
+  'ஸ்பீச்': 'பேச்சு',
+  'ஸ்பிச்': 'பேச்சு',
+  'love': 'அன்பு',
+  'education': 'கல்வி',
+  'friendship': 'நட்பு',
+  'truth': 'வாய்மை',
+  'effort': 'முயற்சி',
+  'discipline': 'ஒழுக்கம்',
+  'compassion': 'அருளுடைமை',
+  'charity': 'ஈகை',
+  'gratitude': 'செய்ந்நன்றி',
+  'patience': 'பொறையுடைமை',
+  'mother': 'தாய்',
+  'father': 'தந்தை',
+  'teacher': 'ஆசிரியர்',
+  'peace': 'அமைதி'
 };
 
 export const CONTEXTUAL_CORE_DATABASE = {
@@ -447,11 +469,17 @@ function isOffTopicQuery(query) {
     if (!query) return false;
     const q = query.toLowerCase();
 
+    // If it is a speech request or philosophical/moral life query, it is 100% IN-DOMAIN
+    if (isSpeechRequest(query) || isSpeechRequest(q)) {
+        return false;
+    }
+
     // Specific Thirukkural contextual keywords (if present, do not block unless it asks for code)
     const kuralIndicators = [
         'குறள்', 'திருக்குறள்', 'வள்ளுவர்', 'திருவள்ளுவர்', 'அதிகாரம்', 'பால்', 'இயல்', 'உரை', 
         'மு.வ', 'சாலமன்', 'கலைஞர்', 'பரிமேலழகர்', 'பொருள் விளக்கம்', 'வாழ்வியல் நெறி',
-        'kural', 'thirukkural', 'valluvar', 'athigaram'
+        'kural', 'thirukkural', 'valluvar', 'athigaram', 'kindness', 'கிண்டன்ஸ்', 'கைண்ட்னஸ்',
+        'love', 'அன்பு', 'கல்வி', 'அறம்', 'நட்பு', 'ஒழுக்கம்', 'வாய்மை'
     ];
     const isKuralRelated = kuralIndicators.some(kw => q.includes(kw));
 
@@ -501,13 +529,15 @@ export function isSpeechRequest(query) {
     if (!query) return false;
     const q = query.toLowerCase();
     const speechKeywords = [
-        'பேச்சு', 'மேடைப் பேச்சு', 'மேடை பேச்சு', 'உரை', 'பேச்சுப் போட்டி', 'பேச்சுப்போட்டி', 
-        'சொற்பொழிவு', 'சொற்ப்பொழிவு', 'உரையாற்ற', 'பேச வேண்டும்', 'உரை தயார்', 'பேச்சு தயார்',
-        'speech', 'oratory', 'stage speech', 'speech on', 'talk on', 'elocution',
+        'பேச்சு', 'மேடைப் பேச்சு', 'மேடை பேச்சு', 'மேடைப்பேச்சு', 'உரை', 'மேடை உரை', 'பேச்சுப் போட்டி', 'பேச்சுப்போட்டி', 
+        'சொற்பொழிவு', 'சொற்ப்பொழிவு', 'உரையாற்ற', 'பேச வேண்டும்', 'உரை தயார்', 'பேச்சு தயார்', 'பேசுங்கள்', 'பேசுக', 'உரையாற்றுக',
+        'ஸ்பீச்', 'ஸ்பிச்', 'ஸ்பீச்ச்', 'ஸ்பீச்ச', 'எ ஸ்பீச்', 'ஒரு ஸ்பீச்',
+        'speech', 'oratory', 'stage speech', 'speech on', 'talk on', 'elocution', 'speech about', 'speech for', 'write a speech',
+        'give me a speech', 'give a speech', 'give me speech', 'prepare a speech', 'speech guidance',
         'குறள் சேர்த்து', 'குறள்களை இணைத்து', 'குறள் சேர்க்க', 'add kural', 'insert kural', 'enhance speech',
         'பொருத்தமான குறள்'
     ];
-    return speechKeywords.some(kw => q.includes(kw));
+    return speechKeywords.some(kw => q.includes(kw)) || q.includes('ஸ்பீச்') || q.includes('speech');
 }
 
 export function isEnhanceSpeechRequest(query) {
@@ -649,9 +679,14 @@ export class KuralAI {
         const isEnhance = isEnhanceSpeechRequest(question) || isEnhanceSpeechRequest(queryForSearch);
         
         // Extract meaningful search terms for Kural matching
-        const cleanForSearch = queryForSearch
-            .replace(/(?:மேடைப்\s*பேச்சு|மேடை\s*பேச்சு|பேச்சுப்\s*போட்டி|பேச்சுப்போட்டி|பேச்சு|உரை|தயார்\s*செய்து\s*தாருங்கள்|வேண்டும்|பற்றி|பற்றிய|speech\s*on|speech|talk\s*on|oratory|குறள்\s*சேர்த்து|குறள்களை\s*இணைத்து|add\s*kural|insert\s*kural|enhance\s*speech)+/gi, ' ')
+        let cleanForSearch = queryForSearch
+            .replace(/(?:give\s*me\s*a\s*speech|give\s*me\s*speech|give\s*me|write\s*a\s*speech|write\s*speech|speech\s*on|speech\s*about|speech\s*for|speech\s*guidance|talk\s*on|talk\s*about|stage\s*speech|oratory|elocution|speech|மேடைப்\s*பேச்சு|மேடை\s*பேச்சு|மேடைப்பேச்சு|பேச்சுப்\s*போட்டி|பேச்சுப்போட்டி|பேச்சு|உரை|தயார்\s*செய்து\s*தாருங்கள்|தயார்\s*செய்க|தயார்\s*பண்ணு|வேண்டும்|பற்றி|பற்றிய|ஒரு|எ|ஸ்பீச்|ஸ்பிச்|குறள்\s*சேர்த்து|குறள்களை\s*இணைத்து|add\s*kural|insert\s*kural|enhance\s*speech)+/gi, ' ')
             .trim();
+
+        const lowerClean = cleanForSearch.toLowerCase();
+        if (TRANSLITERATION_MAP[lowerClean]) {
+            cleanForSearch = TRANSLITERATION_MAP[lowerClean];
+        }
 
         const searchRes = await this.search(cleanForSearch || queryForSearch);
         const matchingKurals = (searchRes.results && searchRes.results.length > 0)
