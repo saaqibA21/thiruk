@@ -34,22 +34,30 @@ def load_env_key():
 
 def build_prompt(kural):
     num = kural.get("Number", 0)
-    translation = kural.get("Translation") or kural.get("explanation") or kural.get("couplet") or ""
-    tamil_exp = kural.get("mv") or kural.get("sp") or kural.get("mk") or ""
+    line1 = kural.get("Line1", "")
+    line2 = kural.get("Line2", "")
+    translation = (kural.get("Translation") or kural.get("explanation") or kural.get("couplet") or "").replace('"', '').replace("'", "").strip()
+    tamil_exp = (kural.get("mv") or kural.get("sp") or kural.get("mk") or "").replace('"', '').replace("'", "").strip()
 
     theme_style = (
         "classical Tamil Sangam era aesthetics, ancient South Indian atmosphere, "
         "dramatic cinematic lighting, rich oil painting, detailed textures, 8k resolution, atmospheric masterpiece"
     )
     if num <= 380:
-        theme_style += ", serene natural landscapes, spiritual grace, warm morning sunlight"
+        scene = f"Serene natural sanctuary, sacred temple courtyards, ancient banyan trees, morning sunlight. Visual Metaphor: {tamil_exp[:100]}"
     elif num <= 1080:
-        theme_style += ", majestic ancient Tamil royal courts, grand stone architecture, bustling village markets, wise ministers and kings"
+        scene = f"Majestic ancient Tamil stone halls, granite pillars, prosperous village harvest, wise scholars. Visual Metaphor: {tamil_exp[:100]}"
     else:
-        theme_style += ", poetic romance, moonlit lotus ponds, traditional Sangam beauty, tender emotion, soft twilight colors"
+        scene = f"Poetic moonlit courtyard, lotus pond, flowering jasmine vines, soft twilight colors. Visual Metaphor: {tamil_exp[:100]}"
 
-    clean_trans = translation.replace('"', '').replace("'", "").strip()
-    return f"A culturally authentic, poetic visual artwork representing Thirukkural Verse #{num}: \"{clean_trans}\". Visual Metaphor: Expressing {tamil_exp[:100]}. Style: {theme_style}. No typography, no modern elements, pure fine art."
+    return (
+        f"A magnificent, culturally authentic cinematic fine art painting representing Thirukkural Verse #{num}.\n\n"
+        f"SCENE DESCRIPTION & VISUAL METAPHOR:\n{scene}.\nStyle: {theme_style}.\n\n"
+        f"TEXT & INSCRIPTION REQUIREMENT (MANDATORY IN THE IMAGE):\n"
+        f"In the lower foreground, render a prominent, beautifully carved ancient stone slab / weathered granite tablet clearly engraved with the sacred Tamil couplet:\n"
+        f"\"{line1}\n{line2}\"\n\n"
+        f"Along with a subtle plaque beneath with the English translation:\n\"{translation}\""
+    )
 
 def generate_imagen3(api_key, prompt, model_name="imagen-3.0-generate-002"):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:predict?key={api_key}"

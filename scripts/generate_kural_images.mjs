@@ -74,27 +74,35 @@ const kurals = rawData.kural || rawData;
  */
 export function buildKuralPrompt(kural) {
   const num = kural.Number;
-  const translation = kural.Translation || kural.explanation || kural.couplet || '';
-  const tamilExplanation = kural.mv || kural.sp || kural.mk || '';
+  const line1 = kural.Line1;
+  const line2 = kural.Line2;
+  const translation = (kural.Translation || kural.explanation || kural.couplet || '').replace(/["']/g, '').trim();
+  const tamilExplanation = (kural.mv || kural.sp || kural.mk || '').replace(/["']/g, '').trim();
 
-  // Classify thematic domain based on Kural Number (Paal & Nature)
+  let sceneDetails = '';
   let themeStyle = 'classical Tamil Sangam era aesthetics, ancient South Indian atmosphere, dramatic cinematic lighting, rich oil painting, detailed textures, 8k resolution, atmospheric masterpiece';
   
   if (num <= 380) {
-    // Aram (Virtue / Ethics / Nature / Domestic life)
-    themeStyle += ', serene natural landscapes, spiritual grace, Vedic and Sangam era Tamil heritage, warm morning sunlight';
+    sceneDetails = `Serene natural sanctuary, sacred temple courtyards, ancient banyan trees, morning sunlight. Visual Metaphor expressing: ${tamilExplanation.slice(0, 100)}`;
   } else if (num <= 1080) {
-    // Porul (Statecraft / Leadership / Wisdom / Wealth / Friendship / Agriculture)
-    themeStyle += ', majestic ancient Tamil royal courts, grand stone architecture, bustling village markets, lush paddy fields, wise ministers and kings';
+    sceneDetails = `Majestic ancient Tamil stone halls, granite pillars, prosperous village harvest, wise scholars. Visual Metaphor expressing: ${tamilExplanation.slice(0, 100)}`;
   } else {
-    // Inbam / Kaamam (Love / Poetic Romance)
-    themeStyle += ', poetic romance, moonlit lotus ponds, traditional Sangam beauty, tender emotion, soft twilight colors, lyrical art';
+    sceneDetails = `Poetic moonlit courtyard, lotus pond, flowering jasmine vines, soft twilight colors. Visual Metaphor expressing: ${tamilExplanation.slice(0, 100)}`;
   }
 
-  // Curated prompts for iconic kurals or dynamic synthesis
-  const cleanExplanation = translation.replace(/["']/g, '').trim();
+  const prompt = `A magnificent, culturally authentic cinematic fine art painting representing Thirukkural Verse #${num}.
 
-  const prompt = `A culturally authentic, poetic visual artwork representing Thirukkural Verse #${num}: "${cleanExplanation}". Visual Metaphor: Expressing ${tamilExplanation.slice(0, 100)}. Style: ${themeStyle}. No typography, no modern elements, pure fine art.`;
+SCENE DESCRIPTION & VISUAL METAPHOR:
+${sceneDetails}.
+Style: ${themeStyle}.
+
+TEXT & INSCRIPTION REQUIREMENT (MANDATORY IN THE IMAGE):
+In the lower foreground, render a prominent, beautifully carved ancient stone slab / weathered granite tablet clearly engraved with the sacred Tamil couplet:
+"${line1}
+${line2}"
+
+Along with a subtle plaque beneath with the English translation:
+"${translation}"`;
 
   return prompt;
 }
