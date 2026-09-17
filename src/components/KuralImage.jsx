@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ZoomIn, X, Sparkles, Share2 } from 'lucide-react';
+import { ZoomIn, X, Sparkles, Share2, Download } from 'lucide-react';
 import { getCandidateImageUrls } from '../utils/kuralFeatures';
 
 export { getCandidateImageUrls };
@@ -28,6 +28,16 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
 
   const handleImageLoad = () => {
     setIsLoaded(true);
+  };
+
+  const handleDirectDownload = () => {
+    if (!currentSrc) return;
+    const link = document.createElement('a');
+    link.href = currentSrc;
+    link.download = `${kuralNumber}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (hasError || candidates.length === 0) {
@@ -100,15 +110,25 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
                 <h4>குறள் {kuralNumber} • காட்சி விளக்கம்</h4>
                 {title && <p className="kural-zoom-title">{title}</p>}
               </div>
-              {onShare && (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <button 
                   className="modal-share-btn" 
-                  onClick={() => onShare(currentSrc)}
-                  title="படம் மற்றும் குறளைப் பகிரவும்"
+                  onClick={handleDirectDownload}
+                  title={`குறள் ${kuralNumber} படத்தை பதிவிறக்குக (${kuralNumber}.jpg)`}
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
                 >
-                  <Share2 size={16} /> <span>பகிர் (Share)</span>
+                  <Download size={16} /> <span>பதிவிறக்கு ({kuralNumber}.jpg)</span>
                 </button>
-              )}
+                {onShare && (
+                  <button 
+                    className="modal-share-btn" 
+                    onClick={() => onShare(currentSrc)}
+                    title="படம் மற்றும் குறளைப் பகிரவும்"
+                  >
+                    <Share2 size={16} /> <span>பகிர் (Share)</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
