@@ -1,0 +1,16 @@
+{
+  "11": {
+    "kuralNumber": 11,
+    "prompt": "A magnificent, culturally authentic cinematic fine art painting representing Thirukkural Verse #11.\n\nSCENE DESCRIPTION & VISUAL METAPHOR:\nSerene natural sanctuary with ancient banyan trees, temple courtyards, sacred lotus ponds, and morning sunlight breaking through misty skies. Expressing the moral concept: மழை பெய்ய உலகம் வாழ்ந்து வருவதால், மழையானது உலகத்து வாழும் உயிர்களுக்கு அமிழ்தம் என்று உணரத்தக்கதாகும்.\nStyle: classical Tamil Sangam era aesthetics, ancient South Indian spiritual atmosphere, dramatic cinematic lighting, rich oil painting, hyper-detailed textures, 8k resolution, masterpiece.\n\nTEXT & INSCRIPTION REQUIREMENT (MANDATORY IN THE IMAGE):\nIn the bottom foreground, render a prominent, beautifully carved ancient stone slab / weathered granite tablet engraved with the authentic 2-line Tamil Thirukkural couplet:\n\"வான்நின்று உலகம் வழங்கி வருதலால்\nதான்அமிழ்தம் என்றுணரற் பாற்று.\"\n\nAlong with a small bronze plaque at the bottom with the English translation:\n\"The genial rain ambrosia call: The world but lasts while rain shall fall\"",
+    "model": "gpt-image-1-mini",
+    "generatedAt": "2026-09-18T03:19:30.512Z",
+    "file": "11.jpg"
+  },
+  "12": {
+    "kuralNumber": 12,
+    "prompt": "A magnificent, culturally authentic cinematic fine art painting representing Thirukkural Verse #12.\n\nSCENE DESCRIPTION & VISUAL METAPHOR:\nSerene natural sanctuary with ancient banyan trees, temple courtyards, sacred lotus ponds, and morning sunlight breaking through misty skies. Expressing the moral concept: உண்பவர்க்குத் தக்க உணவுப் பொருள்களை விளைவித்துத் தருவதோடு, பருகுவோர்க்குத் தானும் ஓர் உணவாக இருப்பது மழையாகும்.\nStyle: classical Tamil Sangam era aesthetics, ancient South Indian spiritual atmosphere, dramatic cinematic lighting, rich oil painting, hyper-detailed textures, 8k resolution, masterpiece.\n\nTEXT & INSCRIPTION REQUIREMENT (MANDATORY IN THE IMAGE):\nIn the bottom foreground, render a prominent, beautifully carved ancient stone slab / weathered granite tablet engraved with the authentic 2-line Tamil Thirukkural couplet:\n\"துப்பார்க்குத் துப்பாய துப்பாக்கித் துப்பார்க்குத்\nதுப்பாய தூஉம் மழை.\"\n\nAlong with a small bronze plaque at the bottom with the English translation:\n\"The rain begets the food we eat\"",
+    "model": "gpt-image-1-mini",
+    "generatedAt": "2026-09-18T03:20:22.286Z",
+    "file": "12.jpg"
+  }
+}
