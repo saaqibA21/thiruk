@@ -25,3 +25,12 @@ android.keystore
 hs_err_pid*
 *.log
 npm-debug.log*
+
+# Temporary & Data Artifacts
+*.traineddata
+tmp_*
+scratch/
+thiruk_image/
+.chrome_gemini_profile/
+
+
