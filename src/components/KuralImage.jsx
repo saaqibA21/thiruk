@@ -34,7 +34,8 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
     if (!currentSrc) return;
     const link = document.createElement('a');
     link.href = currentSrc;
-    link.download = `${kuralNumber}.jpg`;
+    const ext = currentSrc.toLowerCase().endsWith('.png') ? 'png' : 'jpg';
+    link.download = `${kuralNumber}.${ext}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -50,6 +51,7 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
     return (
       <div className={'kural-img-thumb-container ' + className + (isLoaded ? ' loaded' : ' is-loading')}>
         <img
+          key={currentSrc}
           src={currentSrc}
           alt={'குறள் ' + kuralNumber + ' படம்'}
           className="kural-img-thumb"
@@ -67,6 +69,7 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
         <div className="kural-visual-card" onClick={() => setShowZoom(true)} title="பெரிதாக்க சொடுக்கவும் (Click to expand)">
           <div className="kural-visual-img-container">
             <img
+              key={currentSrc}
               src={currentSrc}
               alt={'குறள் ' + kuralNumber + ' காட்சிக் விளக்கம்'}
               className="kural-visual-img"
