@@ -1,0 +1,16 @@
+{
+  "name": "திருக்குறள் நிபுணர் - நுண்மதி ஆய்வுத் தளம்",
+  "short_name": "திருக்குறள்",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fdfcfa",
+  "theme_color": "#9a3412",
+  "description": "அதிவேகத் திருக்குறள் நுண்மதி ஆய்வுத் தளம்",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3665/3665923.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
