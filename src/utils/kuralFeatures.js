@@ -203,9 +203,9 @@ export const getCandidateImageUrls = (kuralNumber) => {
   const rawBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
   const base = rawBase.endsWith('/') ? rawBase : (rawBase + '/');
   return [
-    `${base}thiruk_image/${num}.webp`,
-    `${base}thiruk_image/${num}.jpg`,
     `${base}kural_images/${num}.webp`,
-    `${base}kural_images/${num}.jpg`
+    `${base}kural_images/${num}.jpg`,
+    `${base}thiruk_image/${num}.webp`,
+    `${base}thiruk_image/${num}.jpg`
   ];
 };
