@@ -125,68 +125,137 @@ export const getMetreDetails = (kural) => {
   };
 };
 
-// Web Speech API for authentic Tamil recitation with metrical pause
-let activeUtterance = null;
+// Web Speech API and High-Fidelity Tamil Audio Recitation Engine
+let activeUtterances = [];
+let activeAudio = null;
+let activeTimer = null;
 
 export const playTamilSpeech = (kural, onStart, onEnd) => {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    alert("Speech Synthesis is not supported in this browser.");
+  stopTamilSpeech();
+
+  if (!kural || !kural.Line1 || !kural.Line2) {
     if (onEnd) onEnd();
     return;
   }
-
-  window.speechSynthesis.cancel();
 
   const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
   const line1 = allWords.slice(0, 4).join(' ');
   const line2 = allWords.slice(4).join(' ');
 
-  const utterance1 = new SpeechSynthesisUtterance(line1);
-  const utterance2 = new SpeechSynthesisUtterance(line2);
+  const hasSpeechSynthesis = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  let tamilVoice = null;
+  if (hasSpeechSynthesis) {
+    const voices = window.speechSynthesis.getVoices() || [];
+    tamilVoice = voices.find(v => (v.lang && v.lang.toLowerCase().startsWith('ta')) || (v.name && v.name.toLowerCase().includes('tamil')));
+  }
 
-  const voices = window.speechSynthesis.getVoices();
-  const tamilVoice = voices.find(v => v.lang.startsWith('ta') || v.name.toLowerCase().includes('tamil'));
+  // 1. If an authentic native Tamil voice is found in browser, use SpeechSynthesis
+  if (hasSpeechSynthesis && tamilVoice) {
+    const utterance1 = new SpeechSynthesisUtterance(line1);
+    const utterance2 = new SpeechSynthesisUtterance(line2);
 
-  if (tamilVoice) {
     utterance1.voice = tamilVoice;
     utterance2.voice = tamilVoice;
+    utterance1.lang = 'ta-IN';
+    utterance2.lang = 'ta-IN';
+    utterance1.rate = 0.82; // Classical metre pace
+    utterance2.rate = 0.82;
+    utterance1.pitch = 1.0;
+    utterance2.pitch = 1.0;
+
+    if (onStart) onStart();
+
+    utterance1.onend = () => {
+      activeTimer = setTimeout(() => {
+        if (activeUtterances.length > 0) {
+          window.speechSynthesis.speak(utterance2);
+        }
+      }, 450);
+    };
+
+    utterance2.onend = () => {
+      activeUtterances = [];
+      if (onEnd) onEnd();
+    };
+
+    utterance1.onerror = () => {
+      activeUtterances = [];
+      if (onEnd) onEnd();
+    };
+    utterance2.onerror = () => {
+      activeUtterances = [];
+      if (onEnd) onEnd();
+    };
+
+    activeUtterances = [utterance1, utterance2];
+    window.speechSynthesis.speak(utterance1);
+    return;
   }
-  
-  utterance1.lang = 'ta-IN';
-  utterance2.lang = 'ta-IN';
-  utterance1.rate = 0.82; // measured pace for classical metre
-  utterance2.rate = 0.82;
-  utterance1.pitch = 1.0;
-  utterance2.pitch = 1.0;
 
-  if (onStart) onStart();
+  // 2. High-Fidelity Authentic Tamil Audio Stream (via Google Tamil TTS Audio)
+  try {
+    const fullText = `${line1} , ${line2}`;
+    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(fullText)}&tl=ta&client=tw-ob`;
+    
+    const audio = new Audio(ttsUrl);
+    activeAudio = audio;
 
-  utterance1.onend = () => {
-    // 450ms metrical cadence pause between Line 1 and Line 2
-    setTimeout(() => {
-      window.speechSynthesis.speak(utterance2);
-    }, 450);
-  };
+    audio.onplay = () => {
+      if (onStart) onStart();
+    };
 
-  utterance2.onend = () => {
+    audio.onended = () => {
+      activeAudio = null;
+      if (onEnd) onEnd();
+    };
+
+    audio.onerror = () => {
+      activeAudio = null;
+      if (hasSpeechSynthesis) {
+        const fallbackUtt = new SpeechSynthesisUtterance(`${line1}. ${line2}`);
+        fallbackUtt.lang = 'ta-IN';
+        fallbackUtt.rate = 0.82;
+        fallbackUtt.onend = () => { activeUtterances = []; if (onEnd) onEnd(); };
+        fallbackUtt.onerror = () => { activeUtterances = []; if (onEnd) onEnd(); };
+        activeUtterances = [fallbackUtt];
+        window.speechSynthesis.speak(fallbackUtt);
+      } else {
+        if (onEnd) onEnd();
+      }
+    };
+
+    audio.play().catch(() => {
+      if (hasSpeechSynthesis) {
+        const fallbackUtt = new SpeechSynthesisUtterance(`${line1}. ${line2}`);
+        fallbackUtt.lang = 'ta-IN';
+        fallbackUtt.rate = 0.82;
+        fallbackUtt.onend = () => { activeUtterances = []; if (onEnd) onEnd(); };
+        fallbackUtt.onerror = () => { activeUtterances = []; if (onEnd) onEnd(); };
+        activeUtterances = [fallbackUtt];
+        window.speechSynthesis.speak(fallbackUtt);
+      } else {
+        if (onEnd) onEnd();
+      }
+    });
+  } catch (err) {
     if (onEnd) onEnd();
-  };
-
-  utterance1.onerror = () => {
-    if (onEnd) onEnd();
-  };
-  utterance2.onerror = () => {
-    if (onEnd) onEnd();
-  };
-
-  activeUtterance = utterance1;
-  window.speechSynthesis.speak(utterance1);
+  }
 };
 
 export const stopTamilSpeech = (onStop) => {
+  if (activeTimer) {
+    clearTimeout(activeTimer);
+    activeTimer = null;
+  }
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+    activeAudio = null;
+  }
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
+  activeUtterances = [];
   if (onStop) onStop();
 };
 
