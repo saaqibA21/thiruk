@@ -12,7 +12,9 @@ execSync('git init', { cwd: DIST_DIR, stdio: 'inherit' });
 execSync('git config user.name "saaqibA21"', { cwd: DIST_DIR, stdio: 'inherit' });
 execSync('git config user.email "saaqibheroindia@gmail.com"', { cwd: DIST_DIR, stdio: 'inherit' });
 execSync('git add -A', { cwd: DIST_DIR, stdio: 'inherit' });
-execSync('git commit -m "Deploy Kurals up to 1330 Images to GitHub Pages"', { cwd: DIST_DIR, stdio: 'inherit' });
+try {
+  execSync('git commit -m "Deploy Kurals up to 1330 Images to GitHub Pages"', { cwd: DIST_DIR, stdio: 'inherit' });
+} catch (e) {}
 execSync('git push -f https://github.com/saaqibA21/thiruk.git master:gh-pages', { cwd: DIST_DIR, stdio: 'inherit' });
 
 console.log('🎉 Successfully deployed to gh-pages!');
