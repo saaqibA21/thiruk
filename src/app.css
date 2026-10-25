@@ -1465,6 +1465,23 @@ body {
   .e-block p {
     font-size: 1.05rem;
   }
+
+  .simple-explanation-block {
+    padding: 1rem 1.15rem;
+    margin-top: 1rem;
+    border-radius: 10px;
+  }
+
+  .simple-explanation-block .simple-exp-heading {
+    font-size: 0.92rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .simple-explanation-block p {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    word-break: break-word;
+  }
 }
 
 @media (min-width: 769px) {
