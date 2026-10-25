@@ -826,6 +826,39 @@ body {
   font-weight: 600;
 }
 
+.simple-explanation-block {
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.45) 0%, rgba(254, 215, 170, 0.25) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-left: 4px solid #f59e0b;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.25rem;
+  box-shadow: 0 4px 12px rgba(180, 83, 9, 0.04);
+}
+
+.simple-explanation-block .simple-exp-heading {
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.simple-explanation-block .simple-exp-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.simple-explanation-block p {
+  color: #1e293b;
+  font-size: 1.25rem;
+  line-height: 1.8;
+  font-weight: 600;
+}
+
 /* Helpers */
 .mini-loader {
   width: 20px;

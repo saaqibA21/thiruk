@@ -717,6 +717,7 @@ const App = () => {
          (k.Line2 && k.Line2.includes(search)) ||
          (k.Translation && k.Translation.toLowerCase().includes(cleanSearch)) ||
          (k.mv && k.mv.includes(search)) ||
+         (k.simple_explanation && k.simple_explanation.includes(search)) ||
          (k.Number.toString().includes(search))
       );
    }, [kuralData, searchQuery, selectedPaal, selectedChapter, selectedTheme, libraryMode]);
@@ -1303,6 +1304,14 @@ const App = () => {
                                      {selectedKural.mv && <div className="e-block"> <h5>மு. வரதராசனார் உரை</h5> <p>{selectedKural.mv}</p> </div>}
                                      {selectedKural.sp && <div className="e-block"> <h5>சாலமன் பாப்பையா உரை</h5> <p>{selectedKural.sp}</p> </div>}
                                      {selectedKural.mk && <div className="e-block"> <h5>மு. கருணாநிதி உரை</h5> <p>{selectedKural.mk}</p> </div>}
+                                     {selectedKural.simple_explanation && (
+                                        <div className="e-block simple-explanation-block">
+                                           <h5 className="simple-exp-heading">
+                                              <span className="simple-exp-icon">💡</span> பொதுவான எளிய விளக்கம்
+                                           </h5>
+                                           <p>{selectedKural.simple_explanation}</p>
+                                        </div>
+                                     )}
                                   </div>
 
                                   {/* Bottom Page Turn Navigation Bar */}
