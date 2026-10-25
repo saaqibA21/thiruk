@@ -4,7 +4,7 @@ import {
   BookOpen, 
   Briefcase, 
   Heart, 
-  Sparkles, 
+   
   RotateCw, 
   Compass, 
   ScrollText, 
@@ -391,7 +391,7 @@ export default function HistoryScrollytelling({ onNavigatePaal }) {
                     மிகவும் எளிய, தெளிவான மற்றும் தமிழ் மாணவர்களிடையே உலகளவில் அதிகம் வாசிக்கப்படும் முதன்மைத் திருக்குறள் உரை ஆசிரியர்.
                   </p>
                   <div className="commentator-pill">
-                    <span>📚 எளிய தெளிவுரை</span>
+                    <span>எளிய தெளிவுரை</span>
                   </div>
                 </div>
               </div>
@@ -409,7 +409,7 @@ export default function HistoryScrollytelling({ onNavigatePaal }) {
                     பாமர மக்களும் அன்றாட வாழ்வில் திருக்குறளின் அர்த்தத்தை எளிதில் உணரும் வண்ணம் எளிய நடைமுறை வாழ்வியல் சொல்லாடல்களில் உரை வழங்கியவர்.
                   </p>
                   <div className="commentator-pill">
-                    <span>✨ வாழ்வியல் உரை</span>
+                    <span>வாழ்வியல் உரை</span>
                   </div>
                 </div>
               </div>
@@ -427,7 +427,7 @@ export default function HistoryScrollytelling({ onNavigatePaal }) {
                     தமிழ் நயமும் அடுக்கு மொழியும் நிறைந்த இலக்கியச் சுவைமிக்க 'குறளோவியம்' மற்றும் நவீன கால கலைஞர் உரை தந்தவர்.
                   </p>
                   <div className="commentator-pill">
-                    <span>🎨 குறளோவியம் & இலக்கிய உரை</span>
+                    <span>குறளோவியம் & இலக்கிய உரை</span>
                   </div>
                 </div>
               </div>

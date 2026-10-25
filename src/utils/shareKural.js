@@ -10,16 +10,16 @@ export function getKuralShareText(kural) {
   const line2 = allWords.slice(4).join(' ');
   const meaning = kural.mv || kural.sp || kural.mk || kural.Translation || '';
 
-  return `📜 திருக்குறள் — குறள் ${kural.Number}
+  return `திருக்குறள் — குறள் ${kural.Number}
 
 ${line1}
 ${line2}
 
-📖 உரை விளக்கம்:
+உரை விளக்கம்:
 ${meaning}
 
-🏛️ SRM தமிழ் மன்றம் • மொழி முதல் இயந்திரம் வரை (Thirukkural AI)
-🌐 https://saaqibA21.github.io/thiruk/`;
+SRM தமிழ் மன்றம் • மொழி முதல் இயந்திரம் வரை (Thirukkural AI)
+https://saaqibA21.github.io/thiruk/`;
 }
 
 /**
@@ -103,7 +103,7 @@ export async function generateKuralShareCard(kural, customImageUrl) {
   ctx.fillStyle = '#fef08a';
   ctx.font = 'bold 24px "Outfit", "Noto Sans Tamil", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(`📜 திருக்குறள் • குறள் எண்: ${kural.Number}`, width / 2, 85);
+  ctx.fillText(`திருக்குறள் • குறள் எண்: ${kural.Number}`, width / 2, 85);
 
   // Verse Lines
   const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ZoomIn, X, Sparkles, Share2, Download } from 'lucide-react';
+import { ZoomIn, X,  Share2, Download } from 'lucide-react';
 import { getCandidateImageUrls } from '../utils/kuralFeatures';
 
 export { getCandidateImageUrls };
@@ -76,9 +76,6 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
               onError={handleImageError}
               onLoad={handleImageLoad}
             />
-            <div className="kural-img-corner-tag">
-              <Sparkles size={11} /> <span>வள்ளுவம்</span>
-            </div>
             <div className="kural-visual-overlay">
               <span className="visual-zoom-badge">
                 <ZoomIn size={14} /> பெரிதாக்கு (Click to Expand)
@@ -86,7 +83,7 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
             </div>
           </div>
           <div className="kural-visual-caption">
-            <span className="visual-tag">🎨 காட்சிக் விளக்கம் (Visual Representation)</span>
+            <span className="visual-tag">காட்சிக் விளக்கம் (Visual Representation)</span>
             <span className="visual-kural-no">குறள் {kuralNumber}</span>
           </div>
         </div>
@@ -104,9 +101,6 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
                 alt={'குறள் ' + kuralNumber + ' காட்சி விளக்கம்'}
                 className="kural-zoom-large-img"
               />
-              <div className="kural-img-corner-tag">
-                <Sparkles size={11} /> <span>வள்ளுவம்</span>
-              </div>
             </div>
             <div className="kural-zoom-footer">
               <div className="kural-zoom-footer-info">

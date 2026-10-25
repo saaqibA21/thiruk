@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Sparkles, 
+   
   BookOpen, 
   Cpu, 
   Award, 
@@ -27,9 +27,6 @@ export default function AboutView({ onNavigateTab }) {
       
       {/* Hero Header */}
       <div className="about-hero-card">
-        <div className="about-hero-badge">
-          <Sparkles size={14} /> SRM Institute of Science and Technology
-        </div>
         
         <div className="about-logos-header-row">
           <img 
@@ -37,7 +34,7 @@ export default function AboutView({ onNavigateTab }) {
             alt="SRM IST" 
             className="about-srm-logo" 
           />
-          <span className="about-logo-separator">✕</span>
+          <span className="about-logo-separator">&times;</span>
           <img 
             src="mozhi_to_machine.png" 
             alt="Mozhi to Machine" 

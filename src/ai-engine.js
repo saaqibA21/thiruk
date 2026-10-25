@@ -3,12 +3,12 @@ const CHAPTER_INDEX = [
 ];
 
 const TRIVIA_KNOWLEDGE = {
-    "இயல்": "📜 **திருக்குறள் இயல்கள் விவரம்:**\n\nதிருக்குறளில் மொத்தம் **9 இயல்கள்** உள்ளன:\n• **அறத்துப்பால் (4 இயல்கள்):** பாயிரவியல், இல்லறவியல், துறவறவியல், ஊழியல்\n• **பொருட்பால் (7 இயல்கள்):** அரசியல், அமைச்சியல், அரணியல், கூழியல், படையியல், நட்பியல், குடியியல்\n• **காமத்துப்பால் (2 இயல்கள்):** களவியல், கற்பியல்",
-    "பால்": "📖 **திருக்குறள் பால்கள் விவரம்:**\n\nதிருக்குறளில் மொத்தம் **3 பால்கள்** உள்ளன:\n1. **அறத்துப்பால்:** 38 அதிகாரங்கள் (குறள் 1 - 380)\n2. **பொருட்பால்:** 70 அதிகாரங்கள் (குறள் 381 - 1080)\n3. **காமத்துப்பால்:** 25 அதிகாரங்கள் (குறள் 1081 - 1330)",
-    "எழுத்து": "🔤 **திருக்குறள் எழுத்துக்கள் புள்ளிவிவரம்:**\n\n• **மொத்த எழுத்துக்கள்:** **42,194**\n• **பயன்படுத்தப்பட்ட தமிழ் எழுத்துக்கள்:** **37**\n• **அதிகம் பயன்படுத்தப்பட்ட எழுத்து:** **'னி'** (1,705 முறை)\n• **பயன்படுத்தப்படாத ஒரே உயிர் எழுத்து:** **'ஔ'**\n• **முதல் எழுத்து:** **'அ'** (குறள் 1)\n• **கடைசி எழுத்து:** **'ன்'** (குறள் 1330)",
-    "சொல்": "📊 **திருக்குறள் சொல் மற்றும் சீர் புள்ளிவிவரங்கள்:**\n\n• **மொத்த சீர்கள் (Metrical Words / Seers):** **9,310 சீர்கள்** (1,330 குறள்கள் × 7 சீர்கள்)\n• **மொத்த சொற்கள் (Lexical / Grammatical Words):** **சுமார் 14,000 சொற்கள்** (சொல் புணர்ச்சிகளைப் பிரித்து இலக்கணப்படி கணக்கிடும்போது)\n• **ஒரு குறளுக்கு:** முதல் அடியில் 4 சீர்கள், இரண்டாம் அடியில் 3 சீர்கள் என மொத்தம் 7 சீர்கள்.",
-    "அதிகாரம்": "🏛️ **திருக்குறள் அதிகாரங்கள்:**\n\nதிருக்குறளில் மொத்தம் **133 அதிகாரங்கள்** உள்ளன. ஒவ்வொரு அதிகாரத்திற்கும் 10 குறள்கள் வீதம் மொத்தம் **1,330 குறட்பாக்கள்** உள்ளன.",
-    "குறள்": "📖 **திருக்குறள் பாடல்கள் அமைப்பு:**\n\nதிருக்குறளில் மொத்தம் **1,330 ஈரடி வெண்பாக்கள்** உள்ளன. முதல் அடியில் 4 சீர்களும், இரண்டாம் அடியில் 3 சீர்களும் என மொத்தம் 7 சீர்கள் கொண்டு அமைக்கப்பட்டவை.",
+    "இயல்": "**திருக்குறள் இயல்கள் விவரம்:**\n\nதிருக்குறளில் மொத்தம் **9 இயல்கள்** உள்ளன:\n• **அறத்துப்பால் (4 இயல்கள்):** பாயிரவியல், இல்லறவியல், துறவறவியல், ஊழியல்\n• **பொருட்பால் (7 இயல்கள்):** அரசியல், அமைச்சியல், அரணியல், கூழியல், படையியல், நட்பியல், குடியியல்\n• **காமத்துப்பால் (2 இயல்கள்):** களவியல், கற்பியல்",
+    "பால்": "**திருக்குறள் பால்கள் விவரம்:**\n\nதிருக்குறளில் மொத்தம் **3 பால்கள்** உள்ளன:\n1. **அறத்துப்பால்:** 38 அதிகாரங்கள் (குறள் 1 - 380)\n2. **பொருட்பால்:** 70 அதிகாரங்கள் (குறள் 381 - 1080)\n3. **காமத்துப்பால்:** 25 அதிகாரங்கள் (குறள் 1081 - 1330)",
+    "எழுத்து": "**திருக்குறள் எழுத்துக்கள் புள்ளிவிவரம்:**\n\n• **மொத்த எழுத்துக்கள்:** **42,194**\n• **பயன்படுத்தப்பட்ட தமிழ் எழுத்துக்கள்:** **37**\n• **அதிகம் பயன்படுத்தப்பட்ட எழுத்து:** **'னி'** (1,705 முறை)\n• **பயன்படுத்தப்படாத ஒரே உயிர் எழுத்து:** **'ஔ'**\n• **முதல் எழுத்து:** **'அ'** (குறள் 1)\n• **கடைசி எழுத்து:** **'ன்'** (குறள் 1330)",
+    "சொல்": "**திருக்குறள் சொல் மற்றும் சீர் புள்ளிவிவரங்கள்:**\n\n• **மொத்த சீர்கள் (Metrical Words / Seers):** **9,310 சீர்கள்** (1,330 குறள்கள் × 7 சீர்கள்)\n• **மொத்த சொற்கள் (Lexical / Grammatical Words):** **சுமார் 14,000 சொற்கள்** (சொல் புணர்ச்சிகளைப் பிரித்து இலக்கணப்படி கணக்கிடும்போது)\n• **ஒரு குறளுக்கு:** முதல் அடியில் 4 சீர்கள், இரண்டாம் அடியில் 3 சீர்கள் என மொத்தம் 7 சீர்கள்.",
+    "அதிகாரம்": "**திருக்குறள் அதிகாரங்கள்:**\n\nதிருக்குறளில் மொத்தம் **133 அதிகாரங்கள்** உள்ளன. ஒவ்வொரு அதிகாரத்திற்கும் 10 குறள்கள் வீதம் மொத்தம் **1,330 குறட்பாக்கள்** உள்ளன.",
+    "குறள்": "**திருக்குறள் பாடல்கள் அமைப்பு:**\n\nதிருக்குறளில் மொத்தம் **1,330 ஈரடி வெண்பாக்கள்** உள்ளன. முதல் அடியில் 4 சீர்களும், இரண்டாம் அடியில் 3 சீர்களும் என மொத்தம் 7 சீர்கள் கொண்டு அமைக்கப்பட்டவை.",
     "பெற்றோர்": "திருவள்ளுவரின் பெற்றோர் ஆதி மற்றும் பகவன் என்று நம்பப்படுகிறது.",
     "மனைவி": "திருவள்ளுவரின் மனைவி வாசுகி அம்மையார்.",
     "ஆண்டு": "திருக்குறள் முதன்முதலில் 1812-ம் ஆண்டு தஞ்சையில் அச்சிடப்பட்டது. திருவள்ளுவர் கி.மு. 31-ம் ஆண்டு பிறந்தவராகக் தமிழ்நாடு அரசால் ஏற்கப்பட்டுள்ளது.",
@@ -463,7 +463,7 @@ export function getPolysemyKurals(query, dataset) {
   return matched;
 }
 
-const OFF_TOPIC_RESPONSE = `🙏 **வணக்கம்!**\n\nநான் **திருக்குறள் மற்றும் திருவள்ளுவர் வாழ்வியல் நெறிகளுக்கு** மட்டுமே பதிலளிக்கும் பிரத்யேக AI ஆய்வாளர் (Thirukkural AI Scholar) ஆவேன்.\n\nகணினி நிரலாக்கம் (Coding), மென்பொருள் உருவாக்கம் அல்லது திருக்குறள் சாராத பொதுவான தலைப்புகளுக்கு என்னால் பதிலளிக்க இயலாது.\n\n✨ **என்னிடம் நீங்கள் கேட்கக்கூடியவை:**\n• திருக்குறள் மற்றும் அதிகாரங்களின் தேடல் / விளக்கம்\n• குறிப்பிட்ட சொற்களின் பொருள், தோற்றங்கள் மற்றும் பயன்பாடு\n• பரிமேலழகர், மு.வ, சாலமன் பாப்பையா, கலைஞர் உரைகள்\n• அன்பு, நட்பு, கல்வி, அறம் போன்ற வாழ்வியல் வழிகாட்டல்கள்`;
+const OFF_TOPIC_RESPONSE = `**வணக்கம்!**\n\nநான் **திருக்குறள் மற்றும் திருவள்ளுவர் வாழ்வியல் நெறிகளுக்கு** மட்டுமே பதிலளிக்கும் பிரத்யேக AI ஆய்வாளர் (Thirukkural AI Scholar) ஆவேன்.\n\nகணினி நிரலாக்கம் (Coding), மென்பொருள் உருவாக்கம் அல்லது திருக்குறள் சாராத பொதுவான தலைப்புகளுக்கு என்னால் பதிலளிக்க இயலாது.\n\n**என்னிடம் நீங்கள் கேட்கக்கூடியவை:**\n• திருக்குறள் மற்றும் அதிகாரங்களின் தேடல் / விளக்கம்\n• குறிப்பிட்ட சொற்களின் பொருள், தோற்றங்கள் மற்றும் பயன்பாடு\n• பரிமேலழகர், மு.வ, சாலமன் பாப்பையா, கலைஞர் உரைகள்\n• அன்பு, நட்பு, கல்வி, அறம் போன்ற வாழ்வியல் வழிகாட்டல்கள்`;
 
 function isOffTopicQuery(query) {
     if (!query) return false;
@@ -553,7 +553,7 @@ export function isEnhanceSpeechRequest(query) {
 export function buildDeterministicTamilSpeech(topic, kurals) {
     const title = topic.replace(/(?:பற்றி|பற்றிய|ஒரு|மேடை|மேடைப்|பேச்சு|உரை|தயார்|செய்து|தாருங்கள்|வேண்டும்|speech|on)+/gi, '').trim() || 'வாழ்வியல் நெறிகள்';
     
-    let speech = `🎙️ **செந்தமிழ் மேடைப் பேச்சு: ${title}**\n\n` +
+    let speech = `**செந்தமிழ் மேடைப் பேச்சு: ${title}**\n\n` +
                  `**அவையடக்கம் & தொடக்க வணக்கம்:**\n` +
                  `அவைக்கு முதற்கண் என் பணிவான செந்தமிழ் வணக்கங்கள்!\n` +
                  `மேடையில் வீற்றிருக்கும் அறிஞர் பெருமக்களே, நடுவர் பெருந்தகைகளே, என் நெஞ்சில் குடியிருக்கும் தமிழன்பர்களே!\n\n` +
@@ -563,11 +563,11 @@ export function buildDeterministicTamilSpeech(topic, kurals) {
                  `**மையக் கருத்து & குறள் மணிமாலை:**\n\n`;
 
     kurals.slice(0, 3).forEach((k, idx) => {
-        speech += `📌 **சிந்தனை ${idx + 1}:**\n` +
+        speech += `**சிந்தனை ${idx + 1}:**\n` +
                   `வள்ளுவப் பேராசான் இக்கருத்தை மிகத் தெளிவாக எடுத்துரைக்கிறார்:\n\n` +
                   `> *"**${k.Line1}**\n` +
                   `> **${k.Line2}**"*\n\n` +
-                  `💡 **விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n` +
+                  `**விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n` +
                   `இக்குறள் சுட்டிக்காட்டுவது போல, நாம் வெறும் வார்த்தைகளால் வாழாமல், வள்ளுவர் காட்டிய நெறிமுறைகளை நமது அன்றாட வாழ்வில் நடைமுறைப்படுத்த வேண்டும்.\n\n`;
     });
 
@@ -588,7 +588,7 @@ export function buildDeterministicEnhancedSpeech(originalText, kurals) {
 
     const paragraphs = cleanUserText.split(/\n+/).filter(p => p.trim().length > 0);
     
-    let enhanced = `✨ **திருக்குறள் மேற்கோள்களுடன் செப்பனிடப்பட்ட செந்தமிழ் மேடை உரை:**\n\n`;
+    let enhanced = `**திருக்குறள் மேற்கோள்களுடன் செப்பனிடப்பட்ட செந்தமிழ் மேடை உரை:**\n\n`;
     
     if (paragraphs.length <= 1) {
         enhanced += `${cleanUserText}\n\n`;
@@ -596,7 +596,7 @@ export function buildDeterministicEnhancedSpeech(originalText, kurals) {
             enhanced += `இக்கருத்தை மெய்ப்பிக்கும் வண்ணம் தெய்வப்புலவர் திருவள்ளுவர் அழகுற இயம்புகிறார்:\n\n` +
                         `> *"**${k.Line1}**\n` +
                         `> **${k.Line2}**"*\n\n` +
-                        `💡 **பொருள் விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n`;
+                        `**பொருள் விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n`;
         });
         enhanced += `ஆகவே, குறள் காட்டும் வழியில் நின்று பெருவாழ்வு வாழ்வோம்!\n\n**நன்றி! வணக்கம்! வாழ்க தமிழ்!**`;
         return enhanced;
@@ -609,7 +609,7 @@ export function buildDeterministicEnhancedSpeech(originalText, kurals) {
             enhanced += `இதனைத் தான் பொய்யாமொழிப் புலவர் திருவள்ளுவர் அழகுறக் குறிப்பிடுகிறார்:\n\n` +
                         `> *"**${k.Line1}**\n` +
                         `> **${k.Line2}**"*\n\n` +
-                        `💡 **உரை விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n`;
+                        `**உரை விளக்கம்:** ${k.mv || k.sp || k.mk}\n\n`;
         }
     });
 
@@ -719,11 +719,11 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
 3. USE ONLY PROVIDED KURALS: Quote ONLY the exact Thirukkurals provided in the context. Do not invent other verses.
 4. KURAL WEAVING: You must use the provided authenticated Thirukkurals in between paragraphs using classical transition phrases (e.g., 'இதனைத் தான்... என்று தெய்வப்புலவர் வள்ளுவர் அழகுற வகுத்துரைக்கிறார்...').
 5. ELOQUENT STRUCTURE:
-   - 🎙️ அவையடக்கம் & கம்பீரமான தொடக்க வணக்கம்
-   - 📜 பொருட்பெட்டக முன்னுரை (அடுக்குமொழி, எதுகை மோனைத் தமிழ்)
-   - 💡 மையக்கருத்து & குறள் மணிமாலை (குறள்களை மேற்கோள் காட்டி உண்மை வாழ்வியல் விளக்கம்)
-   - 🌟 நடைமுறை வாழ்வியல் பயன்பாடு & சிந்தனை எழுச்சி
-   - 🔥 எழுச்சியூட்டும் நிறைவுரை (நன்றி, வணக்கம், வாழ்க தமிழ்)`;
+   - அவையடக்கம் & கம்பீரமான தொடக்க வணக்கம்
+   - பொருட்பெட்டக முன்னுரை (அடுக்குமொழி, எதுகை மோனைத் தமிழ்)
+   - மையக்கருத்து & குறள் மணிமாலை (குறள்களை மேற்கோள் காட்டி உண்மை வாழ்வியல் விளக்கம்)
+   - நடைமுறை வாழ்வியல் பயன்பாடு & சிந்தனை எழுச்சி
+   - எழுச்சியூட்டும் நிறைவுரை (நன்றி, வணக்கம், வாழ்க தமிழ்)`;
 
         const userPrompt = `கீழே கொடுக்கப்பட்டுள்ள தலைப்பு/உரைக்கு ஏற்ப, வழங்கப்பட்டுள்ள உண்மைத் திருக்குறள்களை இடைஇடையே பொருத்தி, 100% தூய செந்தமிழில் ஒரு கம்பீரமான மேடைப் பேச்சைத் தயார் செய்து தாருங்கள். எந்தவொரு போலித் தகவலோ அல்லது ஆங்கிலச் சொல்லோ இருக்கக் கூடாது.\n\nபொருத்தமான உண்மைத் திருக்குறள்கள்:\n${kuralContext}\n\nபயனர் கோரிக்கை / உரை:\n${question}`;
 
@@ -914,9 +914,9 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
         // Step 2: Polysemy / Same Word Different Meanings Query Handler
         const polysemyList = getPolysemyKurals(question, this.dataset);
         if (polysemyList && polysemyList.length > 0) {
-            let polysemyText = `✨ **ஒரே சொல் வெவ்வேறு பொருள்களில் வரும் புகழ்பெற்ற குறள்கள் (சொல் பின்வரு நிலையணி):**\n\n`;
+            let polysemyText = `**ஒரே சொல் வெவ்வேறு பொருள்களில் வரும் புகழ்பெற்ற குறள்கள் (சொல் பின்வரு நிலையணி):**\n\n`;
             polysemyList.forEach(item => {
-                polysemyText += `📖 **குறள் ${item.Number} (${item.figureOfSpeech}):**\n` +
+                polysemyText += `**குறள் ${item.Number} (${item.figureOfSpeech}):**\n` +
                                 `**"${item.Line1}\n${item.Line2}"**\n` +
                                 `• **பயன்படுத்தப்பட்ட சொல்:** ${item.word}\n` +
                                 `• **பொருள் விளக்கம்:**\n` +
@@ -935,13 +935,13 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
             if (count > 0) {
                 const ctx = getContextualWordMeaning(kural, targetWord);
                 const enrichedKural = ctx ? { ...kural, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : kural;
-                let text = `📖 **குறள் எண் ${kural.Number}ல் "${targetWord}" என்ற சொல் ஆய்வு:**\n\n` +
+                let text = `**குறள் எண் ${kural.Number}ல் "${targetWord}" என்ற சொல் ஆய்வு:**\n\n` +
                            `• **இக்குறளில் "${targetWord}" என்ற சொல் மொத்தம் ${count} முறை வந்துள்ளது.**\n\n` +
                            `**குறள்:**\n` +
                            `"${kural.Line1}\n${kural.Line2}"\n\n` +
                            `**இடம்பெற்றுள்ள சீர்கள்:**\n` +
                            matches.map(m => `• சீர் ${m.seerNum}: **${m.word}**`).join('\n') + `\n\n` +
-                           (ctx ? `💡 **இக்குறளில் '${targetWord}' குறிப்பது:** ${ctx.meaning}\n\n` : '') +
+                           (ctx ? `**இக்குறளில் '${targetWord}' குறிப்பது:** ${ctx.meaning}\n\n` : '') +
                            `**உரை விளக்கம்:**\n${kural.mv || kural.sp || kural.mk}`;
                 return {
                     answer: text,
@@ -966,7 +966,7 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
                     const ctx = getContextualWordMeaning(k, targetWord);
                     return ctx ? { ...k, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : k;
                 });
-                let text = `📊 **திருக்குறள் சொல் பயன்பாட்டு ஆய்வு (Corpus Frequency Analysis):**\n\n` +
+                let text = `**திருக்குறள் சொல் பயன்பாட்டு ஆய்வு (Corpus Frequency Analysis):**\n\n` +
                            `• **ஆய்வு செய்யப்பட்ட சொல்:** "${targetWord}"\n` +
                            `• **திருக்குறளில் மொத்தம் வந்துள்ள எண்ணிக்கை:** **${rootOccurrences} முறை**\n` +
                            `• **இடம்பெற்றுள்ள மொத்த குறட்பாக்கள்:** **${totalKurals} குறள்கள்**\n\n` +
@@ -1012,7 +1012,7 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
                 const chNum = Math.ceil(targetKuralNum / 10);
                 const chInfo = ALL_ATHIGARAMS.find(a => a.n === chNum);
                 const chTitle = chInfo ? `${chInfo.name} (${chInfo.paal})` : `அதிகாரம் ${chNum}`;
-                const text = `📖 **திருக்குறள் ${kural.Number} - அதிகாரம் ${chNum}: ${chTitle}**\n\n` +
+                const text = `**திருக்குறள் ${kural.Number} - அதிகாரம் ${chNum}: ${chTitle}**\n\n` +
                              `**"${kural.Line1}\n${kural.Line2}"**\n\n` +
                              (kural.mv ? `• **மு. வரதராசனார் உரை:** ${kural.mv}\n` : '') +
                              (kural.sp ? `• **சாலமன் பாப்பையா உரை:** ${kural.sp}\n` : '') +
@@ -1033,7 +1033,7 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
                 const ctx = getContextualWordMeaning(k, athigaram.chapterName);
                 return ctx ? { ...k, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : k;
             });
-            const answer = `📜 **அதிகாரம் ${athigaram.chapterNumber}: ${athigaram.chapterName} (${athigaram.chapterEnglish})**\n\n` +
+            const answer = `**அதிகாரம் ${athigaram.chapterNumber}: ${athigaram.chapterName} (${athigaram.chapterEnglish})**\n\n` +
                            `• **பால்:** ${athigaram.paal} (${athigaram.paalEn})\n` +
                            `• **இயல்:** ${athigaram.iyal} (${athigaram.iyalEn})\n` +
                            `• **குறட்பாக்கள்:** குறள் ${athigaram.startKural} முதல் ${athigaram.endKural} வரை (மொத்தம் 10 குறள்கள்)\n\n` +
@@ -1118,13 +1118,13 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
 
                 let customAnswer = '';
                 if (hasContextWord) {
-                    customAnswer = `🔍 **'${finalTargetWord}' என்ற சொல்லின் வாழ்வியல் சூழல் ஆய்வு (Contextual Word Analysis):**\n\n` +
+                    customAnswer = `**'${finalTargetWord}' என்ற சொல்லின் வாழ்வியல் சூழல் ஆய்வு (Contextual Word Analysis):**\n\n` +
                                    `திருக்குறளில் **'${finalTargetWord}'** என்ற சொல் சூழலுக்கு ஏற்ப தனித்துவமான ஆழமான பொருளைக் குறிக்கிறது (கண்டறியப்பட்ட குறள்கள்: **${count}**):\n\n` +
-                                   topSources.map(k => `• **குறள் ${k.Number}:** 💡 இக்குறளில் '${finalTargetWord}' குறிப்பது: **${k.contextMeaning || k.mv || k.sp || ''}**`).join('\n') +
+                                   topSources.map(k => `• **குறள் ${k.Number}:** இக்குறளில் '${finalTargetWord}' குறிப்பது: **${k.contextMeaning || k.mv || k.sp || ''}**`).join('\n') +
                                    (count > 5 ? `\n\n*(மேலும் கீழேயுள்ள குறள் அட்டைகளில் விரிவான உரை விளக்கங்களைக் காணலாம்)*` : '');
                 } else {
                     customAnswer = count > 1 
-                        ? `🔍 **தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
+                        ? `**தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
                         : `இதோ நீங்கள் கேட்ட குறள்:`;
                 }
 
@@ -1147,13 +1147,13 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
 
                 let customAnswer = '';
                 if (hasContextWord) {
-                    customAnswer = `🔍 **'${finalTargetWord}' என்ற சொல்லின் வாழ்வியல் சூழல் ஆய்வு (Contextual Word Analysis):**\n\n` +
+                    customAnswer = `**'${finalTargetWord}' என்ற சொல்லின் வாழ்வியல் சூழல் ஆய்வு (Contextual Word Analysis):**\n\n` +
                                    `திருக்குறளில் **'${finalTargetWord}'** என்ற சொல் சூழலுக்கு ஏற்ப தனித்துவமான ஆழமான பொருளைக் குறிக்கிறது (கண்டறியப்பட்ட குறள்கள்: **${count}**):\n\n` +
-                                   topSources.map(k => `• **குறள் ${k.Number}:** 💡 இக்குறளில் '${finalTargetWord}' குறிப்பது: **${k.contextMeaning || k.mv || k.sp || ''}**`).join('\n') +
+                                   topSources.map(k => `• **குறள் ${k.Number}:** இக்குறளில் '${finalTargetWord}' குறிப்பது: **${k.contextMeaning || k.mv || k.sp || ''}**`).join('\n') +
                                    (count > 5 ? `\n\n*(மேலும் கீழேயுள்ள குறள் அட்டைகளில் விரிவான உரை விளக்கங்களைக் காணலாம்)*` : '');
                 } else {
                     customAnswer = count > 1 
-                        ? `🔍 **தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
+                        ? `**தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
                         : `இதோ நீங்கள் கேட்ட குறள்:`;
                 }
 
@@ -1191,7 +1191,7 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
                     - Born: 31 BC (Mylapore). First printed: 1812. Translations: 107 languages.
                     
                     ### CONTEXTUAL WORD MEANING REQUIREMENT:
-                    - When analyzing Kurals matching a specific concept or word (e.g. அன்பு, அறம், கல்வி, துப்பு, நட்பு, etc.), explicitly explain what that word refers to / signifies in the context of EACH Kural (e.g., '💡 இக்குறளில் [சொல்] குறிப்பது: ...').
+                    - When analyzing Kurals matching a specific concept or word (e.g. அன்பு, அறம், கல்வி, துப்பு, நட்பு, etc.), explicitly explain what that word refers to / signifies in the context of EACH Kural (e.g., 'இக்குறளில் [சொல்] குறிப்பது: ...').
                     
                     ### VERIFICATION RULES:
                     1. Never hallucinate or invent word occurrence counts. Calculate exact facts.

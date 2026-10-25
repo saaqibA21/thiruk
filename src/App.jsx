@@ -152,7 +152,7 @@ const KuralCard = ({ kural, highlight, onSelect, onPlayAudio, isPlaying, onShare
          <div className="k-mini-info" onClick={onSelect} style={{ flex: 1, cursor: 'pointer' }}>
             <div className="k-mini-num" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                <span>குறள் எண்: {kural.Number}</span>
-               <span className="life-tag-badge mini">{lifeCat.icon} {lifeCat.nameEn}</span>
+               {lifeCat && <span className="life-tag-badge mini">{lifeCat.nameEn}</span>}
             </div>
             <div className="k-mini-lines">
                <p>{highlightText(allWords.slice(0, 4).join(' '))}</p>
@@ -632,7 +632,7 @@ const App = () => {
 
       return lines.map((line, idx) => {
          // If line contains analytical bullet or contextual phrase, format as clean readable text
-         if (line.includes('💡') || line.startsWith('• **குறள்') || line.startsWith('• குறள்') || line.includes('இக்குறளில்') || line.startsWith('•') || line.startsWith('*')) {
+         if (line.startsWith('• **குறள்') || line.startsWith('• குறள்') || line.includes('இக்குறளில்') || line.startsWith('•') || line.startsWith('*') || line.includes('விளக்கம்:')) {
             const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>');
             return (
                <div key={idx} className="analysis-bullet-line" style={{ margin: '0.45rem 0', lineHeight: '1.6' }} dangerouslySetInnerHTML={{ __html: formatted }} />
@@ -946,7 +946,7 @@ const App = () => {
                                     onChange={handleImageUpload}
                                  />
                                  <input
-                                    placeholder={isRecording ? "🎙️ பேசவும் (Listening...)" : "எதையும் கேளுங்கள்..."}
+                                    placeholder={isRecording ? "பேசவும் (Listening...)" : "எதையும் கேளுங்கள்..."}
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyDown={(e) => {
@@ -1098,7 +1098,7 @@ const App = () => {
                           ) : !selectedChapter ? (
                              <div className="chapter-view">
                                 <button className="tamil-back" onClick={() => { setSelectedTheme(null); setSelectedChapter(null); }}> <ArrowLeft size={16} /> Back to Themes </button>
-                                <h2>{selectedTheme.icon} {selectedTheme.name} ({selectedTheme.nameEn})</h2>
+                                <h2>{selectedTheme.name} ({selectedTheme.nameEn})</h2>
                                 <p style={{ color: '#64748b', marginBottom: '15px' }}>{selectedTheme.desc}</p>
                                 <div className="chapter-grid">
                                    {selectedTheme.chapters.map(num => (
@@ -1112,7 +1112,7 @@ const App = () => {
                              <div className="kural-view">
                                 <button className="tamil-back" onClick={() => setSelectedChapter(null)}> <ArrowLeft size={16} /> Back to Chapters </button>
                                 <div className="chapter-kural-header" style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-                                   <span className="life-tag-badge" style={{ marginBottom: '0.5rem' }}>{selectedTheme.icon} {selectedTheme.name}</span>
+                                   <span className="life-tag-badge" style={{ marginBottom: '0.5rem' }}>{selectedTheme.name}</span>
                                    <h2 style={{ fontSize: '1.4rem', color: 'var(--primary)', marginTop: '4px' }}>அதிகாரம் {selectedChapter}: {ATHIGARAMS[selectedChapter - 1]}</h2>
                                 </div>
                                 <div className="kural-grid-stack">
@@ -1225,7 +1225,7 @@ const App = () => {
                                         <ChevronRight size={16} />
                                      </button>
                                   </div>
-                                  <span className="life-tag-badge">{lifeCat.icon} {lifeCat.name}</span>
+                                  {lifeCat && <span className="life-tag-badge">{lifeCat.name}</span>}
                                </div>
                                <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button>
                             </header>
@@ -1307,7 +1307,7 @@ const App = () => {
                                      {selectedKural.simple_explanation && (
                                         <div className="e-block simple-explanation-block">
                                            <h5 className="simple-exp-heading">
-                                              <span className="simple-exp-icon">💡</span> பொதுவான எளிய விளக்கம்
+                                              பொதுவான எளிய விளக்கம்
                                            </h5>
                                            <p>{selectedKural.simple_explanation}</p>
                                         </div>
@@ -1325,7 +1325,7 @@ const App = () => {
                                         <span>முந்தைய குறள்</span>
                                      </button>
                                      <span className="bottom-page-indicator">
-                                        📖 குறள் {selectedKural.Number} / {totalKurals}
+                                        குறள் {selectedKural.Number} / {totalKurals}
                                      </span>
                                      <button 
                                         className="bottom-turn-btn next"

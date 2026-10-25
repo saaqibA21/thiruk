@@ -178,9 +178,6 @@ export default function HistoryView({ onNavigatePaal }) {
         {/* Compact Top Banner with Corpus Statistics */}
         <div className="history-hero-v2 glassmorphic-hero">
           <div className="h-hero-content">
-            <span className="h-hero-top-badge">
-              <Sparkles size={13} /> காலத்தை வென்ற உலகப் பொதுமறை
-            </span>
             <h2 className="h-title-big">திருக்குறள் வரலாறு</h2>
             <p className="h-subtitle-gold">ஏழே சீர்களில் மனிதகுல முழுமைக்குமான வாழ்வியல் வழிகாட்டி</p>
             
@@ -212,9 +209,6 @@ export default function HistoryView({ onNavigatePaal }) {
           <section className="h-section-card glass-card h-side-left">
             <div className="h-section-img-wrapper">
               <img src="thiruvalluvar.jpg" alt="Thiruvalluvar" className="h-card-inner-img" />
-              <div className="h-card-corner-badge">
-                <Sparkles size={11} /> <span>வள்ளுவர்</span>
-              </div>
             </div>
             <div className="h-section-text">
               <div className="card-mini-tag">
@@ -234,9 +228,6 @@ export default function HistoryView({ onNavigatePaal }) {
           <section className="h-section-card glass-card h-side-right">
             <div className="h-section-img-wrapper">
               <img src="manuscript.png" alt="Ancient Palm-leaf Manuscript" className="h-card-inner-img" />
-              <div className="h-card-corner-badge">
-                <Sparkles size={11} /> <span>முப்பால்</span>
-              </div>
             </div>
             <div className="h-section-text">
               <div className="card-mini-tag">
@@ -274,9 +265,6 @@ export default function HistoryView({ onNavigatePaal }) {
           <section className="h-section-card statue-focus glass-card h-side-left">
             <div className="h-section-img-wrapper">
               <img src="statue.png" alt="Valluvar Statue at Kanyakumari" className="h-card-inner-img" />
-              <div className="h-card-corner-badge">
-                <Sparkles size={11} /> <span>133 அடி</span>
-              </div>
             </div>
             <div className="h-section-text">
               <div className="card-mini-tag">
@@ -299,9 +287,6 @@ export default function HistoryView({ onNavigatePaal }) {
           <section className="h-section-card glass-card h-side-right">
             <div className="h-section-img-wrapper">
               <img src="translations.png" alt="Global Translations of Thirukkural" className="h-card-inner-img" />
-              <div className="h-card-corner-badge">
-                <Sparkles size={11} /> <span>100+ மொழிகள்</span>
-              </div>
             </div>
             <div className="h-section-text">
               <div className="card-mini-tag">
@@ -343,7 +328,7 @@ export default function HistoryView({ onNavigatePaal }) {
                     மிகவும் எளிய, தெளிவான மற்றும் தமிழ் மாணவர்களிடையே உலகளவில் அதிகம் வாசிக்கப்படும் முதன்மைத் திருக்குறள் உரை ஆசிரியர்.
                   </p>
                   <div className="commentator-pill">
-                    <span>📚 எளிய தெளிவுரை</span>
+                    <span>எளிய தெளிவுரை</span>
                   </div>
                 </div>
               </div>
@@ -361,7 +346,7 @@ export default function HistoryView({ onNavigatePaal }) {
                     பாமர மக்களும் அன்றாட வாழ்வில் திருக்குறளின் அர்த்தத்தை எளிதில் உணரும் வண்ணம் எளிய நடைமுறை வாழ்வியல் சொல்லாடல்களில் உரை வழங்கியவர்.
                   </p>
                   <div className="commentator-pill">
-                    <span>✨ வாழ்வியல் உரை</span>
+                    <span>வாழ்வியல் உரை</span>
                   </div>
                 </div>
               </div>
@@ -379,7 +364,7 @@ export default function HistoryView({ onNavigatePaal }) {
                     தமிழ் நயமும் அடுக்கு மொழியும் நிறைந்த இலக்கியச் சுவைமிக்க 'குறளோவியம்' மற்றும் நவீன கால கலைஞர் உரை தந்தவர்.
                   </p>
                   <div className="commentator-pill">
-                    <span>🎨 குறளோவியம் & இலக்கிய உரை</span>
+                    <span>குறளோவியம் & இலக்கிய உரை</span>
                   </div>
                 </div>
               </div>
