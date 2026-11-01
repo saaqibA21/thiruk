@@ -13,7 +13,8 @@ import {
   Zap, 
   CheckCircle2,
   Heart,
-  Gamepad2
+  Gamepad2,
+  Puzzle
 } from 'lucide-react';
 import { 
   getKidsStoryAndQuest, 
@@ -22,6 +23,7 @@ import {
 } from '../utils/kidsData.js';
 import { playTamilSpeech, stopTamilSpeech } from '../utils/kuralFeatures.js';
 import KuralJumpGame from './KuralJumpGame';
+import KuralScrambleGame from './KuralScrambleGame';
 
 export default function KidsModeView({ 
   kuralData = [], 
@@ -33,7 +35,7 @@ export default function KidsModeView({
   const [isPlaying, setIsPlaying] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [jumpInput, setJumpInput] = useState('');
-  const [showGame, setShowGame] = useState(false);
+  const [activeGame, setActiveGame] = useState(null); // null, 'jump', or 'scramble'
 
   // Sync when initialKuralNumber changes from parent
   useEffect(() => {
@@ -97,12 +99,29 @@ export default function KidsModeView({
     };
   }, [currentNum]);
 
-  // If Game Mode is active, render Kural Jump mini-game
-  if (showGame) {
+  // If Game Mode is active, render Kural Jump or Kural Scramble mini-game
+  if (activeGame === 'jump') {
     return (
       <div className="kids-mode-root" style={{ background: '#fdf8ee', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <KuralJumpGame 
-          onExit={() => setShowGame(false)} 
+          onExit={() => setActiveGame(null)} 
+          onRewardStar={() => {
+            setStars(s => s + 1);
+            playKidChime();
+          }}
+          lang={lang} 
+        />
+      </div>
+    );
+  }
+
+  if (activeGame === 'scramble') {
+    return (
+      <div className="kids-mode-root" style={{ background: '#fdf8ee', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <KuralScrambleGame 
+          kuralData={kuralData}
+          initialKuralNumber={currentNum}
+          onExit={() => setActiveGame(null)} 
           onRewardStar={() => {
             setStars(s => s + 1);
             playKidChime();
@@ -257,12 +276,22 @@ export default function KidsModeView({
           <div className="kids-nav-right">
             {/* Kural Jump Game Launcher Button */}
             <button 
-              className="kids-game-nav-btn"
-              onClick={() => setShowGame(true)}
+              className="kids-game-nav-btn kids-game-jump-btn"
+              onClick={() => setActiveGame('jump')}
               title="குறள் ஜம்ப் விளையாட்டு (Play Kural Jump Game)"
             >
               <Gamepad2 size={17} />
               <span>{lang === 'ta' ? 'குறள் ஜம்ப் 🐒' : 'Kural Jump 🐒'}</span>
+            </button>
+
+            {/* Kural Scramble Word Puzzle Launcher Button */}
+            <button 
+              className="kids-game-nav-btn kids-game-scramble-btn"
+              onClick={() => setActiveGame('scramble')}
+              title="குறள் புதிர் விளையாட்டு (Play Kural Scramble Word Puzzle)"
+            >
+              <Puzzle size={17} />
+              <span>{lang === 'ta' ? 'குறள் புதிர் 🧩' : 'Kural Puzzle 🧩'}</span>
             </button>
 
             {/* Star & Streak Counter Pill */}
@@ -362,16 +391,26 @@ export default function KidsModeView({
           {lang === 'ta' ? (
             <span>
               வணக்கம், நான் <span className="kids-speech-highlight">திரு!</span> குறள் {currentNum} படித்து விளையாடலாம்.
-              <button className="kids-bubble-game-btn" onClick={() => setShowGame(true)}>
-                🎮 குறள் ஜம்ப் விளையாடு
-              </button>
+              <span className="kids-bubble-btns-row">
+                <button className="kids-bubble-game-btn" onClick={() => setActiveGame('jump')}>
+                  🐒 குறள் ஜம்ப்
+                </button>
+                <button className="kids-bubble-game-btn scramble-btn" onClick={() => setActiveGame('scramble')}>
+                  🧩 குறள் புதிர்
+                </button>
+              </span>
             </span>
           ) : (
             <span>
               Hello, I'm <span className="kids-speech-highlight">Thiru!</span> Let's explore Kural {currentNum} and play.
-              <button className="kids-bubble-game-btn" onClick={() => setShowGame(true)}>
-                🎮 Play Kural Jump
-              </button>
+              <span className="kids-bubble-btns-row">
+                <button className="kids-bubble-game-btn" onClick={() => setActiveGame('jump')}>
+                  🐒 Kural Jump
+                </button>
+                <button className="kids-bubble-game-btn scramble-btn" onClick={() => setActiveGame('scramble')}>
+                  🧩 Kural Scramble
+                </button>
+              </span>
             </span>
           )}
         </div>
