@@ -690,3 +690,66 @@
     padding: 0.75rem 1rem;
   }
 }
+
+
+/* Quick Arrow Nav inside Chapter Card */
+.kids-quick-nav-arrow {
+  background: #fef3c7;
+  border: 1.5px solid #fde047;
+  color: #b45309;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kids-quick-nav-arrow:hover:not(:disabled) {
+  background: #fde047;
+  transform: scale(1.1);
+}
+
+.kids-quick-nav-arrow:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Quick Jump Form */
+.kids-jump-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 3px 4px 3px 12px;
+}
+
+.kids-jump-input {
+  width: 95px;
+  border: none;
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #334155;
+  outline: none;
+}
+
+.kids-jump-btn {
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kids-jump-btn:hover {
+  background: #d97706;
+}

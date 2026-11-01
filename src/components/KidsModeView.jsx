@@ -24,12 +24,20 @@ import { playTamilSpeech, stopTamilSpeech } from '../utils/kuralFeatures.js';
 export default function KidsModeView({ 
   kuralData = [], 
   onExit, 
-  initialKuralNumber = 381 
+  initialKuralNumber = 1 
 }) {
-  const [currentNum, setCurrentNum] = useState(Number(initialKuralNumber) || 381);
+  const [currentNum, setCurrentNum] = useState(Number(initialKuralNumber) || 1);
   const [lang, setLang] = useState('ta'); // 'ta' | 'en'
   const [isPlaying, setIsPlaying] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [jumpInput, setJumpInput] = useState('');
+
+  // Sync when initialKuralNumber changes from parent
+  useEffect(() => {
+    if (initialKuralNumber) {
+      setCurrentNum(Number(initialKuralNumber) || 1);
+    }
+  }, [initialKuralNumber]);
 
   // Local Storage for Gamification
   const [stars, setStars] = useState(() => {
@@ -53,9 +61,9 @@ export default function KidsModeView({
   const [starredKurals, setStarredKurals] = useState(() => {
     try {
       const saved = localStorage.getItem('thiruk_kids_starred_list');
-      return saved ? JSON.parse(saved) : [381];
+      return saved ? JSON.parse(saved) : [];
     } catch (e) {
-      return [381];
+      return [];
     }
   });
 
@@ -89,9 +97,9 @@ export default function KidsModeView({
   // Find Current Kural
   const currentKural = kuralData.find(k => Number(k.Number) === currentNum) || {
     Number: currentNum,
-    Line1: "படைகுடி கூழ்அமைச்சு நட்பரண் ஆறும்",
-    Line2: "உடையான் அரசருள் ஏறு.",
-    Translation: "A king possessing an army, a land, wealth, ministers, allies, and a fortress is a lion among rulers."
+    Line1: "அகர முதல எழுத்தெல்லாம் ஆதி",
+    Line2: "பகவன் முதற்றே உலகு.",
+    Translation: "As the letter A is the first of all letters, so the eternal God is the first in the world."
   };
 
   const athigaram = getKuralAthigaram(currentNum);
@@ -170,6 +178,18 @@ export default function KidsModeView({
     const total = kuralData.length || 1330;
     const randomNum = Math.floor(Math.random() * total) + 1;
     setCurrentNum(randomNum);
+  };
+
+  const handleJumpSubmit = (e) => {
+    e.preventDefault();
+    const val = parseInt(jumpInput, 10);
+    const maxVal = kuralData.length || 1330;
+    if (!isNaN(val) && val >= 1 && val <= maxVal) {
+      stopTamilSpeech();
+      setIsPlaying(false);
+      setCurrentNum(val);
+      setJumpInput('');
+    }
   };
 
   const handleShare = () => {
@@ -274,7 +294,25 @@ export default function KidsModeView({
             {lang === 'ta' ? athigaram.chapterName : athigaram.chapterEn}
           </h2>
           <div className="kids-chapter-kuralno">
-            <span>{lang === 'ta' ? `குறள் ${currentNum} / 1330` : `Kural ${currentNum} / 1330`}</span>
+            <button 
+              className="kids-quick-nav-arrow" 
+              onClick={handlePrev} 
+              disabled={currentNum <= 1}
+              title={lang === 'ta' ? 'முந்தைய குறள்' : 'Previous Kural'}
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="kids-kural-selector-badge">
+              {lang === 'ta' ? `குறள் ${currentNum} / 1330` : `Kural ${currentNum} / 1330`}
+            </span>
+            <button 
+              className="kids-quick-nav-arrow" 
+              onClick={handleNext} 
+              disabled={currentNum >= (kuralData.length || 1330)}
+              title={lang === 'ta' ? 'அடுத்த குறள்' : 'Next Kural'}
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         </div>
       </div>
@@ -287,7 +325,6 @@ export default function KidsModeView({
             alt="திரு (Thiru)" 
             className="kids-mascot-img"
             onError={(e) => {
-              // Fallback if circular image fails
               e.currentTarget.src = "thiruvalluvar.jpg";
             }}
           />
@@ -406,6 +443,22 @@ export default function KidsModeView({
             <span>{lang === 'ta' ? 'அடுத்த குறள்' : 'Next'}</span>
             <ChevronRight size={18} />
           </button>
+
+          {/* Quick Jump Input */}
+          <form className="kids-jump-form" onSubmit={handleJumpSubmit}>
+            <input 
+              type="number"
+              min="1"
+              max={kuralData.length || 1330}
+              placeholder={lang === 'ta' ? 'குறள் எண்...' : 'Kural No...'}
+              value={jumpInput}
+              onChange={(e) => setJumpInput(e.target.value)}
+              className="kids-jump-input"
+            />
+            <button type="submit" className="kids-jump-btn">
+              {lang === 'ta' ? 'செல்' : 'Go'}
+            </button>
+          </form>
 
           {/* Quick Share */}
           <div className="kids-share-mini-row">

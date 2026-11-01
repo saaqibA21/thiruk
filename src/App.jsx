@@ -732,7 +732,7 @@ const App = () => {
          <div className="scholarly-app">
             <KidsModeView 
                kuralData={kuralData}
-               initialKuralNumber={selectedKural ? selectedKural.Number : 381}
+               initialKuralNumber={selectedKural ? selectedKural.Number : 1}
                onExit={() => {
                   setActiveTab('ask');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
