@@ -12,7 +12,8 @@ import {
   BookOpen, 
   Zap, 
   CheckCircle2,
-  Heart
+  Heart,
+  Gamepad2
 } from 'lucide-react';
 import { 
   getKidsStoryAndQuest, 
@@ -20,6 +21,7 @@ import {
   playKidChime 
 } from '../utils/kidsData.js';
 import { playTamilSpeech, stopTamilSpeech } from '../utils/kuralFeatures.js';
+import KuralJumpGame from './KuralJumpGame';
 
 export default function KidsModeView({ 
   kuralData = [], 
@@ -31,6 +33,7 @@ export default function KidsModeView({
   const [isPlaying, setIsPlaying] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
   const [jumpInput, setJumpInput] = useState('');
+  const [showGame, setShowGame] = useState(false);
 
   // Sync when initialKuralNumber changes from parent
   useEffect(() => {
@@ -93,6 +96,22 @@ export default function KidsModeView({
       setIsPlaying(false);
     };
   }, [currentNum]);
+
+  // If Game Mode is active, render Kural Jump mini-game
+  if (showGame) {
+    return (
+      <div className="kids-mode-root" style={{ background: '#fdf8ee', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <KuralJumpGame 
+          onExit={() => setShowGame(false)} 
+          onRewardStar={() => {
+            setStars(s => s + 1);
+            playKidChime();
+          }}
+          lang={lang} 
+        />
+      </div>
+    );
+  }
 
   // Find Current Kural
   const currentKural = kuralData.find(k => Number(k.Number) === currentNum) || {
@@ -236,6 +255,16 @@ export default function KidsModeView({
           </div>
 
           <div className="kids-nav-right">
+            {/* Kural Jump Game Launcher Button */}
+            <button 
+              className="kids-game-nav-btn"
+              onClick={() => setShowGame(true)}
+              title="குறள் ஜம்ப் விளையாட்டு (Play Kural Jump Game)"
+            >
+              <Gamepad2 size={17} />
+              <span>{lang === 'ta' ? 'குறள் ஜம்ப் 🐒' : 'Kural Jump 🐒'}</span>
+            </button>
+
             {/* Star & Streak Counter Pill */}
             <div className="kids-stats-pill" title="உங்கள் நட்சத்திரங்கள் மற்றும் தொடர்ச்சி">
               <span className="kids-stat-badge">⭐ {stars}</span>
@@ -332,11 +361,17 @@ export default function KidsModeView({
         <div className="kids-speech-bubble">
           {lang === 'ta' ? (
             <span>
-              வணக்கம், நான் <span className="kids-speech-highlight">திரு!</span> குறள் {currentNum} படித்து விளையாடலாம். 🧃
+              வணக்கம், நான் <span className="kids-speech-highlight">திரு!</span> குறள் {currentNum} படித்து விளையாடலாம்.
+              <button className="kids-bubble-game-btn" onClick={() => setShowGame(true)}>
+                🎮 குறள் ஜம்ப் விளையாடு
+              </button>
             </span>
           ) : (
             <span>
-              Hello, I'm <span className="kids-speech-highlight">Thiru!</span> Let's explore Kural {currentNum} and play. 🧃
+              Hello, I'm <span className="kids-speech-highlight">Thiru!</span> Let's explore Kural {currentNum} and play.
+              <button className="kids-bubble-game-btn" onClick={() => setShowGame(true)}>
+                🎮 Play Kural Jump
+              </button>
             </span>
           )}
         </div>
