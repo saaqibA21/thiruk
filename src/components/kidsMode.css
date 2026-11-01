@@ -1,0 +1,692 @@
+/* ===================================================
+   THIRUKKURAL KIDS MODE STYLES
+   Storybook aesthetic inspired by user's design
+   =================================================== */
+
+.kids-mode-root {
+  min-height: 100vh;
+  width: 100%;
+  background: #fbf7ee;
+  color: #334155;
+  font-family: 'Outfit', 'Noto Sans Tamil', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  padding-bottom: 4rem;
+}
+
+/* Landscape Hills & Sky Header Area */
+.kids-sky-landscape {
+  position: relative;
+  width: 100%;
+  min-height: 240px;
+  background: linear-gradient(180deg, #dcfce7 0%, #fef9c3 50%, #fef08a 100%);
+  overflow: hidden;
+  border-bottom: 1px solid rgba(132, 204, 22, 0.2);
+}
+
+/* Sun Animation in Top Left */
+.kids-sun-wrapper {
+  position: absolute;
+  top: -35px;
+  left: -35px;
+  width: 160px;
+  height: 160px;
+  pointer-events: none;
+}
+
+.kids-sun-core {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fde047 35%, #facc15 70%, rgba(250, 204, 21, 0.15) 100%);
+  box-shadow: 0 0 55px rgba(250, 204, 21, 0.6);
+  animation: sunGlowPulse 4s infinite ease-in-out;
+}
+
+@keyframes sunGlowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* Floating Clouds */
+.kids-cloud {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+.kids-cloud-1 {
+  top: 30px;
+  right: 5%;
+  width: 110px;
+  height: 38px;
+  opacity: 0.92;
+  animation: cloudFloat 18s ease-in-out infinite alternate;
+}
+
+.kids-cloud-1::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 22px;
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.kids-cloud-1::after {
+  content: '';
+  position: absolute;
+  top: -24px;
+  right: 22px;
+  width: 52px;
+  height: 52px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+@keyframes cloudFloat {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-35px); }
+}
+
+/* Curved Green Rolling Hills */
+.kids-hills-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 110px;
+  pointer-events: none;
+}
+
+/* Top Action Header Bar */
+.kids-top-navbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.kids-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kids-exit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fde047;
+  color: #713f12;
+  border: 2px solid #eab308;
+  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.35);
+  transition: all 0.2s ease;
+}
+
+.kids-exit-btn:hover {
+  background: #facc15;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(234, 179, 8, 0.45);
+}
+
+.kids-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Star & Streak Counter Pill */
+.kids-stats-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #334155;
+  border: 2px solid #f1f5f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.kids-stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Language Toggle: EN | த */
+.kids-lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 3px;
+  border-radius: 9999px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.kids-lang-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.92rem;
+  font-weight: 800;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.kids-lang-btn.active {
+  background: #f43f5e;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(244, 63, 94, 0.35);
+}
+
+/* Floating Chapter Pill on Hill Crest */
+.kids-chapter-pill-wrapper {
+  position: relative;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  margin-top: -35px;
+  padding: 0 1rem;
+}
+
+.kids-chapter-card {
+  background: #ffffff;
+  padding: 0.9rem 2.2rem;
+  border-radius: 24px;
+  border: 2px solid rgba(254, 215, 170, 0.6);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  min-width: 280px;
+  max-width: 90%;
+  animation: softBob 4s ease-in-out infinite alternate;
+}
+
+@keyframes softBob {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+.kids-chapter-paal {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #b45309;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 3px;
+}
+
+.kids-chapter-title {
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #e11d48;
+  line-height: 1.2;
+  margin: 2px 0 4px;
+}
+
+.kids-chapter-kuralno {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Thiru Mascot & Speech Bubble */
+.kids-mascot-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  max-width: 780px;
+  margin: 1.5rem auto 1.25rem;
+  padding: 0 1.25rem;
+}
+
+.kids-mascot-avatar-frame {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 4px solid #fde047;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kids-mascot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kids-speech-bubble {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #fed7aa;
+  padding: 0.75rem 1.4rem;
+  border-radius: 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #334155;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  max-width: 580px;
+}
+
+.kids-speech-bubble::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 12px solid #ffffff;
+  z-index: 2;
+}
+
+.kids-speech-bubble::after {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  border-right: 14px solid #fed7aa;
+  z-index: 1;
+}
+
+.kids-speech-highlight {
+  color: #e11d48;
+  font-weight: 900;
+}
+
+/* Main Kural Big Card */
+.kids-main-content-container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.kids-kural-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 28px;
+  border: 2px solid #fed7aa;
+  box-shadow: 0 18px 45px rgba(217, 119, 6, 0.08);
+  padding: 2.75rem 2.25rem 2rem;
+  text-align: center;
+  margin-bottom: 1.75rem;
+  transition: transform 0.2s ease;
+}
+
+.kids-kural-verse-lines {
+  margin-bottom: 1.75rem;
+}
+
+.kids-verse-line {
+  font-size: 1.95rem;
+  font-weight: 900;
+  color: #451a03;
+  line-height: 1.5;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Audio Listen Button */
+.kids-audio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #f43f5e;
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem 2.25rem;
+  border-radius: 9999px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
+  transition: all 0.2s ease;
+  margin-bottom: 1.75rem;
+}
+
+.kids-audio-btn:hover {
+  background: #e11d48;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(244, 63, 94, 0.5);
+}
+
+.kids-audio-btn.playing {
+  background: #ea580c;
+  animation: audioPulse 1.2s infinite alternate;
+}
+
+@keyframes audioPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.04); }
+}
+
+/* English / Meaning Line */
+.kids-meaning-text {
+  font-size: 1.18rem;
+  line-height: 1.65;
+  color: #475569;
+  font-weight: 600;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* Star Collect Button inside Main Card */
+.kids-star-action-btn {
+  position: absolute;
+  bottom: 18px;
+  right: 22px;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  line-height: 1;
+}
+
+.kids-star-action-btn:hover {
+  transform: scale(1.25) rotate(12deg);
+}
+
+.kids-star-action-btn.starred {
+  animation: starPop 0.4s ease;
+}
+
+@keyframes starPop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.35) rotate(-15deg); }
+  100% { transform: scale(1); }
+}
+
+/* Lower Two Cards Grid */
+.kids-lower-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Card 1: Short Story (Green Tint) */
+.kids-story-card {
+  background: #f0fdf4;
+  border: 2px solid #bbf7d0;
+  border-radius: 24px;
+  padding: 1.75rem;
+  box-shadow: 0 10px 24px rgba(22, 101, 52, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.kids-card-tag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  padding: 0.45rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.25rem;
+}
+
+.kids-story-card .kids-card-tag {
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.kids-story-paragraph {
+  font-size: 1.12rem;
+  line-height: 1.75;
+  color: #14532d;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Card 2: Daily Quest (Pink Tint) */
+.kids-quest-card {
+  background: #fff1f2;
+  border: 2px solid #fecdd3;
+  border-radius: 24px;
+  padding: 1.75rem;
+  box-shadow: 0 10px 24px rgba(159, 18, 57, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.kids-quest-card .kids-card-tag {
+  color: #be123c;
+  border: 1px solid #fda4af;
+}
+
+.kids-quest-text {
+  font-size: 1.12rem;
+  line-height: 1.75;
+  color: #881337;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  flex: 1;
+}
+
+.kids-quest-accept-btn {
+  background: #f43f5e;
+  color: #ffffff;
+  border: none;
+  padding: 0.8rem 1.75rem;
+  border-radius: 9999px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(244, 63, 94, 0.35);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.kids-quest-accept-btn:hover {
+  background: #e11d48;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(244, 63, 94, 0.45);
+}
+
+.kids-quest-accept-btn.accepted {
+  background: #10b981;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+/* Kids Bottom Navigation & Picker Bar */
+.kids-bottom-nav-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 2px solid #fed7aa;
+  border-radius: 20px;
+  padding: 0.85rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  margin-top: 1rem;
+}
+
+.kids-bottom-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fdba74;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kids-bottom-nav-btn:hover:not(:disabled) {
+  background: #ffedd5;
+  transform: translateY(-2px);
+}
+
+.kids-bottom-nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.kids-random-kural-btn {
+  background: #fdf4ff;
+  color: #86198f;
+  border: 1px solid #f0abfc;
+}
+
+.kids-random-kural-btn:hover {
+  background: #fae8ff;
+}
+
+.kids-share-mini-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kids-social-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kids-social-icon-btn:hover {
+  background: #e2e8f0;
+  transform: scale(1.1);
+}
+
+/* Celebration Overlay */
+.kids-celebration-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: #fef08a;
+  padding: 0.85rem 1.8rem;
+  border-radius: 9999px;
+  border: 2px solid #facc15;
+  font-size: 1.1rem;
+  font-weight: 800;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: toastPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes toastPop {
+  0% { transform: translate(-50%, 20px) scale(0.9); opacity: 0; }
+  100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+}
+
+/* Responsive Overhauls for Mobile */
+@media (max-width: 768px) {
+  .kids-sky-landscape {
+    min-height: 200px;
+  }
+
+  .kids-top-navbar {
+    padding: 0.85rem 1rem;
+  }
+
+  .kids-exit-btn {
+    padding: 0.45rem 1rem;
+    font-size: 0.88rem;
+  }
+
+  .kids-stats-pill {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    gap: 8px;
+  }
+
+  .kids-chapter-title {
+    font-size: 1.65rem;
+  }
+
+  .kids-kural-card {
+    padding: 2rem 1.25rem 2rem;
+    border-radius: 20px;
+  }
+
+  .kids-verse-line {
+    font-size: 1.35rem;
+    line-height: 1.45;
+  }
+
+  .kids-lower-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .kids-mascot-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .kids-speech-bubble::before,
+  .kids-speech-bubble::after {
+    display: none;
+  }
+
+  .kids-bottom-nav-bar {
+    justify-content: center;
+    padding: 0.75rem 1rem;
+  }
+}

@@ -1,0 +1,434 @@
+import React, { useState, useEffect } from 'react';
+import './kidsMode.css';
+import { 
+  Volume2, 
+  Square, 
+  ChevronLeft, 
+  ChevronRight, 
+  Shuffle, 
+  Sparkles, 
+  Share2, 
+  DoorOpen, 
+  BookOpen, 
+  Zap, 
+  CheckCircle2,
+  Heart
+} from 'lucide-react';
+import { 
+  getKidsStoryAndQuest, 
+  getKuralAthigaram, 
+  playKidChime 
+} from '../utils/kidsData.js';
+import { playTamilSpeech, stopTamilSpeech } from '../utils/kuralFeatures.js';
+
+export default function KidsModeView({ 
+  kuralData = [], 
+  onExit, 
+  initialKuralNumber = 381 
+}) {
+  const [currentNum, setCurrentNum] = useState(Number(initialKuralNumber) || 381);
+  const [lang, setLang] = useState('ta'); // 'ta' | 'en'
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  // Local Storage for Gamification
+  const [stars, setStars] = useState(() => {
+    try {
+      const saved = localStorage.getItem('thiruk_kids_stars');
+      return saved !== null ? Number(saved) : 2;
+    } catch (e) {
+      return 2;
+    }
+  });
+
+  const [streak, setStreak] = useState(() => {
+    try {
+      const saved = localStorage.getItem('thiruk_kids_streak');
+      return saved !== null ? Number(saved) : 1;
+    } catch (e) {
+      return 1;
+    }
+  });
+
+  const [starredKurals, setStarredKurals] = useState(() => {
+    try {
+      const saved = localStorage.getItem('thiruk_kids_starred_list');
+      return saved ? JSON.parse(saved) : [381];
+    } catch (e) {
+      return [381];
+    }
+  });
+
+  const [acceptedQuests, setAcceptedQuests] = useState(() => {
+    try {
+      const saved = localStorage.getItem('thiruk_kids_accepted_quests');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  // Save changes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('thiruk_kids_stars', String(stars));
+      localStorage.setItem('thiruk_kids_streak', String(streak));
+      localStorage.setItem('thiruk_kids_starred_list', JSON.stringify(starredKurals));
+      localStorage.setItem('thiruk_kids_accepted_quests', JSON.stringify(acceptedQuests));
+    } catch (e) {}
+  }, [stars, streak, starredKurals, acceptedQuests]);
+
+  // Clean up audio on unmount or Kural change
+  useEffect(() => {
+    return () => {
+      stopTamilSpeech();
+      setIsPlaying(false);
+    };
+  }, [currentNum]);
+
+  // Find Current Kural
+  const currentKural = kuralData.find(k => Number(k.Number) === currentNum) || {
+    Number: currentNum,
+    Line1: "படைகுடி கூழ்அமைச்சு நட்பரண் ஆறும்",
+    Line2: "உடையான் அரசருள் ஏறு.",
+    Translation: "A king possessing an army, a land, wealth, ministers, allies, and a fortress is a lion among rulers."
+  };
+
+  const athigaram = getKuralAthigaram(currentNum);
+  const kidsContent = getKidsStoryAndQuest(currentKural);
+
+  // Audio Playback Handler
+  const handleToggleAudio = () => {
+    if (isPlaying) {
+      stopTamilSpeech(() => setIsPlaying(false));
+      setIsPlaying(false);
+    } else {
+      setIsPlaying(true);
+      playTamilSpeech(
+        currentKural,
+        () => setIsPlaying(true),
+        () => {
+          setIsPlaying(false);
+          // Reward kid for listening completely
+          addStarReward(lang === 'ta' ? 'குறளைக் கேட்டதற்கு ⭐ +1 நட்சத்திரம்!' : 'Listening complete! ⭐ +1 Star!');
+        }
+      );
+    }
+  };
+
+  // Add Stars & Celebration
+  const addStarReward = (message) => {
+    setStars(prev => prev + 1);
+    playKidChime();
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 2800);
+  };
+
+  // Star Toggle
+  const isCurrentStarred = starredKurals.includes(currentNum);
+  const handleToggleStar = () => {
+    if (isCurrentStarred) {
+      setStarredKurals(prev => prev.filter(n => n !== currentNum));
+    } else {
+      setStarredKurals(prev => [...prev, currentNum]);
+      addStarReward(lang === 'ta' ? 'நட்சத்திரம் சேர்க்கப்பட்டது! ⭐ +1' : 'Star collected! ⭐ +1');
+    }
+  };
+
+  // Quest Acceptance
+  const isQuestAccepted = acceptedQuests.includes(currentNum);
+  const handleAcceptQuest = () => {
+    if (!isQuestAccepted) {
+      setAcceptedQuests(prev => [...prev, currentNum]);
+      setStreak(prev => prev + 1);
+      addStarReward(lang === 'ta' ? 'பணி ஏற்கப்பட்டது! ⭐ +1 நட்சத்திரம் & 🔥 +1 தொடர்ச்சி!' : 'Quest accepted! ⭐ +1 Star & 🔥 +1 Streak!');
+    }
+  };
+
+  // Navigation Handlers
+  const handlePrev = () => {
+    if (currentNum > 1) {
+      stopTamilSpeech();
+      setIsPlaying(false);
+      setCurrentNum(prev => prev - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentNum < (kuralData.length || 1330)) {
+      stopTamilSpeech();
+      setIsPlaying(false);
+      setCurrentNum(prev => prev + 1);
+    }
+  };
+
+  const handleRandom = () => {
+    stopTamilSpeech();
+    setIsPlaying(false);
+    const total = kuralData.length || 1330;
+    const randomNum = Math.floor(Math.random() * total) + 1;
+    setCurrentNum(randomNum);
+  };
+
+  const handleShare = () => {
+    const text = `📖 திருக்குறள் - குறள் ${currentNum}:\n${currentKural.Line1}\n${currentKural.Line2}\n\nhttps://saaqibA21.github.io/thiruk/`;
+    if (navigator.share) {
+      navigator.share({ title: `குறள் ${currentNum}`, text });
+    } else {
+      navigator.clipboard?.writeText(text);
+      setToastMessage(lang === 'ta' ? 'குறள் நகலெடுக்கப்பட்டது!' : 'Kural copied to clipboard!');
+      setTimeout(() => setToastMessage(null), 2000);
+    }
+  };
+
+  // Kural Verse Breakdown
+  const allWords = `${currentKural.Line1 || ''} ${currentKural.Line2 || ''}`.trim().split(/\s+/);
+  const line1 = allWords.slice(0, 4).join(' ');
+  const line2 = allWords.slice(4).join(' ');
+
+  return (
+    <div className="kids-mode-root">
+      
+      {/* Landscape Header Area with Sun & Rolling Hills */}
+      <div className="kids-sky-landscape">
+        
+        {/* Animated Sun */}
+        <div className="kids-sun-wrapper">
+          <div className="kids-sun-core" />
+        </div>
+
+        {/* Floating Clouds */}
+        <div className="kids-cloud kids-cloud-1" />
+
+        {/* Top Action Navigation Bar */}
+        <nav className="kids-top-navbar">
+          <div className="kids-nav-left">
+            <button 
+              className="kids-exit-btn" 
+              onClick={onExit}
+              title="இயல்பு நிலைக்குத் திரும்பு (Exit to Main App)"
+            >
+              <DoorOpen size={18} />
+              <span>{lang === 'ta' ? 'வெளியேறு' : 'Exit'}</span>
+            </button>
+          </div>
+
+          <div className="kids-nav-right">
+            {/* Star & Streak Counter Pill */}
+            <div className="kids-stats-pill" title="உங்கள் நட்சத்திரங்கள் மற்றும் தொடர்ச்சி">
+              <span className="kids-stat-badge">⭐ {stars}</span>
+              <span>-</span>
+              <span className="kids-stat-badge">🔥 {streak}</span>
+            </div>
+
+            {/* Language Toggle */}
+            <div className="kids-lang-toggle">
+              <button 
+                className={`kids-lang-btn ${lang === 'en' ? 'active' : ''}`}
+                onClick={() => setLang('en')}
+              >
+                EN
+              </button>
+              <button 
+                className={`kids-lang-btn ${lang === 'ta' ? 'active' : ''}`}
+                onClick={() => setLang('ta')}
+              >
+                த
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        {/* SVG Rolling Green Hills */}
+        <svg 
+          className="kids-hills-svg" 
+          viewBox="0 0 1200 120" 
+          preserveAspectRatio="none"
+        >
+          {/* Back Hill Layer */}
+          <path 
+            d="M0,70 C300,10 600,85 1200,35 L1200,120 L0,120 Z" 
+            fill="#a3e635" 
+            opacity="0.55"
+          />
+          {/* Front Hill Layer */}
+          <path 
+            d="M0,45 C250,90 550,20 850,75 C1050,110 1150,55 1200,65 L1200,120 L0,120 Z" 
+            fill="#84cc16" 
+          />
+        </svg>
+
+      </div>
+
+      {/* Floating Chapter Card resting at the Hill Crest */}
+      <div className="kids-chapter-pill-wrapper">
+        <div className="kids-chapter-card">
+          <div className="kids-chapter-paal">
+            {lang === 'ta' 
+              ? `${athigaram.paal} • அதிகாரம் ${athigaram.chapterNumber}` 
+              : `${athigaram.paalEn} • Chapter ${athigaram.chapterNumber}`}
+          </div>
+          <h2 className="kids-chapter-title">
+            {lang === 'ta' ? athigaram.chapterName : athigaram.chapterEn}
+          </h2>
+          <div className="kids-chapter-kuralno">
+            <span>{lang === 'ta' ? `குறள் ${currentNum} / 1330` : `Kural ${currentNum} / 1330`}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Thiru Cartoon Avatar & Speech Bubble */}
+      <div className="kids-mascot-section">
+        <div className="kids-mascot-avatar-frame">
+          <img 
+            src="thiru_avatar_circ.png" 
+            alt="திரு (Thiru)" 
+            className="kids-mascot-img"
+            onError={(e) => {
+              // Fallback if circular image fails
+              e.currentTarget.src = "thiruvalluvar.jpg";
+            }}
+          />
+        </div>
+        <div className="kids-speech-bubble">
+          {lang === 'ta' ? (
+            <span>
+              வணக்கம், நான் <span className="kids-speech-highlight">திரு!</span> குறள் {currentNum} படித்து விளையாடலாம். 🧃
+            </span>
+          ) : (
+            <span>
+              Hello, I'm <span className="kids-speech-highlight">Thiru!</span> Let's explore Kural {currentNum} and play. 🧃
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <main className="kids-main-content-container">
+        
+        {/* Main Kural Verse Card */}
+        <section className="kids-kural-card">
+          <div className="kids-kural-verse-lines">
+            <p className="kids-verse-line">{line1 || currentKural.Line1}</p>
+            <p className="kids-verse-line">{line2 || currentKural.Line2}</p>
+          </div>
+
+          {/* Big Pink Audio Listen Button */}
+          <button 
+            className={`kids-audio-btn ${isPlaying ? 'playing' : ''}`}
+            onClick={handleToggleAudio}
+          >
+            {isPlaying ? <Square size={20} /> : <Volume2 size={22} />}
+            <span>{isPlaying ? (lang === 'ta' ? 'நிறுத்து' : 'Stop') : (lang === 'ta' ? 'கேள்' : 'Listen')}</span>
+          </button>
+
+          {/* Child-Friendly Meaning Line */}
+          <p className="kids-meaning-text">
+            {currentKural.explanation || currentKural.Translation || currentKural.simple_explanation || currentKural.mv}
+          </p>
+
+          {/* Gold Star Button in Bottom Right */}
+          <button 
+            className={`kids-star-action-btn ${isCurrentStarred ? 'starred' : ''}`}
+            onClick={handleToggleStar}
+            title={isCurrentStarred ? 'நட்சத்திரம் சேர்க்கப்பட்டுள்ளது' : 'நட்சத்திரம் சேர்க்க கிளிக் செய்க'}
+          >
+            {isCurrentStarred ? '⭐' : '☆'}
+          </button>
+        </section>
+
+        {/* Lower Two Cards Grid: Short Story & Daily Quest */}
+        <div className="kids-lower-grid">
+          
+          {/* Card 1: Short Story (Green Tint) */}
+          <div className="kids-story-card">
+            <div className="kids-card-tag">
+              <BookOpen size={16} />
+              <span>{lang === 'ta' ? 'ஒரு சிறு கதை' : 'A Short Story'}</span>
+            </div>
+            <p className="kids-story-paragraph">
+              {lang === 'ta' ? kidsContent.storyTa : kidsContent.storyEn}
+            </p>
+          </div>
+
+          {/* Card 2: Daily Quest Challenge (Pink Tint) */}
+          <div className="kids-quest-card">
+            <div className="kids-card-tag">
+              <Zap size={16} />
+              <span>{lang === 'ta' ? 'இன்று முயற்சி செய்' : 'Try Today'}</span>
+            </div>
+            <p className="kids-quest-text">
+              {lang === 'ta' ? kidsContent.questTa : kidsContent.questEn}
+            </p>
+            <button 
+              className={`kids-quest-accept-btn ${isQuestAccepted ? 'accepted' : ''}`}
+              onClick={handleAcceptQuest}
+            >
+              {isQuestAccepted ? (
+                <>
+                  <CheckCircle2 size={18} />
+                  <span>{lang === 'ta' ? 'பணி முடிந்தது! ⭐' : 'Quest Accepted! ⭐'}</span>
+                </>
+              ) : (
+                <span>{lang === 'ta' ? 'பணியை ஏற்கிறேன்! 🌈' : 'I Accept the Quest! 🚀'}</span>
+              )}
+            </button>
+          </div>
+
+        </div>
+
+        {/* Bottom Navigation & Discovery Bar */}
+        <div className="kids-bottom-nav-bar">
+          <button 
+            className="kids-bottom-nav-btn" 
+            onClick={handlePrev}
+            disabled={currentNum <= 1}
+          >
+            <ChevronLeft size={18} />
+            <span>{lang === 'ta' ? 'முந்தைய குறள்' : 'Previous'}</span>
+          </button>
+
+          <button 
+            className="kids-bottom-nav-btn kids-random-kural-btn" 
+            onClick={handleRandom}
+          >
+            <Shuffle size={16} />
+            <span>{lang === 'ta' ? 'மற்றொரு குறள்' : 'Random Kural'}</span>
+          </button>
+
+          <button 
+            className="kids-bottom-nav-btn" 
+            onClick={handleNext}
+            disabled={currentNum >= (kuralData.length || 1330)}
+          >
+            <span>{lang === 'ta' ? 'அடுத்த குறள்' : 'Next'}</span>
+            <ChevronRight size={18} />
+          </button>
+
+          {/* Quick Share */}
+          <div className="kids-share-mini-row">
+            <button 
+              className="kids-social-icon-btn" 
+              onClick={handleShare}
+              title="பகிர் (Share)"
+            >
+              <Share2 size={16} />
+            </button>
+          </div>
+        </div>
+
+      </main>
+
+      {/* Floating Celebration Toast */}
+      {toastMessage && (
+        <div className="kids-celebration-toast">
+          <Sparkles size={20} color="#facc15" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+    </div>
+  );
+}
