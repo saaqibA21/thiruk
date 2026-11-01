@@ -142,6 +142,15 @@
   100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
+.kural-jump-card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .kural-jump-card-badge {
   display: inline-flex;
   align-items: center;
@@ -152,8 +161,87 @@
   border-radius: 9999px;
   font-size: 0.82rem;
   font-weight: 800;
-  margin-bottom: 0.85rem;
   border: 1px solid #fde047;
+}
+
+.kural-jump-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.kural-jump-timer-badge.urgent {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #b91c1c;
+  animation: urgentPulse 0.5s infinite alternate;
+}
+
+@keyframes urgentPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.08); box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
+}
+
+.kural-jump-timer-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.kural-jump-timer-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #f59e0b 70%, #ef4444 100%);
+  border-radius: 9999px;
+  transition: width 1s linear;
+}
+
+.kural-jump-timer-bar-fill.urgent {
+  background: #ef4444;
+}
+
+.kural-jump-timeup-banner {
+  background: #fef2f2;
+  border: 1.5px solid #f87171;
+  color: #991b1b;
+  padding: 0.75rem 1.25rem;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeIn 0.3s ease;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.kural-jump-continue-btn {
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kural-jump-continue-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
 }
 
 .kural-jump-question-text {

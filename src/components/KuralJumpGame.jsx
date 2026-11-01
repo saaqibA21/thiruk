@@ -10,7 +10,8 @@ import {
   Play, 
   HelpCircle,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Timer
 } from 'lucide-react';
 import { KURAL_JUMP_QUESTIONS, getRandomQuestion } from '../utils/kuralJumpQuestions.js';
 
@@ -26,11 +27,13 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
   const [distance, setDistance] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Active Question State
+  // Active Question State & 20s Timer
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
   const [showHint, setShowHint] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(20);
+  const [isTimeUp, setIsTimeUp] = useState(false);
 
   // Internal Game Engine Mutable Refs (to avoid state lag in 60fps loop)
   const engineRef = useRef({
@@ -84,7 +87,6 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
       const now = ctx.currentTime;
 
       if (type === 'jump') {
-        // High harmonic spring boing
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
@@ -100,7 +102,6 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
         osc.stop(now + 0.32);
 
       } else if (type === 'correct') {
-        // Joyful chord fanfare (C5, E5, G5, C6)
         [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -117,7 +118,6 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
         });
 
       } else if (type === 'wrong') {
-        // Gentle friendly double boop
         [220, 180].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -132,6 +132,18 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
           osc.start(now + idx * 0.12);
           osc.stop(now + idx * 0.12 + 0.22);
         });
+
+      } else if (type === 'tick') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(820, now);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
       }
     } catch (e) {}
   };
@@ -161,7 +173,66 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
     setIsAnswerCorrect(null);
     setShowHint(false);
     setCurrentQuestion(null);
+    setTimeLeft(20);
+    setIsTimeUp(false);
     setGameState('PLAYING');
+  };
+
+  // 20-Second Countdown Timer for Questions
+  useEffect(() => {
+    let timer = null;
+    if (gameState === 'QUESTION' && currentQuestion && !isAnswerCorrect && !isTimeUp) {
+      setTimeLeft(20);
+      timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            handleTimeUp();
+            return 0;
+          }
+          if (prev <= 6 && soundEnabled) {
+            playSfx('tick');
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [gameState, currentQuestion, isAnswerCorrect, isTimeUp, soundEnabled]);
+
+  // Handle Time's Up (20s Expired)
+  const handleTimeUp = () => {
+    setIsTimeUp(true);
+    setShowHint(true);
+    playSfx('wrong');
+
+    // Auto-resume after 2.8 seconds so child has time to read the answer
+    setTimeout(() => {
+      handleSkipAndResume();
+    }, 2800);
+  };
+
+  // Skip obstacle and resume running after time-up
+  const handleSkipAndResume = () => {
+    const engine = engineRef.current;
+    engine.player.isJumping = true;
+    engine.player.isGrounded = false;
+    engine.player.vy = -14;
+    engine.speed = 3.8;
+    setGameState('JUMPING');
+
+    setTimeout(() => {
+      setGameState('PLAYING');
+      setCurrentQuestion(null);
+      setSelectedOption(null);
+      setIsAnswerCorrect(null);
+      setIsTimeUp(false);
+      setShowHint(false);
+      engine.inQuestionZone = false;
+      engine.activeObstacle = null;
+    }, 700);
   };
 
   // Main Canvas Setup & 60 FPS Render Loop
@@ -249,7 +320,6 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
       if (gameState === 'PLAYING' || gameState === 'QUESTION' || gameState === 'JUMPING') {
         engine.nextObstacleDist -= currentSpeed;
         if (engine.nextObstacleDist <= 0 && engine.obstacles.length === 0) {
-          // Spawn new obstacle
           engine.obstacles.push({
             x: W + 60,
             y: engine.groundY - 38,
@@ -279,6 +349,8 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
             setSelectedOption(null);
             setIsAnswerCorrect(null);
             setShowHint(false);
+            setTimeLeft(20);
+            setIsTimeUp(false);
             setGameState('QUESTION');
           }
 
@@ -311,7 +383,7 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
 
   // Handle Question Option Click
   const handleSelectOption = (idx) => {
-    if (selectedOption !== null && isAnswerCorrect) return; // already solved
+    if (isTimeUp || (selectedOption !== null && isAnswerCorrect)) return;
 
     setSelectedOption(idx);
     const correct = idx === currentQuestion.correctIndex;
@@ -341,13 +413,13 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
       engine.speed = 4.2;
       setGameState('JUMPING');
 
-      // Close question card after short celebratory moment
       setTimeout(() => {
         setGameState('PLAYING');
         setCurrentQuestion(null);
         setSelectedOption(null);
         setIsAnswerCorrect(null);
         setShowHint(false);
+        setIsTimeUp(false);
         engine.inQuestionZone = false;
         engine.activeObstacle = null;
       }, 750);
@@ -357,7 +429,6 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
       setShowHint(true);
       playSfx('wrong');
 
-      // Cute head-shake effect
       const engine = engineRef.current;
       engine.player.squashX = 1.15;
       engine.player.squashY = 0.88;
@@ -367,14 +438,14 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
   // Keyboard Navigation: Keys 1, 2, 3
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (gameState !== 'QUESTION' || !currentQuestion) return;
+      if (gameState !== 'QUESTION' || !currentQuestion || isTimeUp) return;
       if (e.key === '1') handleSelectOption(0);
       else if (e.key === '2') handleSelectOption(1);
       else if (e.key === '3') handleSelectOption(2);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState, currentQuestion, selectedOption, isAnswerCorrect]);
+  }, [gameState, currentQuestion, selectedOption, isAnswerCorrect, isTimeUp]);
 
   return (
     <div className="kural-jump-container">
@@ -424,8 +495,8 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
             </h2>
             <p className="kural-jump-screen-desc">
               {lang === 'ta' 
-                ? 'சின்னத் திரு ஓடி வருகிறான்! தடைகளைத் தாண்டி குதிக்க திருக்குறள் வினாக்களுக்குச் சரியான விடையளியுங்கள்!' 
-                : 'Little Thiru is on a mission! Answer Thirukkural questions to jump obstacles and collect stars!'}
+                ? 'சின்னத் திரு ஓடி வருகிறான்! தடைகளைத் தாண்டி குதிக்க 20 வினாடிகளுக்குள் திருக்குறள் வினாக்களுக்குச் சரியான விடையளியுங்கள்!' 
+                : 'Little Thiru is running! Answer Thirukkural questions within 20 seconds to jump obstacles and collect stars!'}
             </p>
             <button className="kural-jump-start-btn" onClick={startGame}>
               <Play size={20} />
@@ -438,10 +509,27 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
         {gameState === 'QUESTION' && currentQuestion && (
           <div className="kural-jump-question-overlay">
             <div className="kural-jump-question-card">
-              <span className="kural-jump-card-badge">
-                <HelpCircle size={14} />
-                <span>{lang === 'ta' ? 'குதிப்பதற்கான கேள்வி' : 'Question to Jump!'}</span>
-              </span>
+              
+              {/* Card Header with Question Badge and 20s Animated Timer */}
+              <div className="kural-jump-card-top-row">
+                <span className="kural-jump-card-badge">
+                  <HelpCircle size={14} />
+                  <span>{lang === 'ta' ? 'குதிப்பதற்கான கேள்வி' : 'Question to Jump!'}</span>
+                </span>
+
+                <div className={`kural-jump-timer-badge ${timeLeft <= 5 ? 'urgent' : ''}`}>
+                  <Timer size={15} />
+                  <span>{timeLeft}s</span>
+                </div>
+              </div>
+
+              {/* 20-Second Shrinking Progress Bar */}
+              <div className="kural-jump-timer-bar-track">
+                <div 
+                  className={`kural-jump-timer-bar-fill ${timeLeft <= 5 ? 'urgent' : ''}`}
+                  style={{ width: `${(timeLeft / 20) * 100}%` }}
+                />
+              </div>
 
               <h3 className="kural-jump-question-text">
                 {lang === 'ta' ? currentQuestion.questionTa : currentQuestion.questionEn}
@@ -452,6 +540,8 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
                   let statusClass = '';
                   if (selectedOption === idx) {
                     statusClass = isAnswerCorrect ? 'correct' : 'wrong';
+                  } else if (isTimeUp && idx === currentQuestion.correctIndex) {
+                    statusClass = 'correct'; // Reveal correct answer on time-up
                   }
 
                   return (
@@ -459,7 +549,7 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
                       key={idx}
                       className={`kural-jump-option-btn ${statusClass}`}
                       onClick={() => handleSelectOption(idx)}
-                      disabled={isAnswerCorrect === true}
+                      disabled={isAnswerCorrect === true || isTimeUp}
                     >
                       <span className="kural-jump-option-num">{idx + 1}</span>
                       <span style={{ flex: 1, textAlign: 'center' }}>{opt}</span>
@@ -470,8 +560,18 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
                 })}
               </div>
 
+              {/* Time's Up Banner */}
+              {isTimeUp && (
+                <div className="kural-jump-timeup-banner">
+                  <span>⏱️ {lang === 'ta' ? 'நேரம் முடிந்தது! அடுத்த முறை விரைவாக முயற்சி செய்!' : "Time's up! Try faster next time!"}</span>
+                  <button className="kural-jump-continue-btn" onClick={handleSkipAndResume}>
+                    {lang === 'ta' ? 'தொடரவும் ➡️' : 'Continue ➡️'}
+                  </button>
+                </div>
+              )}
+
               {/* Helpful Hint on Wrong Choice */}
-              {showHint && (
+              {showHint && !isTimeUp && (
                 <div className="kural-jump-hint-box">
                   💡 <strong>{lang === 'ta' ? 'குறிப்பு:' : 'Hint:'}</strong> {lang === 'ta' ? currentQuestion.hintTa : currentQuestion.hintEn}
                 </div>
@@ -485,9 +585,7 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
       {/* Bottom Instructions / Keyboard Hints */}
       <footer className="kural-jump-controls-bar">
         <div className="kural-jump-instructions">
-          <span>விடையளிக்க:</span>
-          <span className="kural-jump-key-badge">விடை பொத்தான்களைத் தொடவும்</span>
-          <span>அல்லது விசைப்பலகையில்</span>
+          <span>விடையளிக்க 20 வினாடிகள்:</span>
           <span className="kural-jump-key-badge">1</span>
           <span className="kural-jump-key-badge">2</span>
           <span className="kural-jump-key-badge">3</span>
@@ -517,7 +615,6 @@ function drawCloud(ctx, x, y, size) {
 }
 
 function drawDistantGopuramAndHills(ctx, W, H, offset) {
-  // Soft pastel green mountain silhouette
   ctx.fillStyle = 'rgba(167, 243, 208, 0.45)';
   ctx.beginPath();
   ctx.moveTo(0, H - 75);
@@ -529,11 +626,9 @@ function drawDistantGopuramAndHills(ctx, W, H, offset) {
   ctx.closePath();
   ctx.fill();
 
-  // Temple Gopuram Silhouettes in distance
   const gopuramX = (W * 0.65 - offset * 0.4 + W * 2) % (W + 200) - 100;
   ctx.fillStyle = 'rgba(110, 231, 183, 0.35)';
   ctx.beginPath();
-  // Pyramid Gopuram tiers
   ctx.moveTo(gopuramX + 20, H - 165);
   ctx.lineTo(gopuramX + 10, H - 125);
   ctx.lineTo(gopuramX + 35, H - 125);
@@ -549,7 +644,6 @@ function drawPalmyraTrees(ctx, W, groundY, offset) {
     const treeX = (i * spacing - offset + W * 3) % (W + spacing) - 60;
     const trunkHeight = 110;
 
-    // Slender tall trunk
     ctx.strokeStyle = '#a16207';
     ctx.lineWidth = 5;
     ctx.beginPath();
@@ -557,7 +651,6 @@ function drawPalmyraTrees(ctx, W, groundY, offset) {
     ctx.quadraticCurveTo(treeX - 8, groundY - trunkHeight * 0.6, treeX - 3, groundY - trunkHeight);
     ctx.stroke();
 
-    // Palmyra Fan Fronds
     ctx.fillStyle = '#65a30d';
     const topX = treeX - 3;
     const topY = groundY - trunkHeight;
@@ -570,7 +663,6 @@ function drawPalmyraTrees(ctx, W, groundY, offset) {
 }
 
 function drawGroundTrack(ctx, W, H, groundY, offset) {
-  // Main Earth Road
   const roadGrad = ctx.createLinearGradient(0, groundY, 0, H);
   roadGrad.addColorStop(0, '#fde68a');
   roadGrad.addColorStop(0.3, '#d97706');
@@ -578,11 +670,9 @@ function drawGroundTrack(ctx, W, H, groundY, offset) {
   ctx.fillStyle = roadGrad;
   ctx.fillRect(0, groundY, W, H - groundY);
 
-  // Top Grass Line
   ctx.fillStyle = '#84cc16';
   ctx.fillRect(0, groundY - 4, W, 6);
 
-  // Road Paver Lines & Speed Streaks
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
   ctx.lineWidth = 2;
   const stripeDist = 60;
@@ -600,19 +690,16 @@ function drawObstacle(ctx, obs) {
   ctx.translate(obs.x, obs.y);
 
   if (obs.type === 'stone_pillar') {
-    // Ancient Inscribed Stone Pillar (கல்தூண்)
     ctx.fillStyle = '#64748b';
     ctx.beginPath();
     ctx.roundRect(0, 0, 32, 45, 6);
     ctx.fill();
 
-    // Carved details & lotus crown
     ctx.fillStyle = '#f59e0b';
     ctx.beginPath();
     ctx.arc(16, 0, 8, 0, Math.PI * 2);
     ctx.fill();
 
-    // Ancient inscription grooves
     ctx.strokeStyle = '#334155';
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -622,19 +709,16 @@ function drawObstacle(ctx, obs) {
     ctx.stroke();
 
   } else {
-    // Mossy Wooden Log
     ctx.fillStyle = '#854d0e';
     ctx.beginPath();
     ctx.roundRect(0, 10, 38, 30, 8);
     ctx.fill();
 
-    // Wood rings on end
     ctx.fillStyle = '#a16207';
     ctx.beginPath();
     ctx.ellipse(34, 25, 4, 12, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Moss patch on top
     ctx.fillStyle = '#84cc16';
     ctx.beginPath();
     ctx.ellipse(16, 10, 12, 4, 0, 0, Math.PI * 2);
@@ -647,12 +731,10 @@ function drawObstacle(ctx, obs) {
 function updateAndDrawCharacter(ctx, engine, time) {
   const p = engine.player;
 
-  // Jump Gravity & Physics
   if (p.isJumping) {
     p.y += p.vy;
-    p.vy += 0.62; // Gravity
+    p.vy += 0.62;
 
-    // Apex stretch easing
     if (p.vy < 0) {
       p.squashX = 0.88;
       p.squashY = 1.15;
@@ -661,30 +743,25 @@ function updateAndDrawCharacter(ctx, engine, time) {
       p.squashY = 0.95;
     }
 
-    // Land on ground
     if (p.y >= p.baseY) {
       p.y = p.baseY;
       p.vy = 0;
       p.isJumping = false;
       p.isGrounded = true;
-      p.squashX = 1.25; // Landing impact squash
+      p.squashX = 1.25;
       p.squashY = 0.78;
 
-      // Emit ground impact dust puff
       spawnDustPuff(engine, p.x + 20, p.baseY);
     }
   } else {
-    // Return smoothly to normal scale
     p.squashX += (1 - p.squashX) * 0.18;
     p.squashY += (1 - p.squashY) * 0.18;
 
-    // Footstep dust during fast sprint
     if (engine.speed > 1 && Math.random() < 0.2) {
       spawnDustPuff(engine, p.x + 6, p.baseY);
     }
   }
 
-  // Running cycle stride
   const isRunning = engine.speed > 0.5 && p.isGrounded;
   if (isRunning) {
     p.runCycle += 0.28;
@@ -696,7 +773,7 @@ function updateAndDrawCharacter(ctx, engine, time) {
   ctx.translate(p.x, p.y + strideBob);
   ctx.scale(p.squashX, p.squashY);
 
-  // 1. Fluttering Scarf / Angavastram (Waving Bezier curves behind him)
+  // Scarf
   ctx.strokeStyle = '#f43f5e';
   ctx.lineWidth = 5;
   ctx.lineCap = 'round';
@@ -706,30 +783,26 @@ function updateAndDrawCharacter(ctx, engine, time) {
   ctx.quadraticCurveTo(-15, -34 + scarfWave, -35, -28 - scarfWave);
   ctx.stroke();
 
-  // 2. Legs (Alternating stride)
+  // Legs
   ctx.strokeStyle = '#d97706';
   ctx.lineWidth = 4;
   ctx.lineCap = 'round';
-
-  // Back leg
   ctx.beginPath();
   ctx.moveTo(14, -10);
   ctx.lineTo(14 - Math.sin(legAngle) * 16, 0);
   ctx.stroke();
 
-  // Front leg
   ctx.beginPath();
   ctx.moveTo(24, -10);
   ctx.lineTo(24 + Math.sin(legAngle) * 16, 0);
   ctx.stroke();
 
-  // 3. Torso & Traditional Dhoti (வேட்டி)
+  // Dhoti
   ctx.fillStyle = '#fffdfa';
   ctx.beginPath();
   ctx.roundRect(8, -36, 24, 28, 6);
   ctx.fill();
 
-  // Golden Dhoti border (ஜரிகை)
   ctx.strokeStyle = '#f59e0b';
   ctx.lineWidth = 2.5;
   ctx.beginPath();
@@ -737,22 +810,19 @@ function updateAndDrawCharacter(ctx, engine, time) {
   ctx.lineTo(32, -12);
   ctx.stroke();
 
-  // 4. Arms & Palm Leaf Manuscript (ஓலைச்சுவடி)
+  // Arms & Manuscript
   ctx.strokeStyle = '#d97706';
   ctx.lineWidth = 3.5;
-  // Back arm
   ctx.beginPath();
   ctx.moveTo(12, -30);
   ctx.lineTo(4 - Math.sin(legAngle) * 8, -20);
   ctx.stroke();
 
-  // Front arm holding Palm-leaf scroll
   ctx.beginPath();
   ctx.moveTo(26, -30);
   ctx.lineTo(36, -24);
   ctx.stroke();
 
-  // Palm leaf manuscript in hand
   ctx.fillStyle = '#fef08a';
   ctx.strokeStyle = '#ca8a04';
   ctx.lineWidth = 1.5;
@@ -761,32 +831,29 @@ function updateAndDrawCharacter(ctx, engine, time) {
   ctx.fill();
   ctx.stroke();
 
-  // 5. Head & Face
+  // Head
   ctx.fillStyle = '#fcd34d';
   ctx.beginPath();
   ctx.arc(20, -46, 12, 0, Math.PI * 2);
   ctx.fill();
 
-  // Gentle eyes & friendly smile
   ctx.fillStyle = '#451a03';
   ctx.beginPath();
-  ctx.arc(24, -48, 1.8, 0, Math.PI * 2); // Eye
+  ctx.arc(24, -48, 1.8, 0, Math.PI * 2);
   ctx.fill();
 
-  // Smile
   ctx.strokeStyle = '#451a03';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.arc(23, -44, 4, 0.1, Math.PI * 0.8);
   ctx.stroke();
 
-  // 6. Top-knot Hair Bun (குடுமி) with delayed bounce
+  // Hair
   ctx.fillStyle = '#1e1b18';
   ctx.beginPath();
   ctx.arc(14, -58, 6, 0, Math.PI * 2);
   ctx.fill();
 
-  // Golden Rudraksha bead
   ctx.fillStyle = '#ea580c';
   ctx.beginPath();
   ctx.arc(17, -54, 2, 0, Math.PI * 2);
@@ -824,7 +891,6 @@ function spawnStarConfetti(engine, x, y) {
 }
 
 function updateAndDrawParticles(ctx, engine) {
-  // 1. Dust Puffs
   for (let i = engine.dustPuffs.length - 1; i >= 0; i--) {
     const d = engine.dustPuffs[i];
     d.x += d.vx;
@@ -843,7 +909,6 @@ function updateAndDrawParticles(ctx, engine) {
     ctx.fill();
   }
 
-  // 2. Star Confetti
   for (let i = engine.particles.length - 1; i >= 0; i--) {
     const p = engine.particles[i];
     p.x += p.vx;
