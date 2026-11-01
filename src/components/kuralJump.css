@@ -583,3 +583,44 @@
     gap: 8px;
   }
 }
+
+
+/* Institutional Branding in Game HUD */
+.game-hud-branding-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.game-hud-srm-logo {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.game-hud-divider {
+  width: 1px;
+  height: 16px;
+  background: #cbd5e1;
+}
+
+.game-hud-mandram-logo {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 3px;
+}
+
+@media (max-width: 640px) {
+  .game-hud-srm-logo,
+  .game-hud-mandram-logo {
+    height: 20px;
+  }
+}

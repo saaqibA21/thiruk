@@ -271,6 +271,25 @@ export default function KidsModeView({
               <DoorOpen size={18} />
               <span>{lang === 'ta' ? 'வெளியேறு' : 'Exit'}</span>
             </button>
+
+            {/* SRM & Tamil Mandram Institutional Brand Pill */}
+            <div className="kids-institution-pill" title="SRM Institute of Science and Technology • SRM தமிழ் மன்றம்">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" 
+                alt="SRM IST" 
+                className="kids-brand-logo-srm" 
+              />
+              <span className="kids-brand-divider" />
+              <img 
+                src="mozhi_to_machine.png" 
+                alt="SRM தமிழ் மன்றம் - மொழி முதல் இயந்திரம் வரை" 
+                className="kids-brand-logo-mandram" 
+              />
+              <div className="kids-brand-text-col">
+                <span className="kids-brand-title">SRM</span>
+                <span className="kids-brand-sub">{lang === 'ta' ? 'தமிழ் மன்றம்' : 'Tamil Mandram'}</span>
+              </div>
+            </div>
           </div>
 
           <div className="kids-nav-right">
@@ -545,6 +564,26 @@ export default function KidsModeView({
             </button>
           </div>
         </div>
+
+        {/* Kids Mode Institutional Footer with SRM & Tamil Mandram Branding */}
+        <footer className="kids-footer-branding">
+          <div className="kids-footer-logos">
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" 
+              alt="SRM IST" 
+              className="kids-footer-srm-logo" 
+            />
+            <span className="kids-footer-divider" />
+            <img 
+              src="mozhi_to_machine.png" 
+              alt="SRM தமிழ் மன்றம் - மொழி முதல் இயந்திரம் வரை" 
+              className="kids-footer-mandram-logo" 
+            />
+          </div>
+          <p className="kids-footer-text">
+            <strong>SRM Institute of Science and Technology</strong> • {lang === 'ta' ? 'SRM தமிழ் மன்றம் (மொழி முதல் இயந்திரம் வரை)' : 'SRM Tamil Mandram (Mozhi to Machine)'}
+          </p>
+        </footer>
 
       </main>
 

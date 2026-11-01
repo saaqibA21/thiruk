@@ -464,6 +464,20 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
             <DoorOpen size={16} />
             <span>{lang === 'ta' ? 'வெளியேறு' : 'Exit'}</span>
           </button>
+
+          <div className="game-hud-branding-pill" title="SRM & SRM தமிழ் மன்றம்">
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" 
+              alt="SRM IST" 
+              className="game-hud-srm-logo" 
+            />
+            <span className="game-hud-divider" />
+            <img 
+              src="mozhi_to_machine.png" 
+              alt="SRM தமிழ் மன்றம்" 
+              className="game-hud-mandram-logo" 
+            />
+          </div>
           <div className="kural-jump-game-title">
             <span>🐒 குறள் ஜம்ப்</span>
           </div>
