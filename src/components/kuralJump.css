@@ -476,3 +476,110 @@
     font-size: 1.1rem;
   }
 }
+
+
+/* Difficulty Mode HUD Button */
+.kural-jump-hud-diff-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1.5px solid transparent;
+}
+
+.kural-jump-hud-diff-btn.easy {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #86efac;
+}
+
+.kural-jump-hud-diff-btn.hard {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #f87171;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+
+.kural-jump-hud-diff-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Difficulty Selector in Start Screen */
+.kural-jump-mode-select-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 1.75rem;
+}
+
+.kural-jump-mode-pill {
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 0.9rem 1.15rem;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kural-jump-mode-pill strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+
+.kural-jump-mode-pill small {
+  display: block;
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+.kural-jump-mode-pill:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+}
+
+.kural-jump-mode-pill.active {
+  background: #ffffff;
+  color: #15803d;
+  border-color: #4ade80;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.kural-jump-mode-pill.hard.active {
+  background: #ffffff;
+  color: #b91c1c;
+  border-color: #ef4444;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+}
+
+/* Easy Mode Badge inside Question Card */
+.kural-jump-easy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #dcfce7;
+  border: 1.5px solid #86efac;
+  color: #15803d;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .kural-jump-mode-select-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

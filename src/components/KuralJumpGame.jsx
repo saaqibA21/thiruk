@@ -11,7 +11,9 @@ import {
   HelpCircle,
   CheckCircle2,
   AlertCircle,
-  Timer
+  Timer,
+  Flame,
+  Smile
 } from 'lucide-react';
 import { KURAL_JUMP_QUESTIONS, getRandomQuestion } from '../utils/kuralJumpQuestions.js';
 
@@ -27,7 +29,10 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
   const [distance, setDistance] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Active Question State & 20s Timer
+  // Difficulty Modes: 'easy' (No Timer, relaxed) | 'hard' (20s Timer, faster speed)
+  const [difficulty, setDifficulty] = useState('easy');
+
+  // Active Question State & Timer
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
@@ -38,8 +43,8 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
   // Internal Game Engine Mutable Refs (to avoid state lag in 60fps loop)
   const engineRef = useRef({
     distance: 0,
-    speed: 3.8,
-    targetSpeed: 3.8,
+    speed: 3.6,
+    targetSpeed: 3.6,
     groundY: 0,
     // Character Physics
     player: {
@@ -148,14 +153,19 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
     } catch (e) {}
   };
 
-  // Start / Restart Game
-  const startGame = () => {
+  // Start / Restart Game with chosen Mode
+  const startGame = (chosenMode) => {
+    const selectedMode = chosenMode || difficulty;
+    setDifficulty(selectedMode);
+
+    const baseSpeed = selectedMode === 'hard' ? 4.6 : 3.6;
+
     const engine = engineRef.current;
     engine.distance = 0;
-    engine.speed = 3.8;
-    engine.targetSpeed = 3.8;
+    engine.speed = baseSpeed;
+    engine.targetSpeed = baseSpeed;
     engine.obstacles = [];
-    engine.nextObstacleDist = 320;
+    engine.nextObstacleDist = selectedMode === 'hard' ? 280 : 360;
     engine.activeObstacle = null;
     engine.particles = [];
     engine.dustPuffs = [];
@@ -178,10 +188,10 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
     setGameState('PLAYING');
   };
 
-  // 20-Second Countdown Timer for Questions
+  // 20-Second Countdown Timer - ONLY ACTIVE IN HARD MODE
   useEffect(() => {
     let timer = null;
-    if (gameState === 'QUESTION' && currentQuestion && !isAnswerCorrect && !isTimeUp) {
+    if (difficulty === 'hard' && gameState === 'QUESTION' && currentQuestion && !isAnswerCorrect && !isTimeUp) {
       setTimeLeft(20);
       timer = setInterval(() => {
         setTimeLeft(prev => {
@@ -200,9 +210,9 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [gameState, currentQuestion, isAnswerCorrect, isTimeUp, soundEnabled]);
+  }, [difficulty, gameState, currentQuestion, isAnswerCorrect, isTimeUp, soundEnabled]);
 
-  // Handle Time's Up (20s Expired)
+  // Handle Time's Up (Only in Hard Mode)
   const handleTimeUp = () => {
     setIsTimeUp(true);
     setShowHint(true);
@@ -220,7 +230,7 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
     engine.player.isJumping = true;
     engine.player.isGrounded = false;
     engine.player.vy = -14;
-    engine.speed = 3.8;
+    engine.speed = difficulty === 'hard' ? 4.6 : 3.6;
     setGameState('JUMPING');
 
     setTimeout(() => {
@@ -329,21 +339,20 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
             passed: false,
             triggered: false
           });
-          engine.nextObstacleDist = Math.floor(Math.random() * 320) + 480;
+          const intervalBase = difficulty === 'hard' ? 340 : 440;
+          engine.nextObstacleDist = Math.floor(Math.random() * 260) + intervalBase;
         }
 
         for (let i = engine.obstacles.length - 1; i >= 0; i--) {
           const obs = engine.obstacles[i];
           obs.x -= currentSpeed;
 
-          // Check if obstacle entered Question Zone (~220px in front of player)
+          // Check if obstacle entered Question Zone
           if (!obs.triggered && obs.x <= engine.player.x + 220 && obs.x > engine.player.x) {
             obs.triggered = true;
             engine.activeObstacle = obs;
             engine.inQuestionZone = true;
-            // Smoothly slow down speed to pause
-            engine.speed = 0;
-            // Pick a fun question
+            engine.speed = 0; // Pause
             const q = getRandomQuestion();
             setCurrentQuestion(q);
             setSelectedOption(null);
@@ -354,10 +363,8 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
             setGameState('QUESTION');
           }
 
-          // Draw the Obstacle
           drawObstacle(ctx, obs);
 
-          // Remove off-screen obstacles
           if (obs.x < -80) {
             engine.obstacles.splice(i, 1);
           }
@@ -379,7 +386,7 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
       window.removeEventListener('resize', resizeCanvas);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [gameState, soundEnabled]);
+  }, [gameState, soundEnabled, difficulty]);
 
   // Handle Question Option Click
   const handleSelectOption = (idx) => {
@@ -399,18 +406,18 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
       engine.player.isGrounded = false;
       engine.player.vy = -16.5; // Upward parabolic velocity
       engine.player.squashX = 0.75;
-      engine.player.squashY = 1.35; // Vertical stretch on launch
+      engine.player.squashY = 1.35; // Stretch on launch
 
-      // Spawn burst of golden celebration sparkles
       spawnStarConfetti(engine, engine.player.x + 20, engine.player.y - 40);
 
-      // Reward Stars & Streak
-      setScore(s => s + 10);
+      // Hard mode gives extra points!
+      const pointsEarned = difficulty === 'hard' ? 20 : 10;
+      setScore(s => s + pointsEarned);
       setStreak(st => st + 1);
       if (onRewardStar) onRewardStar();
 
       // Resume game speed with a punch
-      engine.speed = 4.2;
+      engine.speed = difficulty === 'hard' ? 4.8 : 4.0;
       setGameState('JUMPING');
 
       setTimeout(() => {
@@ -460,6 +467,31 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
           <div className="kural-jump-game-title">
             <span>🐒 குறள் ஜம்ப்</span>
           </div>
+
+          {/* Mode Switcher Pill in HUD */}
+          <button 
+            className={`kural-jump-hud-diff-btn ${difficulty === 'hard' ? 'hard' : 'easy'}`}
+            onClick={() => {
+              const newMode = difficulty === 'easy' ? 'hard' : 'easy';
+              setDifficulty(newMode);
+              if (engineRef.current) {
+                engineRef.current.speed = newMode === 'hard' ? 4.6 : 3.6;
+              }
+            }}
+            title={lang === 'ta' ? 'முறையை மாற்ற கிளிக் செய்க' : 'Click to toggle difficulty'}
+          >
+            {difficulty === 'hard' ? (
+              <>
+                <Flame size={14} />
+                <span>{lang === 'ta' ? 'கடினம் (20s)' : 'Hard (20s)'}</span>
+              </>
+            ) : (
+              <>
+                <Smile size={14} />
+                <span>{lang === 'ta' ? 'எளிய முறை' : 'Easy Mode'}</span>
+              </>
+            )}
+          </button>
         </div>
 
         <div className="kural-jump-hud-right">
@@ -495,10 +527,36 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
             </h2>
             <p className="kural-jump-screen-desc">
               {lang === 'ta' 
-                ? 'சின்னத் திரு ஓடி வருகிறான்! தடைகளைத் தாண்டி குதிக்க 20 வினாடிகளுக்குள் திருக்குறள் வினாக்களுக்குச் சரியான விடையளியுங்கள்!' 
-                : 'Little Thiru is running! Answer Thirukkural questions within 20 seconds to jump obstacles and collect stars!'}
+                ? 'சின்னத் திரு ஓடி வருகிறான்! தடைகளைத் தாண்டி குதிக்க திருக்குறள் வினாக்களுக்குச் சரியான விடையளியுங்கள்!' 
+                : 'Little Thiru is running! Answer Thirukkural questions to jump obstacles and collect stars!'}
             </p>
-            <button className="kural-jump-start-btn" onClick={startGame}>
+
+            {/* Difficulty Mode Selector in Start Screen */}
+            <div className="kural-jump-mode-select-row">
+              <button 
+                className={`kural-jump-mode-pill ${difficulty === 'easy' ? 'active' : ''}`}
+                onClick={() => setDifficulty('easy')}
+              >
+                <Smile size={18} />
+                <div style={{ textAlign: 'left' }}>
+                  <strong>{lang === 'ta' ? 'எளிய முறை (Easy)' : 'Easy Mode'}</strong>
+                  <small>{lang === 'ta' ? 'நேர வரம்பு இல்லை • நிதானமாக யோசிக்கலாம்' : 'No Timer • Relaxed Pace'}</small>
+                </div>
+              </button>
+
+              <button 
+                className={`kural-jump-mode-pill hard ${difficulty === 'hard' ? 'active' : ''}`}
+                onClick={() => setDifficulty('hard')}
+              >
+                <Flame size={18} />
+                <div style={{ textAlign: 'left' }}>
+                  <strong>{lang === 'ta' ? 'கடின முறை (Hard)' : 'Hard Mode'}</strong>
+                  <small>{lang === 'ta' ? '20 வினாடி நேர வரம்பு • வேகமான ஓட்டம்' : '20s Timer • Fast Pace'}</small>
+                </div>
+              </button>
+            </div>
+
+            <button className="kural-jump-start-btn" onClick={() => startGame(difficulty)}>
               <Play size={20} />
               <span>{lang === 'ta' ? 'விளையாட்டைத் தொடங்கு!' : 'Start Running!'}</span>
             </button>
@@ -510,26 +568,36 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
           <div className="kural-jump-question-overlay">
             <div className="kural-jump-question-card">
               
-              {/* Card Header with Question Badge and 20s Animated Timer */}
+              {/* Card Header */}
               <div className="kural-jump-card-top-row">
                 <span className="kural-jump-card-badge">
                   <HelpCircle size={14} />
                   <span>{lang === 'ta' ? 'குதிப்பதற்கான கேள்வி' : 'Question to Jump!'}</span>
                 </span>
 
-                <div className={`kural-jump-timer-badge ${timeLeft <= 5 ? 'urgent' : ''}`}>
-                  <Timer size={15} />
-                  <span>{timeLeft}s</span>
-                </div>
+                {/* 20-Second Animated Timer - SHOWN ONLY IN HARD MODE */}
+                {difficulty === 'hard' ? (
+                  <div className={`kural-jump-timer-badge ${timeLeft <= 5 ? 'urgent' : ''}`}>
+                    <Timer size={15} />
+                    <span>{timeLeft}s</span>
+                  </div>
+                ) : (
+                  <span className="kural-jump-easy-badge">
+                    <Smile size={14} />
+                    <span>{lang === 'ta' ? 'எளிய முறை (நேர வரம்பு இல்லை)' : 'Easy Mode (No Timer)'}</span>
+                  </span>
+                )}
               </div>
 
-              {/* 20-Second Shrinking Progress Bar */}
-              <div className="kural-jump-timer-bar-track">
-                <div 
-                  className={`kural-jump-timer-bar-fill ${timeLeft <= 5 ? 'urgent' : ''}`}
-                  style={{ width: `${(timeLeft / 20) * 100}%` }}
-                />
-              </div>
+              {/* 20-Second Shrinking Progress Bar - ONLY IN HARD MODE */}
+              {difficulty === 'hard' && (
+                <div className="kural-jump-timer-bar-track">
+                  <div 
+                    className={`kural-jump-timer-bar-fill ${timeLeft <= 5 ? 'urgent' : ''}`}
+                    style={{ width: `${(timeLeft / 20) * 100}%` }}
+                  />
+                </div>
+              )}
 
               <h3 className="kural-jump-question-text">
                 {lang === 'ta' ? currentQuestion.questionTa : currentQuestion.questionEn}
@@ -560,8 +628,8 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
                 })}
               </div>
 
-              {/* Time's Up Banner */}
-              {isTimeUp && (
+              {/* Time's Up Banner (Hard Mode Only) */}
+              {difficulty === 'hard' && isTimeUp && (
                 <div className="kural-jump-timeup-banner">
                   <span>⏱️ {lang === 'ta' ? 'நேரம் முடிந்தது! அடுத்த முறை விரைவாக முயற்சி செய்!' : "Time's up! Try faster next time!"}</span>
                   <button className="kural-jump-continue-btn" onClick={handleSkipAndResume}>
@@ -585,13 +653,13 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
       {/* Bottom Instructions / Keyboard Hints */}
       <footer className="kural-jump-controls-bar">
         <div className="kural-jump-instructions">
-          <span>விடையளிக்க 20 வினாடிகள்:</span>
+          <span>{difficulty === 'hard' ? '20 வினாடிகளுக்குள் விடையளிக்க:' : 'விடையளிக்க:'}</span>
           <span className="kural-jump-key-badge">1</span>
           <span className="kural-jump-key-badge">2</span>
           <span className="kural-jump-key-badge">3</span>
         </div>
 
-        <button className="kids-bottom-nav-btn kids-random-kural-btn" onClick={startGame}>
+        <button className="kids-bottom-nav-btn kids-random-kural-btn" onClick={() => startGame(difficulty)}>
           <RotateCcw size={16} />
           <span>{lang === 'ta' ? 'மீண்டும் தொடங்கு' : 'Restart'}</span>
         </button>
