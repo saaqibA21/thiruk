@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users, Smile } from 'lucide-react';
+import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, Download, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users, Smile } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI, getContextualWordMeaning } from './ai-engine';
 import {
@@ -18,6 +18,7 @@ import HistoryView from './components/HistoryView';
 import AboutView from './components/AboutView';
 import KidsModeView from './components/KidsModeView';
 import { findAthigaram, ATHIGARAMS, ALL_ATHIGARAMS } from './utils/athigaramsData.js';
+import { logQAInteraction, downloadQALogsJSON } from './utils/qaLogger';
 
 const TAMIL_KEYS = [
    ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ'],
@@ -607,12 +608,22 @@ const App = () => {
          //    });
          // }
 
+         const aiAnswer = result.answer || "இதோ உங்களுக்கான குறள்கள்:";
+         const aiSources = result.sources || [];
          setMessages(prev => [...prev, { 
             role: 'ai', 
-            content: result.answer || "இதோ உங்களுக்கான குறள்கள்:", 
-            sources: result.sources || [],
+            content: aiAnswer, 
+            sources: aiSources,
             searchTerms: result.searchTerms || (result.targetWord ? [result.targetWord] : [])
          }]);
+
+         // Automatically log question and answer to JSON storage
+         logQAInteraction({
+            query: currentText,
+            answer: aiAnswer,
+            mode: directAI ? 'direct_ai' : 'search_ai',
+            sources: aiSources
+         });
       } catch (error) {
          console.error("Chat Error:", error);
          setMessages(prev => [...prev, { role: 'ai', content: "மன்னிக்கவும், பதிலைத் தேடுவதில் தொழில்நுட்பக் கோளாறு ஏற்பட்டுள்ளது. மீண்டும் ஒருமுறை முயற்சி செய்யுங்கள்.", sources: [] }]);
@@ -950,6 +961,9 @@ const App = () => {
                                  </button>
                                  <button className="kb-toggle-v2" onClick={() => fileInputRef.current?.click()} title="படத்தைப் பதிவேற்றவும் (Upload Image / Puzzle)">
                                     <Camera size={20} />
+                                 </button>
+                                 <button className="kb-toggle-v2" onClick={downloadQALogsJSON} title="கேள்வி-பதில் தரவுகளை JSON வடிவில் பதிவிறக்கு (Download Q&A JSON)">
+                                    <Download size={20} />
                                  </button>
                                  <button 
                                     className={`kb-toggle-v2 voice-mic-btn ${isRecording ? 'recording-active' : ''}`} 
