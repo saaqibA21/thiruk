@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   Heart,
   Gamepad2,
-  Puzzle
+  Puzzle,
+  Compass
 } from 'lucide-react';
 import { 
   getKidsStoryAndQuest, 
@@ -24,6 +25,7 @@ import {
 import { playTamilSpeech, stopTamilSpeech } from '../utils/kuralFeatures.js';
 import KuralJumpGame from './KuralJumpGame';
 import KuralScrambleGame from './KuralScrambleGame';
+import ValluvarRPGGame from './ValluvarRPGGame';
 
 export default function KidsModeView({ 
   kuralData = [], 
@@ -127,6 +129,21 @@ export default function KidsModeView({
             playKidChime();
           }}
           lang={lang} 
+        />
+      </div>
+    );
+  }
+
+  if (activeGame === 'rpg') {
+    return (
+      <div className="kids-mode-root" style={{ background: '#fdf8ee', minHeight: '100vh', padding: '1rem 0' }}>
+        <ValluvarRPGGame 
+          onExit={() => setActiveGame(null)} 
+          onRewardStar={() => {
+            setStars(s => s + 1);
+            playKidChime();
+          }}
+          initialLang={lang} 
         />
       </div>
     );
@@ -313,6 +330,16 @@ export default function KidsModeView({
               <span>{lang === 'ta' ? 'குறள் புதிர் 🧩' : 'Kural Puzzle 🧩'}</span>
             </button>
 
+            {/* Valluvar's Path RPG Game Launcher Button */}
+            <button 
+              className="kids-game-nav-btn kids-game-rpg-btn"
+              onClick={() => setActiveGame('rpg')}
+              title="வள்ளுவர் வழி RPG விளையாட்டு (Play Valluvar's Path RPG)"
+            >
+              <Compass size={17} />
+              <span>{lang === 'ta' ? 'வள்ளுவர் வழி ⚖️' : 'Valluvar RPG ⚖️'}</span>
+            </button>
+
             {/* Star & Streak Counter Pill */}
             <div className="kids-stats-pill" title="உங்கள் நட்சத்திரங்கள் மற்றும் தொடர்ச்சி">
               <span className="kids-stat-badge">⭐ {stars}</span>
@@ -417,6 +444,9 @@ export default function KidsModeView({
                 <button className="kids-bubble-game-btn scramble-btn" onClick={() => setActiveGame('scramble')}>
                   🧩 குறள் புதிர்
                 </button>
+                <button className="kids-bubble-game-btn rpg-btn" onClick={() => setActiveGame('rpg')}>
+                  ⚖️ வள்ளுவர் வழி
+                </button>
               </span>
             </span>
           ) : (
@@ -428,6 +458,9 @@ export default function KidsModeView({
                 </button>
                 <button className="kids-bubble-game-btn scramble-btn" onClick={() => setActiveGame('scramble')}>
                   🧩 Kural Scramble
+                </button>
+                <button className="kids-bubble-game-btn rpg-btn" onClick={() => setActiveGame('rpg')}>
+                  ⚖️ Valluvar RPG
                 </button>
               </span>
             </span>

@@ -146,7 +146,9 @@
 .kids-nav-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 /* Star & Streak Counter Pill */
@@ -997,4 +999,37 @@
   .kids-footer-text {
     font-size: 0.82rem;
   }
+}
+
+
+/* =========================================================
+   Kids Mode - Valluvar RPG Game Nav Button
+   ========================================================= */
+.kids-game-rpg-btn {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+  animation: rpgBtnGlow 2.8s infinite alternate ease-in-out;
+}
+
+@keyframes rpgBtnGlow {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.04); box-shadow: 0 6px 16px rgba(217, 119, 6, 0.5); }
+}
+
+.kids-game-rpg-btn:hover {
+  background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+  transform: translateY(-2px);
+}
+
+.kids-bubble-game-btn.rpg-btn {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #78350f;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.2);
+}
+
+.kids-bubble-game-btn.rpg-btn:hover {
+  background: #fde68a;
+  border-color: #f59e0b;
 }
