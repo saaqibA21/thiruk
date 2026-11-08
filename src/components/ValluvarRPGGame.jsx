@@ -182,8 +182,7 @@ export default function ValluvarRPGGame({
     }
     setIsPlayingAudio(true);
     playTamilSpeech(
-      kural.Line1,
-      kural.Line2,
+      kural,
       () => setIsPlayingAudio(true),
       () => setIsPlayingAudio(false)
     );

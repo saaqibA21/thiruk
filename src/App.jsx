@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
-import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, Download, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users, Smile, Compass } from 'lucide-react';
+import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, Download, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users, Smile } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KuralAI, getContextualWordMeaning } from './ai-engine';
 import {
@@ -17,7 +17,6 @@ import { IntroVideo } from './components/IntroVideo';
 import HistoryView from './components/HistoryView';
 import AboutView from './components/AboutView';
 import KidsModeView from './components/KidsModeView';
-import ValluvarRPGGame from './components/ValluvarRPGGame';
 import { findAthigaram, ATHIGARAMS, ALL_ATHIGARAMS } from './utils/athigaramsData.js';
 import { logQAInteraction, downloadQALogsJSON } from './utils/qaLogger';
 
@@ -754,19 +753,6 @@ const App = () => {
       );
    }
 
-   if (activeTab === 'rpg') {
-      return (
-         <div className="scholarly-app" style={{ minHeight: '100vh', background: '#faf5ea', padding: '1rem 0 3rem' }}>
-            <ValluvarRPGGame 
-               onExit={() => {
-                  setActiveTab('ask');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-               }}
-            />
-         </div>
-      );
-   }
-
    return (
       <div className="scholarly-app">
          {/* Cinematic Fullscreen Website Intro Video */}
@@ -807,7 +793,6 @@ const App = () => {
                      <button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}> <HistoryIcon size={16} /> <span>வரலாறு</span> </button>
                      <button className={activeTab === 'about' ? 'active' : ''} onClick={() => setActiveTab('about')}> <Users size={16} /> <span>தமிழ் மன்றம்</span> </button>
                      <button className={activeTab === 'kids' ? 'active kids-nav-pill-btn' : 'kids-nav-pill-btn'} onClick={() => setActiveTab('kids')}> <Smile size={16} /> <span>குழந்தைகள் (Kids)</span> </button>
-                     <button className={activeTab === 'rpg' ? 'active rpg-nav-pill-btn' : 'rpg-nav-pill-btn'} onClick={() => setActiveTab('rpg')}> <Compass size={16} /> <span>வள்ளுவர் வழி (RPG)</span> </button>
                   </nav>
 
                   {/* Mobile Nav Button */}
@@ -828,7 +813,6 @@ const App = () => {
                               <button onClick={() => { setActiveTab('history'); setShowMobileMenu(false); }}> <HistoryIcon size={18} /> வரலாறு </button>
                               <button onClick={() => { setActiveTab('about'); setShowMobileMenu(false); }}> <Users size={18} /> தமிழ் மன்றம் </button>
                               <button className="kids-mobile-menu-item" onClick={() => { setActiveTab('kids'); setShowMobileMenu(false); }}> <Smile size={18} /> குழந்தைகள் (Kids Mode) </button>
-                              <button className="rpg-mobile-menu-item" onClick={() => { setActiveTab('rpg'); setShowMobileMenu(false); }}> <Compass size={18} /> வள்ளுவர் வழி (RPG Game) </button>
                            </motion.div>
                         )}
                      </AnimatePresence>

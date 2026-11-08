@@ -130,17 +130,39 @@ let activeUtterances = [];
 let activeAudio = null;
 let activeTimer = null;
 
-export const playTamilSpeech = (kural, onStart, onEnd) => {
+export const playTamilSpeech = (kuralOrLine1, onStartOrLine2, onEndOrStart, maybeEnd) => {
   stopTamilSpeech();
 
-  if (!kural || !kural.Line1 || !kural.Line2) {
+  let line1 = '';
+  let line2 = '';
+  let onStart = null;
+  let onEnd = null;
+
+  if (typeof kuralOrLine1 === 'object' && kuralOrLine1 !== null) {
+    line1 = kuralOrLine1.Line1 || '';
+    line2 = kuralOrLine1.Line2 || '';
+    onStart = typeof onStartOrLine2 === 'function' ? onStartOrLine2 : null;
+    onEnd = typeof onEndOrStart === 'function' ? onEndOrStart : null;
+  } else if (typeof kuralOrLine1 === 'string' && typeof onStartOrLine2 === 'string') {
+    line1 = kuralOrLine1;
+    line2 = onStartOrLine2;
+    onStart = typeof onEndOrStart === 'function' ? onEndOrStart : null;
+    onEnd = typeof maybeEnd === 'function' ? maybeEnd : null;
+  } else if (typeof kuralOrLine1 === 'string') {
+    const parts = kuralOrLine1.split(/\n|\r/);
+    line1 = parts[0] || '';
+    line2 = parts[1] || '';
+    onStart = typeof onStartOrLine2 === 'function' ? onStartOrLine2 : null;
+    onEnd = typeof onEndOrStart === 'function' ? onEndOrStart : null;
+  }
+
+  line1 = line1.trim();
+  line2 = line2.trim();
+
+  if (!line1 && !line2) {
     if (onEnd) onEnd();
     return;
   }
-
-  const allWords = `${kural.Line1} ${kural.Line2}`.trim().split(/\s+/);
-  const line1 = allWords.slice(0, 4).join(' ');
-  const line2 = allWords.slice(4).join(' ');
 
   const hasSpeechSynthesis = typeof window !== 'undefined' && 'speechSynthesis' in window;
   let tamilVoice = null;
@@ -151,6 +173,7 @@ export const playTamilSpeech = (kural, onStart, onEnd) => {
 
   // 1. If an authentic native Tamil voice is found in browser, use SpeechSynthesis
   if (hasSpeechSynthesis && tamilVoice) {
+    window.speechSynthesis.cancel();
     const utterance1 = new SpeechSynthesisUtterance(line1);
     const utterance2 = new SpeechSynthesisUtterance(line2);
 
@@ -192,6 +215,23 @@ export const playTamilSpeech = (kural, onStart, onEnd) => {
     return;
   }
 
+  // Fallback speaker using browser speech synthesis
+  const speakFallbackSpeech = () => {
+    if (hasSpeechSynthesis) {
+      window.speechSynthesis.cancel();
+      const fallbackUtt = new SpeechSynthesisUtterance(`${line1}. ${line2}`);
+      fallbackUtt.lang = 'ta-IN';
+      fallbackUtt.rate = 0.82;
+      fallbackUtt.onstart = () => { if (onStart) onStart(); };
+      fallbackUtt.onend = () => { activeUtterances = []; if (onEnd) onEnd(); };
+      fallbackUtt.onerror = () => { activeUtterances = []; if (onEnd) onEnd(); };
+      activeUtterances = [fallbackUtt];
+      window.speechSynthesis.speak(fallbackUtt);
+    } else {
+      if (onEnd) onEnd();
+    }
+  };
+
   // 2. High-Fidelity Authentic Tamil Audio Stream (via Google Tamil TTS Audio)
   try {
     const fullText = `${line1} , ${line2}`;
@@ -211,34 +251,15 @@ export const playTamilSpeech = (kural, onStart, onEnd) => {
 
     audio.onerror = () => {
       activeAudio = null;
-      if (hasSpeechSynthesis) {
-        const fallbackUtt = new SpeechSynthesisUtterance(`${line1}. ${line2}`);
-        fallbackUtt.lang = 'ta-IN';
-        fallbackUtt.rate = 0.82;
-        fallbackUtt.onend = () => { activeUtterances = []; if (onEnd) onEnd(); };
-        fallbackUtt.onerror = () => { activeUtterances = []; if (onEnd) onEnd(); };
-        activeUtterances = [fallbackUtt];
-        window.speechSynthesis.speak(fallbackUtt);
-      } else {
-        if (onEnd) onEnd();
-      }
+      speakFallbackSpeech();
     };
 
     audio.play().catch(() => {
-      if (hasSpeechSynthesis) {
-        const fallbackUtt = new SpeechSynthesisUtterance(`${line1}. ${line2}`);
-        fallbackUtt.lang = 'ta-IN';
-        fallbackUtt.rate = 0.82;
-        fallbackUtt.onend = () => { activeUtterances = []; if (onEnd) onEnd(); };
-        fallbackUtt.onerror = () => { activeUtterances = []; if (onEnd) onEnd(); };
-        activeUtterances = [fallbackUtt];
-        window.speechSynthesis.speak(fallbackUtt);
-      } else {
-        if (onEnd) onEnd();
-      }
+      activeAudio = null;
+      speakFallbackSpeech();
     });
   } catch (err) {
-    if (onEnd) onEnd();
+    speakFallbackSpeech();
   }
 };
 
