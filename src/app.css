@@ -250,6 +250,7 @@ body {
 
 .chat-view-container {
   overflow-y: hidden; /* Fix sticky input on PC */
+  padding-top: 0.75rem;
   padding-bottom: 0; /* Brings the input bar lower in PC UI */
   position: relative;
 }
@@ -265,7 +266,7 @@ body {
 .chat-window {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
   background: #f8fafc;
 }
 
@@ -275,8 +276,8 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
+  gap: 1.5rem;
+  padding: 0.75rem 1.5rem 0.5rem;
 }
 
 .chat-bubble-container {
@@ -472,7 +473,7 @@ body {
 /* Input Area - Floating input bar, no rectangle background/border */
 .chat-input-sticky-area {
   flex: 0 0 auto;
-  padding: 0.4rem 1.5rem 0.25rem;
+  padding: 0.15rem 1.5rem 0.25rem;
   background: transparent !important;
   border: none !important;
   border-top: none !important;
@@ -498,16 +499,16 @@ body {
   background: white;
   border: 1.5px solid rgba(180, 83, 9, 0.25);
   border-radius: 9999px;
-  padding: 0.6rem 0.85rem;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(180, 83, 9, 0.08);
+  padding: 0.4rem 0.75rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(180, 83, 9, 0.08);
 }
 
 .tamil-input-box-v2 input {
   flex: 1;
   border: none;
   outline: none;
-  padding: 0.75rem 1rem;
-  font-size: 1.2rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 1.15rem;
   font-weight: 700;
   font-family: inherit;
 }
@@ -516,9 +517,9 @@ body {
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: 15px;
-  width: 52px;
-  height: 52px;
+  border-radius: 9999px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1565,7 +1566,7 @@ body {
 
   /* Elegant Floating Input Area - No enclosing rectangle */
   .chat-input-sticky-area {
-    padding: 0.35rem var(--mob-pad) calc(0.25rem + env(safe-area-inset-bottom)) !important;
+    padding: 0.15rem var(--mob-pad) calc(0.25rem + env(safe-area-inset-bottom)) !important;
     background: transparent !important;
     position: fixed;
     bottom: 0;
