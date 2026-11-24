@@ -1301,14 +1301,14 @@ const App = () => {
                                             }}
                                             title="இக்குறளைக் கதை மற்றும் பயிற்சிகளுடன் குழந்தைகள் முறையில் காண்க"
                                          >
-                                            <Smile size={15} />
+                                            <Smile size={14} />
                                             <span>Kids Mode</span>
                                          </button>
                                         <button 
                                            className={`audio-play-large-btn ${isPlaying ? 'active' : ''}`}
                                            onClick={() => handleToggleAudio(selectedKural)}
                                         >
-                                           {isPlaying ? <Square size={16} /> : <Volume2 size={16} />}
+                                           {isPlaying ? <Square size={14} /> : <Volume2 size={14} />}
                                            <span>{isPlaying ? 'நிறுத்து' : 'கேளுங்கள்'}</span>
                                         </button>
                                         <button 
@@ -1319,7 +1319,7 @@ const App = () => {
                                            }}
                                            title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural & Image)"
                                         >
-                                           <Share2 size={15} />
+                                           <Share2 size={14} />
                                            <span>பகிர்</span>
                                         </button>
                                      </div>

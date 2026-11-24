@@ -196,16 +196,20 @@ body {
 .modal-kids-view-shortcut-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 5px;
   background: #fef3c7;
   color: #92400e;
   border: 1px solid #fcd34d;
-  padding: 0.55rem 1rem;
-  border-radius: 2rem;
-  font-size: 0.82rem;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
   font-weight: 800;
   cursor: pointer;
+  height: 32px;
+  box-sizing: border-box;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .modal-kids-view-shortcut-btn:hover {
@@ -1842,9 +1846,10 @@ body {
   .modal-share-btn {
     flex: 1 1 0 !important;
     min-width: 0 !important;
-    padding: 8px 4px !important;
-    border-radius: 10px !important;
-    font-size: 0.75rem !important;
+    height: 32px !important;
+    padding: 0 6px !important;
+    border-radius: 9999px !important;
+    font-size: 0.74rem !important;
     justify-content: center !important;
     text-align: center !important;
     white-space: nowrap !important;
@@ -1852,10 +1857,18 @@ body {
     box-sizing: border-box !important;
   }
 
+  .modal-kids-view-shortcut-btn svg,
+  .audio-play-large-btn svg,
+  .modal-share-btn svg {
+    width: 13px !important;
+    height: 13px !important;
+    flex-shrink: 0 !important;
+  }
+
   .modal-kids-view-shortcut-btn span,
   .audio-play-large-btn span,
   .modal-share-btn span {
-    font-size: 0.75rem !important;
+    font-size: 0.74rem !important;
   }
 
   /* Strictly 2 Lines for Kural Verse: Line 1 (4 words) & Line 2 (3 words) */
@@ -2495,17 +2508,21 @@ body {
 .audio-play-large-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 5px;
   background: #b45309;
   color: #ffffff;
   border: none;
-  border-radius: 24px;
-  padding: 8px 16px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  border-radius: 9999px;
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
   cursor: pointer;
+  height: 32px;
+  box-sizing: border-box;
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(180, 83, 9, 0.25);
+  white-space: nowrap;
 }
 
 .audio-play-large-btn:hover {
@@ -4526,24 +4543,27 @@ body {
 .modal-share-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0.65rem 1.1rem;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 12px;
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.22) 100%);
   border: 1px solid rgba(245, 158, 11, 0.45);
   color: #92400e;
-  border-radius: 12px;
+  border-radius: 9999px;
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   cursor: pointer;
+  height: 32px;
+  box-sizing: border-box;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Outfit', 'Noto Sans Tamil', sans-serif;
+  white-space: nowrap;
 }
 
 .modal-share-btn:hover {
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  transform: translateY(-1px);
 }
 
 .kural-share-action {
