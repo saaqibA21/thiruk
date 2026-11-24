@@ -941,38 +941,46 @@ body {
 
 .m-verse-box h3,
 .m-verse-box .m-verse-line {
-  font-size: clamp(1.25rem, 2.3vw, 1.95rem);
+  font-size: clamp(1.15rem, 2.2vw, 1.95rem);
   font-weight: 950;
-  margin: 0;
-  line-height: 1.4;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.5;
   color: var(--text);
   letter-spacing: -0.01em;
-  white-space: nowrap !important; /* Strictly 2 lines: line 1 (4 words) & line 2 (3 words) */
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
   width: 100%;
   text-align: center;
-  overflow: hidden;
-  text-overflow: clip;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 
 @media (max-width: 768px) {
   .m-verse-box h3,
   .m-verse-box .m-verse-line {
-    font-size: clamp(0.68rem, 3.3vw, 1.15rem) !important;
-    white-space: nowrap !important; /* Strictly 2 lines on mobile */
-    letter-spacing: -0.02em !important;
-    overflow: hidden !important;
+    font-size: clamp(0.85rem, 3.6vw, 1.25rem) !important;
+    white-space: normal !important;
+    letter-spacing: -0.015em !important;
+    overflow: visible !important;
     text-overflow: clip !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.5 !important;
   }
 }
 
 @media (max-width: 440px) {
   .m-verse-box h3,
   .m-verse-box .m-verse-line {
-    font-size: clamp(0.62rem, 3.2vw, 0.95rem) !important;
-    white-space: nowrap !important; /* Strictly 2 lines on smallest mobile */
-    letter-spacing: -0.025em !important;
-    overflow: hidden !important;
+    font-size: clamp(0.78rem, 3.5vw, 1.05rem) !important;
+    white-space: normal !important;
+    letter-spacing: -0.02em !important;
+    overflow: visible !important;
     text-overflow: clip !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.45 !important;
   }
 }
 
@@ -1537,10 +1545,13 @@ body {
 
   .verse-line-1,
   .verse-line-2 {
-    font-size: clamp(0.85rem, 3.4vw, 1.15rem) !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    font-size: clamp(0.82rem, 3.5vw, 1.15rem) !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.5 !important;
   }
 
   /* Elegant Floating Input Area - No enclosing rectangle */
@@ -1882,14 +1893,16 @@ body {
 
   .m-verse-box h3,
   .m-verse-box .m-verse-line {
-    font-size: clamp(0.68rem, 3.3vw, 1.15rem) !important;
-    white-space: nowrap !important; /* Strict 2 lines on mobile */
-    line-height: 1.45 !important;
-    letter-spacing: -0.02em !important;
+    font-size: clamp(0.82rem, 3.5vw, 1.15rem) !important;
+    white-space: normal !important;
+    line-height: 1.5 !important;
+    letter-spacing: -0.015em !important;
     width: 100% !important;
     text-align: center !important;
-    overflow: hidden !important;
-    text-overflow: clip !important; /* Never cut words with ellipsis '...' */
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
   }
 
   .modal-context-meaning-banner {

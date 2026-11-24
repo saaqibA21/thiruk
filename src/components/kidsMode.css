@@ -339,19 +339,23 @@
 
 .kids-kural-verse-lines {
   margin-bottom: 1.75rem;
+  width: 100%;
 }
 
 .kids-verse-line {
-  font-size: clamp(1.15rem, 3.2vw, 1.95rem);
+  font-size: clamp(1.05rem, 2.8vw, 1.85rem);
   font-weight: 900;
   color: #451a03;
-  line-height: 1.5;
-  margin: 0;
+  line-height: 1.55;
+  margin: 0 0 0.45rem 0;
   letter-spacing: -0.01em;
-  white-space: nowrap !important;
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: 100%;
 }
 
 /* Audio Listen Button */
@@ -660,15 +664,24 @@
     font-size: 1.65rem;
   }
 
+  .kids-main-content-container {
+    padding: 0 0.85rem;
+  }
+
   .kids-kural-card {
-    padding: 2rem 1.25rem 2rem;
-    border-radius: 20px;
+    padding: 1.75rem 1rem 1.75rem;
+    border-radius: 22px;
   }
 
   .kids-verse-line {
-    font-size: clamp(0.75rem, 4vw, 1.25rem) !important;
-    line-height: 1.45;
-    white-space: nowrap !important;
+    font-size: clamp(0.92rem, 3.9vw, 1.25rem) !important;
+    line-height: 1.55 !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    margin-bottom: 0.45rem !important;
   }
 
   .kids-lower-grid {
@@ -1618,4 +1631,26 @@
 .learner-pill-del:hover {
   color: #ef4444;
   background: #fee2e2;
+}
+
+@media (max-width: 440px) {
+  .kids-main-content-container {
+    padding: 0 0.65rem;
+  }
+
+  .kids-kural-card {
+    padding: 1.5rem 0.75rem 1.5rem;
+    border-radius: 20px;
+  }
+
+  .kids-verse-line {
+    font-size: clamp(0.85rem, 3.7vw, 1.12rem) !important;
+    line-height: 1.5 !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    margin-bottom: 0.4rem !important;
+  }
 }
