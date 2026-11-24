@@ -14,16 +14,45 @@
   padding-bottom: 4rem;
 }
 
-/* Clean Kids Header Bar */
-.kids-header-bar {
+/* Unified Full-Width Header with Hero Banner */
+.kids-main-header {
   position: relative;
   width: 100%;
-  background: rgba(255, 255, 255, 0.96);
+  background: #bae6fd;
+  border-bottom: 3px solid #facc15;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  z-index: 25;
+}
+
+.kids-header-top-nav-bar {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 2px solid #fef08a;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.08);
-  z-index: 30;
+  border-bottom: 1.5px solid rgba(254, 240, 138, 0.7);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.kids-header-banner-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: #bae6fd;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.kids-header-banner-img {
+  width: 100%;
+  max-width: 1280px;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.kids-header-banner-wrap:hover .kids-header-banner-img {
+  transform: scale(1.008);
 }
 
 /* Top Action Header Bar */
@@ -130,7 +159,7 @@
   z-index: 15;
   display: flex;
   justify-content: center;
-  margin-top: 0.75rem;
+  margin-top: -24px;
   margin-bottom: 0.75rem;
   padding: 0 1rem;
 }
@@ -988,50 +1017,6 @@
 @media (max-width: 768px) {
   .kids-navbar-logo-badge {
     height: 28px;
-  }
-}
-
-/* Playful Hero Banner */
-.kids-banner-outer-wrap {
-  max-width: 1100px;
-  margin: 1rem auto 1.5rem;
-  padding: 0 1rem;
-  box-sizing: border-box;
-}
-
-.kids-hero-banner-card {
-  width: 100%;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 12px 36px rgba(245, 158, 11, 0.22), 0 4px 14px rgba(0, 0, 0, 0.06);
-  border: 3px solid #fef08a;
-  background: #ffffff;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: block;
-}
-
-.kids-hero-banner-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 18px 45px rgba(245, 158, 11, 0.32);
-  border-color: #facc15;
-}
-
-.kids-hero-banner-img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
-
-@media (max-width: 768px) {
-  .kids-banner-outer-wrap {
-    margin: 0.75rem auto 0.5rem;
-    padding: 0 0.5rem;
-  }
-  .kids-hero-banner-card {
-    border-radius: 16px;
-    border-width: 2px;
   }
 }
 

@@ -280,77 +280,77 @@ export default function KidsModeView({
   return (
     <div className="kids-mode-root">
       
-      {/* Clean Top Navigation Bar */}
-      <header className="kids-header-bar">
-        <nav className="kids-top-navbar">
-          <div className="kids-nav-left">
-            <button 
-              className="kids-exit-btn" 
-              onClick={onExit}
-              title="இயல்பு நிலைக்குத் திரும்பு (Exit to Main App)"
-            >
-              <DoorOpen size={18} />
-              <span>{lang === 'ta' ? 'வெளியேறு' : 'Exit'}</span>
-            </button>
+      {/* Kids Mode Main Top Header with Illustration Banner */}
+      <header className="kids-main-header">
+        <div className="kids-header-top-nav-bar">
+          <nav className="kids-top-navbar">
+            <div className="kids-nav-left">
+              <button 
+                className="kids-exit-btn" 
+                onClick={onExit}
+                title="இயல்பு நிலைக்குத் திரும்பு (Exit to Main App)"
+              >
+                <DoorOpen size={18} />
+                <span>{lang === 'ta' ? 'வெளியேறு' : 'Exit'}</span>
+              </button>
 
-            {/* SRM & Tamil Mandram Institutional Brand Pill */}
-            <div className="kids-institution-pill" title="SRM Institute of Science and Technology • SRM தமிழ் மன்றம்">
+              {/* SRM & Tamil Mandram Institutional Brand Pill */}
+              <div className="kids-institution-pill" title="SRM Institute of Science and Technology • SRM தமிழ் மன்றம்">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" 
+                  alt="SRM IST" 
+                  className="kids-brand-logo-srm" 
+                />
+                <span className="kids-brand-divider" />
+                <img 
+                  src="mozhi_to_machine.png" 
+                  alt="SRM தமிழ் மன்றம் - மொழி முதல் இயந்திரம் வரை" 
+                  className="kids-brand-logo-mandram" 
+                />
+                <div className="kids-brand-text-col">
+                  <span className="kids-brand-title">SRM</span>
+                  <span className="kids-brand-sub">{lang === 'ta' ? 'தமிழ் மன்றம்' : 'Tamil Mandram'}</span>
+                </div>
+              </div>
+
+              {/* Kids Mode Logo Badge */}
               <img 
-                src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" 
-                alt="SRM IST" 
-                className="kids-brand-logo-srm" 
+                src="kids/kids_logo_header.png" 
+                alt="Thirukkural for Kids" 
+                className="kids-navbar-logo-badge" 
               />
-              <span className="kids-brand-divider" />
-              <img 
-                src="mozhi_to_machine.png" 
-                alt="SRM தமிழ் மன்றம் - மொழி முதல் இயந்திரம் வரை" 
-                className="kids-brand-logo-mandram" 
-              />
-              <div className="kids-brand-text-col">
-                <span className="kids-brand-title">SRM</span>
-                <span className="kids-brand-sub">{lang === 'ta' ? 'தமிழ் மன்றம்' : 'Tamil Mandram'}</span>
+            </div>
+
+            <div className="kids-nav-right">
+              {/* Star & Streak Counter Pill */}
+              <div className="kids-stats-pill" title="உங்கள் நட்சத்திரங்கள் மற்றும் தொடர்ச்சி">
+                <span className="kids-stat-badge">⭐ {stars}</span>
+                <span>-</span>
+                <span className="kids-stat-badge">🔥 {streak}</span>
+              </div>
+
+              {/* Language Toggle */}
+              <div className="kids-lang-toggle">
+                <button 
+                  className={`kids-lang-btn ${lang === 'en' ? 'active' : ''}`}
+                  onClick={() => setLang('en')}
+                >
+                  EN
+                </button>
+                <button 
+                  className={`kids-lang-btn ${lang === 'ta' ? 'active' : ''}`}
+                  onClick={() => setLang('ta')}
+                >
+                  த
+                </button>
               </div>
             </div>
+          </nav>
+        </div>
 
-            {/* Kids Mode Logo Badge */}
-            <img 
-              src="kids/kids_logo_header.png" 
-              alt="Thirukkural for Kids" 
-              className="kids-navbar-logo-badge" 
-            />
-          </div>
-
-          <div className="kids-nav-right">
-            {/* Star & Streak Counter Pill */}
-            <div className="kids-stats-pill" title="உங்கள் நட்சத்திரங்கள் மற்றும் தொடர்ச்சி">
-              <span className="kids-stat-badge">⭐ {stars}</span>
-              <span>-</span>
-              <span className="kids-stat-badge">🔥 {streak}</span>
-            </div>
-
-            {/* Language Toggle */}
-            <div className="kids-lang-toggle">
-              <button 
-                className={`kids-lang-btn ${lang === 'en' ? 'active' : ''}`}
-                onClick={() => setLang('en')}
-              >
-                EN
-              </button>
-              <button 
-                className={`kids-lang-btn ${lang === 'ta' ? 'active' : ''}`}
-                onClick={() => setLang('ta')}
-              >
-                த
-              </button>
-            </div>
-          </div>
-        </nav>
-      </header>
-
-      {/* Top Hero Banner (Replaces the Sun & Cloud Sky Banner) */}
-      <div className="kids-banner-outer-wrap">
+        {/* Full-Width Header Hero Banner */}
         <div 
-          className="kids-hero-banner-card" 
+          className="kids-header-banner-wrap" 
           onClick={scrollToKural} 
           role="button" 
           tabIndex={0} 
@@ -359,10 +359,10 @@ export default function KidsModeView({
           <img 
             src="kids/kids_hero_banner.jpg" 
             alt="Discover the Wisdom of Thirukkural! Learn • Play • Grow - Timeless wisdom. Fun for little minds!" 
-            className="kids-hero-banner-img"
+            className="kids-header-banner-img"
           />
         </div>
-      </div>
+      </header>
 
       {/* Floating Chapter Card resting at the Hill Crest */}
       <div className="kids-chapter-pill-wrapper">
