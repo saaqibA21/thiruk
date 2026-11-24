@@ -60,17 +60,70 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
 
   if (isThumbnail) {
     return (
-      <div className={'kural-img-thumb-container ' + className + (isLoaded ? ' loaded' : ' is-loading')}>
-        <img
-          key={currentSrc}
-          src={currentSrc}
-          alt={'குறள் ' + kuralNumber + ' படம்'}
-          className="kural-img-thumb"
-          onError={handleImageError}
-          onLoad={handleImageLoad}
-          loading="lazy"
-        />
-      </div>
+      <>
+        <div 
+          className={'kural-img-thumb-container ' + className + (isLoaded ? ' loaded' : ' is-loading')}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowZoom(true);
+          }}
+          title="படத்தைப் பெரிதாக்க சொடுக்கவும் (Click to enlarge image)"
+          style={{ cursor: 'pointer' }}
+        >
+          <img
+            key={currentSrc}
+            src={currentSrc}
+            alt={'குறள் ' + kuralNumber + ' படம்'}
+            className="kural-img-thumb"
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+            loading="lazy"
+          />
+        </div>
+
+        {showZoom && typeof document !== 'undefined' && ReactDOM.createPortal(
+          <div className="kural-img-zoom-modal-overlay" onClick={() => setShowZoom(false)}>
+            <div className="kural-img-zoom-modal-content" onClick={e => e.stopPropagation()}>
+              <button className="kural-zoom-close-btn" onClick={() => setShowZoom(false)} aria-label="Close">
+                <X size={24} />
+              </button>
+              <div className="kural-zoom-img-box">
+                <img
+                  src={currentSrc}
+                  alt={'குறள் ' + kuralNumber + ' காட்சி விளக்கம்'}
+                  className="kural-zoom-large-img"
+                />
+              </div>
+              <div className="kural-zoom-footer">
+                <div className="kural-zoom-footer-info">
+                  <h4>குறள் {kuralNumber} • காட்சி விளக்கம்</h4>
+                  {title && <p className="kural-zoom-title">{title}</p>}
+                </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <button 
+                    className="modal-share-btn" 
+                    onClick={handleDirectDownload}
+                    title={`குறள் ${kuralNumber} படத்தை பதிவிறக்குக (${kuralNumber}.jpg)`}
+                    style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+                  >
+                    <Download size={16} /> <span>பதிவிறக்கு</span>
+                  </button>
+                  {onShare && (
+                    <button 
+                      className="modal-share-btn" 
+                      onClick={() => onShare(currentSrc)}
+                      title="படம் மற்றும் குறளைப் பகிரவும்"
+                    >
+                      <Share2 size={16} /> <span>பகிர்</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+      </>
     );
   }
 
