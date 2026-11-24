@@ -16,30 +16,49 @@
 
 /* Unified Full-Width Header with Hero Banner */
 .kids-main-header {
-  position: relative;
-  width: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative !important;
   background: #bae6fd;
   border-bottom: 3px solid #facc15;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   z-index: 25;
 }
 
 .kids-header-top-nav-bar {
   width: 100%;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1.5px solid rgba(254, 240, 138, 0.7);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  border-bottom: 2px solid #fef08a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.kids-top-navbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.75rem;
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .kids-header-banner-wrap {
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
   background: #bae6fd;
   cursor: pointer;
   overflow: hidden;
+  line-height: 0;
 }
 
 .kids-header-banner-img {
@@ -47,24 +66,13 @@
   max-width: 1280px;
   height: auto;
   display: block;
-  object-fit: cover;
+  margin: 0 auto;
+  object-fit: contain;
   transition: transform 0.3s ease;
 }
 
 .kids-header-banner-wrap:hover .kids-header-banner-img {
-  transform: scale(1.008);
-}
-
-/* Top Action Header Bar */
-.kids-top-navbar {
-  position: relative;
-  z-index: 20;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 2rem;
-  max-width: 1180px;
-  margin: 0 auto;
+  transform: scale(1.006);
 }
 
 .kids-nav-left {
@@ -159,7 +167,7 @@
   z-index: 15;
   display: flex;
   justify-content: center;
-  margin-top: -24px;
+  margin-top: 1.5rem;
   margin-bottom: 0.75rem;
   padding: 0 1rem;
 }

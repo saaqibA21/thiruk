@@ -281,7 +281,7 @@ export default function KidsModeView({
     <div className="kids-mode-root">
       
       {/* Kids Mode Main Top Header with Illustration Banner */}
-      <header className="kids-main-header">
+      <div className="kids-main-header">
         <div className="kids-header-top-nav-bar">
           <nav className="kids-top-navbar">
             <div className="kids-nav-left">
@@ -362,7 +362,7 @@ export default function KidsModeView({
             className="kids-header-banner-img"
           />
         </div>
-      </header>
+      </div>
 
       {/* Floating Chapter Card resting at the Hill Crest */}
       <div className="kids-chapter-pill-wrapper">
