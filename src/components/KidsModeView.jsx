@@ -283,18 +283,8 @@ export default function KidsModeView({
   return (
     <div className="kids-mode-root">
       
-      {/* Landscape Header Area with Sun & Rolling Hills */}
-      <div className="kids-sky-landscape">
-        
-        {/* Animated Sun */}
-        <div className="kids-sun-wrapper">
-          <div className="kids-sun-core" />
-        </div>
-
-        {/* Floating Clouds */}
-        <div className="kids-cloud kids-cloud-1" />
-
-        {/* Top Action Navigation Bar */}
+      {/* Clean Top Navigation Bar */}
+      <header className="kids-header-bar">
         <nav className="kids-top-navbar">
           <div className="kids-nav-left">
             <button 
@@ -388,29 +378,9 @@ export default function KidsModeView({
             </div>
           </div>
         </nav>
+      </header>
 
-        {/* SVG Rolling Green Hills */}
-        <svg 
-          className="kids-hills-svg" 
-          viewBox="0 0 1200 120" 
-          preserveAspectRatio="none"
-        >
-          {/* Back Hill Layer */}
-          <path 
-            d="M0,70 C300,10 600,85 1200,35 L1200,120 L0,120 Z" 
-            fill="#a3e635" 
-            opacity="0.55"
-          />
-          {/* Front Hill Layer */}
-          <path 
-            d="M0,45 C250,90 550,20 850,75 C1050,110 1150,55 1200,65 L1200,120 L0,120 Z" 
-            fill="#84cc16" 
-          />
-        </svg>
-
-      </div>
-
-      {/* Playful Hero Banner */}
+      {/* Top Hero Banner (Replaces the Sun & Cloud Sky Banner) */}
       <div className="kids-banner-outer-wrap">
         <div 
           className="kids-hero-banner-card" 
