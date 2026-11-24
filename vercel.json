@@ -1,5 +1,19 @@
 {
   "framework": "vite",
   "buildCommand": "vite build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/thiruk/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/thiruk/:path*",
+      "destination": "/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
