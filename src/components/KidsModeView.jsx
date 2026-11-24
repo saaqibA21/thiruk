@@ -31,6 +31,7 @@ import { playTamilSpeech, stopTamilSpeech } from '../utils/kuralFeatures.js';
 import KuralJumpGame from './KuralJumpGame';
 import KuralScrambleGame from './KuralScrambleGame';
 import ValluvarRPGGame from './ValluvarRPGGame';
+import KuralQuizGame from './KuralQuizGame';
 
 export default function KidsModeView({ 
   kuralData = [], 
@@ -300,6 +301,20 @@ export default function KidsModeView({
             addStarReward(3, lang === 'ta' ? 'வள்ளுவர் வழி வெற்றி! ⭐ +3 நட்சத்திரங்கள்!' : 'RPG Triumph! ⭐ +3 Stars!');
           }}
           initialLang={lang} 
+        />
+      </div>
+    );
+  }
+
+  if (activeGame === 'quiz') {
+    return (
+      <div className="kids-mode-root" style={{ background: '#fdf8ee', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <KuralQuizGame 
+          onExit={() => setActiveGame(null)} 
+          onRewardStar={() => {
+            addStarReward(2, lang === 'ta' ? 'வினாடி வினா வெற்றி! ⭐ +2 நட்சத்திரங்கள்!' : 'Quiz Win! ⭐ +2 Stars!');
+          }}
+          lang={lang} 
         />
       </div>
     );
@@ -576,8 +591,8 @@ export default function KidsModeView({
 
             <button 
               className="kids-feature-img-card" 
-              onClick={() => setActiveGame('scramble')} 
-              title={lang === 'ta' ? 'குறள் புதிர்' : 'Quick Quiz'}
+              onClick={() => setActiveGame('quiz')} 
+              title={lang === 'ta' ? 'குறள் வினாடி வினா' : 'Quick Quiz'}
             >
               <img src="kids/card_quiz.png" alt="Quick Quiz" />
             </button>
@@ -766,6 +781,14 @@ export default function KidsModeView({
                 <div className="game-choice-info">
                   <strong>{lang === 'ta' ? 'குறள் புதிர்' : 'Kural Scramble'}</strong>
                   <p>{lang === 'ta' ? 'கலைந்த சொற்களை சரியான வரிசையில் அடுக்கு!' : 'Unscramble words into the correct Kural order!'}</p>
+                </div>
+              </button>
+
+              <button className="kids-game-choice-btn quiz-card" onClick={() => { setShowGameModal(false); setActiveGame('quiz'); }}>
+                <span className="game-choice-emoji">💡</span>
+                <div className="game-choice-info">
+                  <strong>{lang === 'ta' ? 'குறள் வினாடி வினா' : 'Quick Quiz'}</strong>
+                  <p>{lang === 'ta' ? '50+ சுவாரஸ்யமான குறள் வினாக்களுக்கு விடையளி!' : 'Test your Kural wisdom with 50+ fun questions!'}</p>
                 </div>
               </button>
 
