@@ -593,6 +593,10 @@
 
 .rpg-holy-couplet .line {
   display: block;
+  white-space: nowrap !important;
+  font-size: clamp(0.78rem, 3.8vw, 1.25rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rpg-kural-actions-bar {

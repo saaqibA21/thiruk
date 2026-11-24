@@ -356,12 +356,16 @@
 }
 
 .kids-verse-line {
-  font-size: 1.95rem;
+  font-size: clamp(1.15rem, 3.2vw, 1.95rem);
   font-weight: 900;
   color: #451a03;
   line-height: 1.5;
   margin: 0;
   letter-spacing: -0.01em;
+  white-space: nowrap !important;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Audio Listen Button */
@@ -667,8 +671,9 @@
   }
 
   .kids-verse-line {
-    font-size: 1.35rem;
+    font-size: clamp(0.75rem, 4vw, 1.25rem) !important;
     line-height: 1.45;
+    white-space: nowrap !important;
   }
 
   .kids-lower-grid {
