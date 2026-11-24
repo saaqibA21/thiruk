@@ -1254,8 +1254,8 @@ const App = () => {
                          </button>
 
                          <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="tamil-modal">
-                            <header className="m-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.2rem 1.5rem 0.6rem' }}>
-                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <header className="m-header">
+                               <div className="m-header-left">
                                   <span className="m-badge">குறள் {selectedKural.Number}</span>
                                   <div className="m-header-stepper">
                                      <button onClick={handlePrevKural} disabled={currentNum <= 1} title="முந்தைய குறள்">
@@ -1267,8 +1267,8 @@ const App = () => {
                                      </button>
                                   </div>
                                   {lifeCat && <span className="life-tag-badge">{lifeCat.name}</span>}
-                               </div>
-                               <button className="modal-close-btn" onClick={() => setSelectedKural(null)}><X /></button>
+                                </div>
+                                <button className="modal-close-btn" onClick={() => setSelectedKural(null)} aria-label="Close"><X size={20} /></button>
                             </header>
 
                             {/* Page Sheet Container with 3D Page Turn Animation */}
@@ -1285,13 +1285,13 @@ const App = () => {
                                   {/* Audio Recitation Bar */}
                                   <div className="modal-audio-player-bar">
                                      <div className="audio-player-info">
-                                        <Headphones size={20} color="#b45309" />
-                                        <div>
-                                           <strong style={{ fontSize: '0.9rem', color: '#78350f', display: 'block' }}>திருக்குறள் வெண்பா ஒலி வடிவம்</strong>
-                                           <span style={{ fontSize: '0.75rem', color: '#92400e' }}>சீர் மற்றும் அசை நிறுத்தங்களுடன் கூடிய தூய உச்சரிப்பு</span>
+                                        <Headphones size={20} color="#b45309" className="audio-player-icon" />
+                                        <div className="audio-player-text">
+                                           <strong className="audio-player-title">திருக்குறள் வெண்பா ஒலி வடிவம்</strong>
+                                           <span className="audio-player-sub">சீர் மற்றும் அசை நிறுத்தங்களுடன் கூடிய தூய உச்சரிப்பு</span>
                                         </div>
                                      </div>
-                                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                     <div className="modal-audio-actions">
                                          <button 
                                             className="modal-kids-view-shortcut-btn"
                                             onClick={() => {
@@ -1309,7 +1309,7 @@ const App = () => {
                                            onClick={() => handleToggleAudio(selectedKural)}
                                         >
                                            {isPlaying ? <Square size={16} /> : <Volume2 size={16} />}
-                                           {isPlaying ? 'நிறுத்து (Stop)' : 'கேளுங்கள் (Listen)'}
+                                           <span>{isPlaying ? 'நிறுத்து' : 'கேளுங்கள்'}</span>
                                         </button>
                                         <button 
                                            className="modal-share-btn"
@@ -1319,8 +1319,8 @@ const App = () => {
                                            }}
                                            title="படம் மற்றும் உரையுடன் பகிரவும் (Share Kural & Image)"
                                         >
-                                           <Share2 size={16} />
-                                           <span>பகிர் (Share)</span>
+                                           <Share2 size={15} />
+                                           <span>பகிர்</span>
                                         </button>
                                      </div>
                                   </div>
