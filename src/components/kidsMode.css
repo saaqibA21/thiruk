@@ -1044,24 +1044,23 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  border-radius: 20px;
-  overflow: hidden;
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.08));
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .kids-feature-img-card img {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 20px;
   object-fit: contain;
 }
 
 .kids-feature-img-card:hover {
-  transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px) scale(1.025);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.14));
 }
 
 @media (max-width: 768px) {
