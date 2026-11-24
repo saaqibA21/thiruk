@@ -110,21 +110,51 @@
 .kids-stats-pill {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   background: #ffffff;
-  padding: 0.5rem 1.25rem;
+  padding: 0.42rem 1.1rem;
   border-radius: 9999px;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: #334155;
-  border: 2px solid #f1f5f9;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 2px solid #fde047;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.15);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.kids-stats-pill:hover {
+  transform: translateY(-2px);
+  border-color: #eab308;
+  box-shadow: 0 6px 16px rgba(234, 179, 8, 0.25);
+}
+
+.kids-stat-learner-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fefce8;
+  color: #854d0e;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid #fef08a;
+  font-size: 0.82rem;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kids-stat-sep {
+  color: #cbd5e1;
+  font-weight: 400;
 }
 
 .kids-stat-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 /* Language Toggle: EN | த */
@@ -1307,4 +1337,285 @@
 @keyframes kidsScaleIn {
   from { transform: scale(0.92); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+
+/* ===================================================
+   Kids Mode Multi-User Profiles & Management
+   =================================================== */
+
+.kids-badges-profile-card {
+  max-width: 520px !important;
+}
+
+.kids-profile-active-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #eff6ff;
+  border: 2px solid #bfdbfe;
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.kids-active-learner-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kids-active-avatar {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.kids-active-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kids-active-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #1e3a8a;
+}
+
+.kids-icon-btn-edit {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #3b82f6;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.kids-icon-btn-edit:hover {
+  background: #dbeafe;
+}
+
+.kids-inline-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kids-name-input {
+  border: 1.5px solid #3b82f6;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  outline: none;
+  background: #ffffff;
+  color: #1e3a8a;
+  max-width: 140px;
+}
+
+.kids-icon-btn-confirm {
+  background: #22c55e;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.kids-reset-progress-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  border: 1.5px solid #fca5a5;
+  color: #dc2626;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kids-reset-progress-btn:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.kids-profile-switcher-section {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.kids-switcher-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+.kids-section-subtitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+.kids-add-learner-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.kids-add-learner-toggle-btn:hover {
+  background: #e2e8f0;
+}
+
+.kids-add-learner-box {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.kids-avatar-picker {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.kids-avatar-choice {
+  font-size: 1.35rem;
+  background: #f8fafc;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 3px 6px;
+  transition: all 0.15s;
+}
+
+.kids-avatar-choice:hover {
+  background: #f1f5f9;
+  transform: scale(1.1);
+}
+
+.kids-avatar-choice.selected {
+  background: #fef08a;
+  border-color: #eab308;
+  transform: scale(1.15);
+}
+
+.kids-add-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+.kids-new-name-input {
+  flex: 1;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.kids-new-name-input:focus {
+  border-color: #3b82f6;
+}
+
+.kids-add-submit-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.kids-add-submit-btn:hover {
+  background: #1d4ed8;
+}
+
+.kids-learners-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kids-learner-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.kids-learner-pill-btn:hover {
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.kids-learner-pill-btn.active {
+  background: #fefce8;
+  border-color: #eab308;
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.25);
+}
+
+.learner-pill-avatar {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.learner-pill-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.learner-pill-stars {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ca8a04;
+}
+
+.learner-pill-del {
+  margin-left: 2px;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+
+.learner-pill-del:hover {
+  color: #ef4444;
+  background: #fee2e2;
 }

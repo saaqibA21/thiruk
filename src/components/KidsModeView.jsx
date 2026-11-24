@@ -16,7 +16,11 @@ import {
   Trophy,
   Award,
   X,
-  Star
+  Star,
+  UserPlus,
+  RotateCcw,
+  Edit2,
+  Check
 } from 'lucide-react';
 import { 
   getKidsStoryAndQuest, 
@@ -60,52 +64,193 @@ export default function KidsModeView({
     }
   }, [initialKuralNumber]);
 
-  // Local Storage for Gamification
-  const [stars, setStars] = useState(() => {
+  // Avatar options for kids
+  const AVATAR_OPTIONS = ['🌟', '👦', '👧', '🦁', '🐘', '🦚', '🚀', '👑'];
+
+  // Multi-user Profiles Management (Each learner has independent progress)
+  const [profiles, setProfiles] = useState(() => {
+    const today = new Date().toISOString().split('T')[0];
     try {
-      const saved = localStorage.getItem('thiruk_kids_stars');
-      return saved !== null ? Number(saved) : 2;
-    } catch (e) {
-      return 2;
-    }
+      const saved = localStorage.getItem('thiruk_kids_profiles_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return [
+      {
+        id: 'learner_default',
+        name: 'மாணவர் 1',
+        avatar: '🌟',
+        stars: 0,
+        streak: 1,
+        lastActiveDate: today,
+        starredKurals: [],
+        acceptedQuests: [],
+        listenedKurals: []
+      }
+    ];
   });
 
-  const [streak, setStreak] = useState(() => {
+  const [activeProfileId, setActiveProfileId] = useState(() => {
     try {
-      const saved = localStorage.getItem('thiruk_kids_streak');
-      return saved !== null ? Number(saved) : 1;
-    } catch (e) {
-      return 1;
-    }
+      const saved = localStorage.getItem('thiruk_kids_active_id_v2');
+      if (saved) return saved;
+    } catch (e) {}
+    return 'learner_default';
   });
 
-  const [starredKurals, setStarredKurals] = useState(() => {
-    try {
-      const saved = localStorage.getItem('thiruk_kids_starred_list');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
+  // State for Add/Edit profile UI
+  const [showAddProfile, setShowAddProfile] = useState(false);
+  const [newProfileName, setNewProfileName] = useState('');
+  const [newProfileAvatar, setNewProfileAvatar] = useState('👦');
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editNameValue, setEditNameValue] = useState('');
 
-  const [acceptedQuests, setAcceptedQuests] = useState(() => {
-    try {
-      const saved = localStorage.getItem('thiruk_kids_accepted_quests');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
+  // Active Profile Object
+  const activeProfile = profiles.find(p => p.id === activeProfileId) || profiles[0] || {
+    id: 'learner_default',
+    name: 'மாணவர் 1',
+    avatar: '🌟',
+    stars: 0,
+    streak: 1,
+    lastActiveDate: new Date().toISOString().split('T')[0],
+    starredKurals: [],
+    acceptedQuests: [],
+    listenedKurals: []
+  };
 
-  // Save changes to localStorage
+  const stars = activeProfile.stars || 0;
+  const streak = activeProfile.streak || 1;
+  const starredKurals = activeProfile.starredKurals || [];
+  const acceptedQuests = activeProfile.acceptedQuests || [];
+  const listenedKurals = activeProfile.listenedKurals || [];
+
+  // Save changes to localStorage whenever profiles or active learner changes
   useEffect(() => {
     try {
-      localStorage.setItem('thiruk_kids_stars', String(stars));
-      localStorage.setItem('thiruk_kids_streak', String(streak));
-      localStorage.setItem('thiruk_kids_starred_list', JSON.stringify(starredKurals));
-      localStorage.setItem('thiruk_kids_accepted_quests', JSON.stringify(acceptedQuests));
+      localStorage.setItem('thiruk_kids_profiles_v2', JSON.stringify(profiles));
+      localStorage.setItem('thiruk_kids_active_id_v2', activeProfile.id);
     } catch (e) {}
-  }, [stars, streak, starredKurals, acceptedQuests]);
+  }, [profiles, activeProfile.id]);
+
+  // Helper to update active profile
+  const updateActiveProfile = (updater) => {
+    setProfiles(prevProfiles => {
+      return prevProfiles.map(p => {
+        if (p.id === activeProfile.id) {
+          const updated = typeof updater === 'function' ? updater(p) : { ...p, ...updater };
+          return updated;
+        }
+        return p;
+      });
+    });
+  };
+
+  // Record daily activity & compute consecutive days streak
+  const recordDailyActivity = () => {
+    const today = new Date().toISOString().split('T')[0];
+    updateActiveProfile(prev => {
+      if (prev.lastActiveDate === today) {
+        return prev;
+      }
+      let newStreak = prev.streak || 1;
+      if (prev.lastActiveDate) {
+        const last = new Date(prev.lastActiveDate);
+        const now = new Date(today);
+        const diffDays = Math.round((now - last) / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) {
+          newStreak += 1;
+        } else if (diffDays > 1) {
+          newStreak = 1;
+        }
+      } else {
+        newStreak = 1;
+      }
+      return {
+        ...prev,
+        streak: newStreak,
+        lastActiveDate: today
+      };
+    });
+  };
+
+  // Add Stars & Celebration for Active Learner
+  const addStarReward = (amount = 1, message = null) => {
+    recordDailyActivity();
+    updateActiveProfile(prev => ({
+      ...prev,
+      stars: (prev.stars || 0) + amount
+    }));
+    playKidChime();
+    if (message) {
+      setToastMessage(message);
+      setTimeout(() => {
+        setToastMessage(null);
+      }, 2800);
+    }
+  };
+
+  const handleCreateProfile = (e) => {
+    e.preventDefault();
+    const name = newProfileName.trim();
+    if (!name) return;
+    const newProfile = {
+      id: 'learner_' + Date.now(),
+      name: name,
+      avatar: newProfileAvatar || '👦',
+      stars: 0,
+      streak: 1,
+      lastActiveDate: new Date().toISOString().split('T')[0],
+      starredKurals: [],
+      acceptedQuests: [],
+      listenedKurals: []
+    };
+    setProfiles(prev => [...prev, newProfile]);
+    setActiveProfileId(newProfile.id);
+    setNewProfileName('');
+    setShowAddProfile(false);
+    setToastMessage(lang === 'ta' ? `வணக்கம், ${name}! 🌈` : `Welcome, ${name}! 🌈`);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const handleSaveName = () => {
+    const trimmed = editNameValue.trim();
+    if (trimmed) {
+      updateActiveProfile({ name: trimmed });
+    }
+    setIsEditingName(false);
+  };
+
+  const handleResetLearnerProgress = () => {
+    if (window.confirm(lang === 'ta' ? 'இந்த மாணவரின் நட்சத்திரங்களை 0 ஆக மீட்டமைக்க விரும்புகிறீர்களா?' : "Reset this learner's stars to 0?")) {
+      const today = new Date().toISOString().split('T')[0];
+      updateActiveProfile({
+        stars: 0,
+        streak: 1,
+        lastActiveDate: today,
+        starredKurals: [],
+        acceptedQuests: [],
+        listenedKurals: []
+      });
+      setToastMessage(lang === 'ta' ? 'நட்சத்திரங்கள் மீட்டமைக்கப்பட்டது! ⭐ 0' : 'Progress reset to ⭐ 0!');
+      setTimeout(() => setToastMessage(null), 2500);
+    }
+  };
+
+  const handleDeleteProfile = (idToDelete) => {
+    if (profiles.length <= 1) {
+      alert(lang === 'ta' ? 'குறைந்தது ஒரு மாணவர் சுயவிவரம் இருக்க வேண்டும்.' : 'At least one learner profile is required.');
+      return;
+    }
+    if (window.confirm(lang === 'ta' ? 'இந்த மாணவரை நீக்க விரும்புகிறீர்களா?' : 'Delete this learner profile?')) {
+      const remaining = profiles.filter(p => p.id !== idToDelete);
+      setProfiles(remaining);
+      if (activeProfile.id === idToDelete) {
+        setActiveProfileId(remaining[0].id);
+      }
+    }
+  };
 
   // Clean up audio on unmount or Kural change
   useEffect(() => {
@@ -122,8 +267,7 @@ export default function KidsModeView({
         <KuralJumpGame 
           onExit={() => setActiveGame(null)} 
           onRewardStar={() => {
-            setStars(s => s + 1);
-            playKidChime();
+            addStarReward(2, lang === 'ta' ? 'குறள் ஜம்ப் வெற்றி! ⭐ +2 நட்சத்திரங்கள்!' : 'Kural Jump Win! ⭐ +2 Stars!');
           }}
           lang={lang} 
         />
@@ -139,8 +283,7 @@ export default function KidsModeView({
           initialKuralNumber={currentNum}
           onExit={() => setActiveGame(null)} 
           onRewardStar={() => {
-            setStars(s => s + 1);
-            playKidChime();
+            addStarReward(2, lang === 'ta' ? 'குறள் புதிர் வெற்றி! ⭐ +2 நட்சத்திரங்கள்!' : 'Kural Scramble Win! ⭐ +2 Stars!');
           }}
           lang={lang} 
         />
@@ -154,8 +297,7 @@ export default function KidsModeView({
         <ValluvarRPGGame 
           onExit={() => setActiveGame(null)} 
           onRewardStar={() => {
-            setStars(s => s + 1);
-            playKidChime();
+            addStarReward(3, lang === 'ta' ? 'வள்ளுவர் வழி வெற்றி! ⭐ +3 நட்சத்திரங்கள்!' : 'RPG Triumph! ⭐ +3 Stars!');
           }}
           initialLang={lang} 
         />
@@ -186,31 +328,33 @@ export default function KidsModeView({
         () => setIsPlaying(true),
         () => {
           setIsPlaying(false);
-          // Reward kid for listening completely
-          addStarReward(lang === 'ta' ? 'குறளைக் கேட்டதற்கு ⭐ +1 நட்சத்திரம்!' : 'Listening complete! ⭐ +1 Star!');
+          // Reward kid for listening completely (awarded once per unique kural)
+          if (!listenedKurals.includes(currentNum)) {
+            updateActiveProfile(prev => ({
+              ...prev,
+              listenedKurals: [...(prev.listenedKurals || []), currentNum]
+            }));
+            addStarReward(1, lang === 'ta' ? 'குறளைக் கேட்டதற்கு ⭐ +1 நட்சத்திரம்!' : 'Listening complete! ⭐ +1 Star!');
+          }
         }
       );
     }
-  };
-
-  // Add Stars & Celebration
-  const addStarReward = (message) => {
-    setStars(prev => prev + 1);
-    playKidChime();
-    setToastMessage(message);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 2800);
   };
 
   // Star Toggle
   const isCurrentStarred = starredKurals.includes(currentNum);
   const handleToggleStar = () => {
     if (isCurrentStarred) {
-      setStarredKurals(prev => prev.filter(n => n !== currentNum));
+      updateActiveProfile(prev => ({
+        ...prev,
+        starredKurals: (prev.starredKurals || []).filter(n => n !== currentNum)
+      }));
     } else {
-      setStarredKurals(prev => [...prev, currentNum]);
-      addStarReward(lang === 'ta' ? 'நட்சத்திரம் சேர்க்கப்பட்டது! ⭐ +1' : 'Star collected! ⭐ +1');
+      updateActiveProfile(prev => ({
+        ...prev,
+        starredKurals: [...(prev.starredKurals || []), currentNum]
+      }));
+      addStarReward(1, lang === 'ta' ? 'நட்சத்திரம் சேர்க்கப்பட்டது! ⭐ +1' : 'Star collected! ⭐ +1');
     }
   };
 
@@ -218,9 +362,11 @@ export default function KidsModeView({
   const isQuestAccepted = acceptedQuests.includes(currentNum);
   const handleAcceptQuest = () => {
     if (!isQuestAccepted) {
-      setAcceptedQuests(prev => [...prev, currentNum]);
-      setStreak(prev => prev + 1);
-      addStarReward(lang === 'ta' ? 'பணி ஏற்கப்பட்டது! ⭐ +1 நட்சத்திரம் & 🔥 +1 தொடர்ச்சி!' : 'Quest accepted! ⭐ +1 Star & 🔥 +1 Streak!');
+      updateActiveProfile(prev => ({
+        ...prev,
+        acceptedQuests: [...(prev.acceptedQuests || []), currentNum]
+      }));
+      addStarReward(1, lang === 'ta' ? 'பணி ஏற்கப்பட்டது! ⭐ +1 நட்சத்திரம்!' : 'Quest accepted! ⭐ +1 Star!');
     }
   };
 
@@ -322,12 +468,18 @@ export default function KidsModeView({
             </div>
 
             <div className="kids-nav-right">
-              {/* Star & Streak Counter Pill */}
-              <div className="kids-stats-pill" title="உங்கள் நட்சத்திரங்கள் மற்றும் தொடர்ச்சி">
+              {/* Star & Streak Counter Pill with Active Learner Tag */}
+              <button 
+                type="button"
+                className="kids-stats-pill" 
+                onClick={() => setShowBadgesModal(true)}
+                title={lang === 'ta' ? 'மாணவர் விவரம் & சாதனைகள்' : 'Learner Profile & Achievements'}
+              >
+                <span className="kids-stat-learner-tag">{activeProfile.avatar} {activeProfile.name}</span>
                 <span className="kids-stat-badge">⭐ {stars}</span>
-                <span>-</span>
+                <span className="kids-stat-sep">-</span>
                 <span className="kids-stat-badge">🔥 {streak}</span>
-              </div>
+              </button>
 
               {/* Language Toggle */}
               <div className="kids-lang-toggle">
@@ -629,17 +781,140 @@ export default function KidsModeView({
         </div>
       )}
 
-      {/* Interactive Badges & Achievements Modal */}
+      {/* Interactive Badges & Learner Profiles Modal */}
       {showBadgesModal && (
         <div className="kids-modal-backdrop" onClick={() => setShowBadgesModal(false)}>
-          <div className="kids-popup-card" onClick={e => e.stopPropagation()}>
+          <div className="kids-popup-card kids-badges-profile-card" onClick={e => e.stopPropagation()}>
             <div className="kids-popup-header">
-              <h3>🏆 {lang === 'ta' ? 'உங்கள் சாதனைகள் & பதக்கங்கள்' : 'Your Badges & Achievements'}</h3>
+              <h3>🏆 {lang === 'ta' ? 'மாணவர் விவரம் & சாதனைகள்' : 'Learner Profile & Achievements'}</h3>
               <button className="kids-popup-close-btn" onClick={() => setShowBadgesModal(false)} aria-label="Close">
                 <X size={20} />
               </button>
             </div>
+            
             <div className="kids-badges-content">
+              {/* Active Learner Profile Bar */}
+              <div className="kids-profile-active-bar">
+                <div className="kids-active-learner-info">
+                  <span className="kids-active-avatar">{activeProfile.avatar}</span>
+                  {isEditingName ? (
+                    <div className="kids-inline-edit-row">
+                      <input 
+                        type="text" 
+                        className="kids-name-input"
+                        value={editNameValue} 
+                        onChange={e => setEditNameValue(e.target.value)}
+                        placeholder={lang === 'ta' ? 'பெயர்...' : 'Name...'}
+                        autoFocus
+                      />
+                      <button className="kids-icon-btn-confirm" onClick={handleSaveName} title="சேமி">
+                        <Check size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="kids-active-name-row">
+                      <span className="kids-active-name">{activeProfile.name}</span>
+                      <button 
+                        type="button"
+                        className="kids-icon-btn-edit" 
+                        onClick={() => { setEditNameValue(activeProfile.name); setIsEditingName(true); }}
+                        title={lang === 'ta' ? 'பெயரை மாற்று' : 'Edit name'}
+                      >
+                        <Edit2 size={13} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <button 
+                  type="button" 
+                  className="kids-reset-progress-btn"
+                  onClick={handleResetLearnerProgress}
+                  title={lang === 'ta' ? 'நட்சத்திரங்களை 0 ஆக மாற்று' : 'Reset stars to 0'}
+                >
+                  <RotateCcw size={13} />
+                  <span>{lang === 'ta' ? 'மீட்டமை' : 'Reset'}</span>
+                </button>
+              </div>
+
+              {/* Learner Switcher & Add New Learner */}
+              <div className="kids-profile-switcher-section">
+                <div className="kids-switcher-header">
+                  <span className="kids-section-subtitle">
+                    {lang === 'ta' ? '👤 மாணவர் சுயவிவரங்கள்:' : '👤 Learner Profiles:'}
+                  </span>
+                  <button 
+                    type="button" 
+                    className="kids-add-learner-toggle-btn"
+                    onClick={() => setShowAddProfile(!showAddProfile)}
+                  >
+                    <UserPlus size={14} />
+                    <span>{showAddProfile ? (lang === 'ta' ? 'மூடு' : 'Close') : (lang === 'ta' ? '+ புதிய மாணவர்' : '+ New Learner')}</span>
+                  </button>
+                </div>
+
+                {showAddProfile && (
+                  <form className="kids-add-learner-box" onSubmit={handleCreateProfile}>
+                    <div className="kids-avatar-picker">
+                      {AVATAR_OPTIONS.map(av => (
+                        <button 
+                          type="button" 
+                          key={av} 
+                          className={`kids-avatar-choice ${newProfileAvatar === av ? 'selected' : ''}`}
+                          onClick={() => setNewProfileAvatar(av)}
+                        >
+                          {av}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="kids-add-input-row">
+                      <input 
+                        type="text" 
+                        className="kids-new-name-input"
+                        placeholder={lang === 'ta' ? 'மாணவர் பெயர் (எ.கா: கவின்)' : 'Learner name (e.g. Kavin)'}
+                        value={newProfileName}
+                        onChange={e => setNewProfileName(e.target.value)}
+                        required
+                      />
+                      <button type="submit" className="kids-add-submit-btn">
+                        {lang === 'ta' ? 'சேர்' : 'Add'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                <div className="kids-learners-row">
+                  {profiles.map(p => (
+                    <button 
+                      key={p.id}
+                      type="button"
+                      className={`kids-learner-pill-btn ${p.id === activeProfile.id ? 'active' : ''}`}
+                      onClick={() => {
+                        setActiveProfileId(p.id);
+                        setIsEditingName(false);
+                      }}
+                    >
+                      <span className="learner-pill-avatar">{p.avatar}</span>
+                      <span className="learner-pill-name">{p.name}</span>
+                      <span className="learner-pill-stars">⭐ {p.stars || 0}</span>
+                      {profiles.length > 1 && (
+                        <span 
+                          className="learner-pill-del"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteProfile(p.id);
+                          }}
+                          title={lang === 'ta' ? 'நீக்கு' : 'Delete'}
+                        >
+                          ×
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stats Summary for Active Learner */}
               <div className="kids-badge-stats-summary">
                 <div className="badge-stat-box">
                   <span className="badge-stat-num">⭐ {stars}</span>
@@ -655,6 +930,7 @@ export default function KidsModeView({
                 </div>
               </div>
 
+              {/* Badges List */}
               <div className="kids-badges-list">
                 <div className={`badge-item ${stars >= 1 ? 'unlocked' : 'locked'}`}>
                   <span className="badge-icon">🌟</span>
