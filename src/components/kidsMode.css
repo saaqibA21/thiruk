@@ -340,19 +340,19 @@
 .kids-kural-verse-lines {
   margin-bottom: 1.75rem;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .kids-verse-line {
-  font-size: clamp(1.05rem, 2.8vw, 1.85rem);
+  font-size: clamp(1.05rem, 2.6vw, 1.75rem);
   font-weight: 900;
   color: #451a03;
-  line-height: 1.55;
-  margin: 0 0 0.45rem 0;
+  line-height: 1.5;
+  margin: 0;
   letter-spacing: -0.01em;
   text-align: center;
-  white-space: normal !important;
-  word-break: keep-all !important;
-  overflow-wrap: break-word !important;
+  white-space: nowrap !important; /* Strictly 2 lines */
   overflow: visible !important;
   text-overflow: clip !important;
   max-width: 100%;
@@ -674,14 +674,11 @@
   }
 
   .kids-verse-line {
-    font-size: clamp(0.92rem, 3.9vw, 1.25rem) !important;
-    line-height: 1.55 !important;
-    white-space: normal !important;
-    word-break: keep-all !important;
-    overflow-wrap: break-word !important;
+    font-size: clamp(0.88rem, 3.8vw, 1.22rem) !important;
+    line-height: 1.45 !important;
+    white-space: nowrap !important; /* Strictly 2 lines on mobile */
     overflow: visible !important;
     text-overflow: clip !important;
-    margin-bottom: 0.45rem !important;
   }
 
   .kids-lower-grid {
@@ -1644,14 +1641,11 @@
   }
 
   .kids-verse-line {
-    font-size: clamp(0.85rem, 3.7vw, 1.12rem) !important;
-    line-height: 1.5 !important;
-    white-space: normal !important;
-    word-break: keep-all !important;
-    overflow-wrap: break-word !important;
+    font-size: clamp(0.8rem, 3.6vw, 1.08rem) !important;
+    line-height: 1.4 !important;
+    white-space: nowrap !important; /* Strictly 2 lines on smallest mobile */
     overflow: visible !important;
     text-overflow: clip !important;
-    margin-bottom: 0.4rem !important;
   }
 }
 

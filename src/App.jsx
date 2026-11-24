@@ -12,6 +12,7 @@ import {
    stopTamilSpeech
 } from './utils/kuralFeatures';
 import { KuralImage } from './components/KuralImage';
+import StrictKuralVerse from './components/StrictKuralVerse';
 import ShareModal from './components/ShareModal';
 import { IntroVideo } from './components/IntroVideo';
 import HistoryView from './components/HistoryView';
@@ -1326,10 +1327,12 @@ const App = () => {
                                   </div>
 
                                   {/* Verse Display - Strictly Two Lines: Line 1 (4 words) & Line 2 (3 words) */}
-                                  <div className="m-verse-box">
-                                     <h3 className="m-verse-line m-verse-line-1">{allWords.slice(0, 4).join(' ')}</h3>
-                                     <h3 className="m-verse-line m-verse-line-2">{allWords.slice(4).join(' ')}</h3>
-                                  </div>
+                                  <StrictKuralVerse 
+                                     line1={allWords.slice(0, 4).join(' ')} 
+                                     line2={allWords.slice(4).join(' ')}
+                                     className="m-verse-line"
+                                     containerClassName="m-verse-box"
+                                  />
 
                                   {/* Kural Visual Representation Image */}
                                   <KuralImage 

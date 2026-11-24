@@ -939,18 +939,23 @@ body {
   padding: 0.25rem 0.5rem;
 }
 
+.m-verse-box {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  margin: 0 auto 0.75rem;
+}
+
 .m-verse-box h3,
 .m-verse-box .m-verse-line {
-  font-size: clamp(1.15rem, 2.2vw, 1.95rem);
+  font-size: clamp(1.1rem, 2.2vw, 1.85rem);
   font-weight: 950;
-  margin: 0 0 0.35rem 0;
-  line-height: 1.5;
+  margin: 0;
+  line-height: 1.45;
   color: var(--text);
-  letter-spacing: -0.01em;
-  white-space: normal !important;
-  word-break: keep-all !important;
-  overflow-wrap: break-word !important;
-  width: 100%;
+  letter-spacing: -0.015em;
+  white-space: nowrap !important; /* Strictly 2 lines: line 1 (4 words) & line 2 (3 words) */
   text-align: center;
   overflow: visible !important;
   text-overflow: clip !important;
@@ -960,13 +965,11 @@ body {
   .m-verse-box h3,
   .m-verse-box .m-verse-line {
     font-size: clamp(0.85rem, 3.6vw, 1.25rem) !important;
-    white-space: normal !important;
+    white-space: nowrap !important;
     letter-spacing: -0.015em !important;
     overflow: visible !important;
     text-overflow: clip !important;
-    word-break: keep-all !important;
-    overflow-wrap: break-word !important;
-    line-height: 1.5 !important;
+    line-height: 1.45 !important;
   }
 }
 
@@ -974,13 +977,11 @@ body {
   .m-verse-box h3,
   .m-verse-box .m-verse-line {
     font-size: clamp(0.78rem, 3.5vw, 1.05rem) !important;
-    white-space: normal !important;
+    white-space: nowrap !important;
     letter-spacing: -0.02em !important;
     overflow: visible !important;
     text-overflow: clip !important;
-    word-break: keep-all !important;
-    overflow-wrap: break-word !important;
-    line-height: 1.45 !important;
+    line-height: 1.4 !important;
   }
 }
 
@@ -1894,15 +1895,13 @@ body {
   .m-verse-box h3,
   .m-verse-box .m-verse-line {
     font-size: clamp(0.82rem, 3.5vw, 1.15rem) !important;
-    white-space: normal !important;
-    line-height: 1.5 !important;
+    white-space: nowrap !important; /* Strictly 2 lines on mobile */
+    line-height: 1.45 !important;
     letter-spacing: -0.015em !important;
     width: 100% !important;
     text-align: center !important;
     overflow: visible !important;
     text-overflow: clip !important;
-    word-break: keep-all !important;
-    overflow-wrap: break-word !important;
   }
 
   .modal-context-meaning-banner {

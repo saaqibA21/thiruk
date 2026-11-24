@@ -32,6 +32,7 @@ import KuralJumpGame from './KuralJumpGame';
 import KuralScrambleGame from './KuralScrambleGame';
 import ValluvarRPGGame from './ValluvarRPGGame';
 import KuralQuizGame from './KuralQuizGame';
+import StrictKuralVerse from './StrictKuralVerse';
 
 export default function KidsModeView({ 
   kuralData = [], 
@@ -609,10 +610,12 @@ export default function KidsModeView({
         
         {/* Main Kural Verse Card */}
         <section className="kids-kural-card" ref={kuralCardRef}>
-          <div className="kids-kural-verse-lines">
-            <p className="kids-verse-line">{line1 || currentKural.Line1}</p>
-            <p className="kids-verse-line">{line2 || currentKural.Line2}</p>
-          </div>
+          <StrictKuralVerse 
+            line1={line1 || currentKural.Line1}
+            line2={line2 || currentKural.Line2}
+            className="kids-verse-line"
+            containerClassName="kids-kural-verse-lines"
+          />
 
           {/* Big Pink Audio Listen Button */}
           <button 
