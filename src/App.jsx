@@ -1100,17 +1100,14 @@ const App = () => {
                                <h2 className="library-main-title">திருக்குறள் நூலகம்</h2>
                                <div className="paal-cards">
                                   <div className="paal-card aram" onClick={() => { setSelectedPaal('அறத்துப்பால்'); setSelectedChapter(null); }}>
-                                     <span className="orn-bl"></span> <span className="orn-br"></span>
                                      <h3>அறத்துப்பால்</h3>
                                      <p>38 அதிகாரங்கள்</p>
                                   </div>
                                   <div className="paal-card porul" onClick={() => { setSelectedPaal('பொருட்பால்'); setSelectedChapter(null); }}>
-                                     <span className="orn-bl"></span> <span className="orn-br"></span>
                                      <h3>பொருட்பால்</h3>
                                      <p>70 அதிகாரங்கள்</p>
                                   </div>
                                   <div className="paal-card inbam" onClick={() => { setSelectedPaal('காமத்துப்பால்'); setSelectedChapter(null); }}>
-                                     <span className="orn-bl"></span> <span className="orn-br"></span>
                                      <h3>இன்பத்துப்பால்</h3>
                                      <p>25 அதிகாரங்கள்</p>
                                   </div>
