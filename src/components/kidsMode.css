@@ -52,27 +52,22 @@
 
 .kids-header-banner-wrap {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #bae6fd;
+  display: block;
   cursor: pointer;
   overflow: hidden;
   line-height: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .kids-header-banner-img {
-  width: 100%;
-  max-width: 1280px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  object-fit: contain;
-  transition: transform 0.3s ease;
-}
-
-.kids-header-banner-wrap:hover .kids-header-banner-img {
-  transform: scale(1.006);
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  object-fit: cover !important;
 }
 
 .kids-nav-left {
