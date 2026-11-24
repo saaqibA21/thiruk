@@ -250,8 +250,9 @@ body {
 
 .chat-view-container {
   overflow-y: hidden; /* Fix sticky input on PC */
-  padding-top: 0.75rem;
-  padding-bottom: 0; /* Brings the input bar lower in PC UI */
+  padding-top: 0.5rem !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
   position: relative;
 }
 
@@ -260,6 +261,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 /* Chat Bubbles */
@@ -473,7 +476,8 @@ body {
 /* Input Area - Floating input bar, no rectangle background/border */
 .chat-input-sticky-area {
   flex: 0 0 auto;
-  padding: 0.15rem 1.5rem 0.25rem;
+  padding: 0.1rem 1.5rem 0 !important;
+  margin-bottom: 0 !important;
   background: transparent !important;
   border: none !important;
   border-top: none !important;
@@ -487,6 +491,7 @@ body {
 .chat-input-container-inner {
   max-width: 1100px;
   margin: 0 auto;
+  margin-bottom: 0 !important;
   width: 100%;
   position: relative;
   pointer-events: auto;
@@ -501,6 +506,7 @@ body {
   border-radius: 9999px;
   padding: 0.4rem 0.75rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(180, 83, 9, 0.08);
+  margin-bottom: 0 !important;
 }
 
 .tamil-input-box-v2 input {
@@ -1566,7 +1572,8 @@ body {
 
   /* Elegant Floating Input Area - No enclosing rectangle */
   .chat-input-sticky-area {
-    padding: 0.15rem var(--mob-pad) calc(0.25rem + env(safe-area-inset-bottom)) !important;
+    padding: 0.1rem var(--mob-pad) calc(0.1rem + env(safe-area-inset-bottom)) !important;
+    margin-bottom: 0 !important;
     background: transparent !important;
     position: fixed;
     bottom: 0;
