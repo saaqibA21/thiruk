@@ -224,6 +224,9 @@ body {
   flex-direction: column;
   position: relative;
   background: white;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
 }
 
 .chat-view-container,
@@ -250,10 +253,10 @@ body {
 
 .chat-view-container {
   overflow-y: hidden; /* Fix sticky input on PC */
-  padding-top: 0.5rem !important;
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
+  padding: 0.5rem 1rem 0 !important;
+  margin: 0 !important;
   position: relative;
+  width: 100%;
 }
 
 .chat-view {
