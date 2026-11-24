@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './kidsMode.css';
 import { 
   Volume2, 
@@ -15,7 +15,11 @@ import {
   Heart,
   Gamepad2,
   Puzzle,
-  Compass
+  Compass,
+  Trophy,
+  Award,
+  X,
+  Star
 } from 'lucide-react';
 import { 
   getKidsStoryAndQuest, 
@@ -38,6 +42,19 @@ export default function KidsModeView({
   const [toastMessage, setToastMessage] = useState(null);
   const [jumpInput, setJumpInput] = useState('');
   const [activeGame, setActiveGame] = useState(null); // null, 'jump', or 'scramble'
+  const [showGameModal, setShowGameModal] = useState(false);
+  const [showBadgesModal, setShowBadgesModal] = useState(false);
+
+  const kuralCardRef = useRef(null);
+  const storyCardRef = useRef(null);
+
+  const scrollToKural = () => {
+    kuralCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const scrollToStory = () => {
+    storyCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   // Sync when initialKuralNumber changes from parent
   useEffect(() => {
@@ -307,6 +324,13 @@ export default function KidsModeView({
                 <span className="kids-brand-sub">{lang === 'ta' ? 'தமிழ் மன்றம்' : 'Tamil Mandram'}</span>
               </div>
             </div>
+
+            {/* Kids Mode Logo Badge */}
+            <img 
+              src="kids/kids_logo_header.png" 
+              alt="Thirukkural for Kids" 
+              className="kids-navbar-logo-badge" 
+            />
           </div>
 
           <div className="kids-nav-right">
@@ -384,6 +408,23 @@ export default function KidsModeView({
           />
         </svg>
 
+      </div>
+
+      {/* Playful Hero Banner */}
+      <div className="kids-banner-outer-wrap">
+        <div 
+          className="kids-hero-banner-card" 
+          onClick={scrollToKural} 
+          role="button" 
+          tabIndex={0} 
+          title={lang === 'ta' ? 'தொடங்குங்கள்! குறளைக் கற்க கிளிக் செய்க' : 'Start Learning! Click to explore Kural'}
+        >
+          <img 
+            src="kids/kids_hero_banner.jpg" 
+            alt="Discover the Wisdom of Thirukkural! Learn • Play • Grow - Timeless wisdom. Fun for little minds!" 
+            className="kids-hero-banner-img"
+          />
+        </div>
       </div>
 
       {/* Floating Chapter Card resting at the Hill Crest */}
@@ -470,9 +511,46 @@ export default function KidsModeView({
 
       {/* Main Content Area */}
       <main className="kids-main-content-container">
+
+        {/* 4 Feature Interactive Cards Deck */}
+        <div className="kids-features-grid-wrap">
+          <div className="kids-features-grid">
+            <button 
+              className="kids-feature-img-card" 
+              onClick={scrollToStory} 
+              title={lang === 'ta' ? 'குறள் கதைகள்' : 'Kural Stories'}
+            >
+              <img src="kids/card_stories.png" alt="Kural Stories" />
+            </button>
+
+            <button 
+              className="kids-feature-img-card" 
+              onClick={() => setShowGameModal(true)} 
+              title={lang === 'ta' ? 'விளையாட்டுகள்' : 'Fun Games'}
+            >
+              <img src="kids/card_games.png" alt="Fun Games" />
+            </button>
+
+            <button 
+              className="kids-feature-img-card" 
+              onClick={() => setActiveGame('scramble')} 
+              title={lang === 'ta' ? 'குறள் புதிர்' : 'Quick Quiz'}
+            >
+              <img src="kids/card_quiz.png" alt="Quick Quiz" />
+            </button>
+
+            <button 
+              className="kids-feature-img-card" 
+              onClick={() => setShowBadgesModal(true)} 
+              title={lang === 'ta' ? 'விருதுகள்' : 'Earn Badges'}
+            >
+              <img src="kids/card_badges.png" alt="Earn Badges" />
+            </button>
+          </div>
+        </div>
         
         {/* Main Kural Verse Card */}
-        <section className="kids-kural-card">
+        <section className="kids-kural-card" ref={kuralCardRef}>
           <div className="kids-kural-verse-lines">
             <p className="kids-verse-line">{line1 || currentKural.Line1}</p>
             <p className="kids-verse-line">{line2 || currentKural.Line2}</p>
@@ -506,7 +584,7 @@ export default function KidsModeView({
         <div className="kids-lower-grid">
           
           {/* Card 1: Short Story (Green Tint) */}
-          <div className="kids-story-card">
+          <div className="kids-story-card" ref={storyCardRef}>
             <div className="kids-card-tag">
               <BookOpen size={16} />
               <span>{lang === 'ta' ? 'ஒரு சிறு கதை' : 'A Short Story'}</span>
@@ -541,6 +619,75 @@ export default function KidsModeView({
           </div>
 
         </div>
+
+        {/* Interactive Discovery Section: Try a Kural + Popular Kurals + Wisdom Cloud */}
+        <section className="kids-discovery-section">
+          
+          {/* Try a Kural Feature Card */}
+          <div 
+            className="kids-try-kural-container" 
+            onClick={() => { setCurrentNum(111); scrollToKural(); }}
+            role="button"
+            tabIndex={0}
+            title={lang === 'ta' ? 'குறள் 111 கற்க' : 'Try Kural 111'}
+          >
+            <div className="kids-try-card-wrapper">
+              <img 
+                src="kids/card_try_kural.jpg" 
+                alt="Try a Kural! One must walk with virtue and fairness" 
+                className="kids-try-kural-img" 
+              />
+              <div className="kids-try-overlay-action">
+                <button className="kids-try-cta-btn" onClick={(e) => { e.stopPropagation(); setCurrentNum(111); scrollToKural(); }}>
+                  <span>{lang === 'ta' ? 'குறள் 111 கற்க ▶' : 'Learn Kural 111 ▶'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Popular Topics Card & Wisdom Cloud */}
+          <div className="kids-topics-and-wisdom-col">
+            <div className="kids-popular-topics-card">
+              <img 
+                src="kids/card_popular_kurals.jpg" 
+                alt="Popular Kurals: Love and Kindness, Justice and Fairness, The Value of Education" 
+                className="kids-popular-topics-img" 
+              />
+              <div className="kids-popular-overlay-links">
+                <button 
+                  onClick={() => { setCurrentNum(71); scrollToKural(); }} 
+                  className="kids-topic-link-btn btn-love"
+                  title="அன்புடைமை (Kural 71)"
+                >
+                  ❤️ {lang === 'ta' ? 'அன்புடைமை (71)' : 'Love (71)'}
+                </button>
+                <button 
+                  onClick={() => { setCurrentNum(111); scrollToKural(); }} 
+                  className="kids-topic-link-btn btn-justice"
+                  title="நீதி / நடுவுநிலைமை (Kural 111)"
+                >
+                  ⚖️ {lang === 'ta' ? 'நீதி (111)' : 'Justice (111)'}
+                </button>
+                <button 
+                  onClick={() => { setCurrentNum(391); scrollToKural(); }} 
+                  className="kids-topic-link-btn btn-edu"
+                  title="கல்வி (Kural 391)"
+                >
+                  🎓 {lang === 'ta' ? 'கல்வி (391)' : 'Education (391)'}
+                </button>
+              </div>
+            </div>
+
+            <div className="kids-wisdom-cloud-card">
+              <img 
+                src="kids/card_wisdom_cloud.jpg" 
+                alt="Let's keep the wisdom alive!" 
+                className="kids-wisdom-cloud-img" 
+              />
+            </div>
+          </div>
+
+        </section>
 
         {/* Bottom Navigation & Discovery Bar */}
         <div className="kids-bottom-nav-bar">
@@ -619,6 +766,113 @@ export default function KidsModeView({
         </footer>
 
       </main>
+
+      {/* Interactive Game Picker Modal */}
+      {showGameModal && (
+        <div className="kids-modal-backdrop" onClick={() => setShowGameModal(false)}>
+          <div className="kids-popup-card" onClick={e => e.stopPropagation()}>
+            <div className="kids-popup-header">
+              <h3>🎮 {lang === 'ta' ? 'விளையாட்டைத் தேர்ந்தெடு!' : 'Pick a Fun Game!'}</h3>
+              <button className="kids-popup-close-btn" onClick={() => setShowGameModal(false)} aria-label="Close">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="kids-game-options-grid">
+              <button className="kids-game-choice-btn jump-card" onClick={() => { setShowGameModal(false); setActiveGame('jump'); }}>
+                <span className="game-choice-emoji">🐒</span>
+                <div className="game-choice-info">
+                  <strong>{lang === 'ta' ? 'குறள் ஜம்ப்' : 'Kural Jump'}</strong>
+                  <p>{lang === 'ta' ? 'மேடை மேடையாகக் குதித்து குறள் சொற்களைச் சேர்!' : 'Jump across platforms to collect Kural words!'}</p>
+                </div>
+              </button>
+
+              <button className="kids-game-choice-btn scramble-card" onClick={() => { setShowGameModal(false); setActiveGame('scramble'); }}>
+                <span className="game-choice-emoji">🧩</span>
+                <div className="game-choice-info">
+                  <strong>{lang === 'ta' ? 'குறள் புதிர்' : 'Kural Scramble'}</strong>
+                  <p>{lang === 'ta' ? 'கலைந்த சொற்களை சரியான வரிசையில் அடுக்கு!' : 'Unscramble words into the correct Kural order!'}</p>
+                </div>
+              </button>
+
+              <button className="kids-game-choice-btn rpg-card" onClick={() => { setShowGameModal(false); setActiveGame('rpg'); }}>
+                <span className="game-choice-emoji">⚖️</span>
+                <div className="game-choice-info">
+                  <strong>{lang === 'ta' ? 'வள்ளுவர் வழி (RPG)' : "Valluvar's Path (RPG)"}</strong>
+                  <p>{lang === 'ta' ? 'அரசன், வணிகனாக நற்சிந்தனை முடிவெடு!' : 'Roleplay moral dilemmas as a King, Merchant or Scholar!'}</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Badges & Achievements Modal */}
+      {showBadgesModal && (
+        <div className="kids-modal-backdrop" onClick={() => setShowBadgesModal(false)}>
+          <div className="kids-popup-card" onClick={e => e.stopPropagation()}>
+            <div className="kids-popup-header">
+              <h3>🏆 {lang === 'ta' ? 'உங்கள் சாதனைகள் & பதக்கங்கள்' : 'Your Badges & Achievements'}</h3>
+              <button className="kids-popup-close-btn" onClick={() => setShowBadgesModal(false)} aria-label="Close">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="kids-badges-content">
+              <div className="kids-badge-stats-summary">
+                <div className="badge-stat-box">
+                  <span className="badge-stat-num">⭐ {stars}</span>
+                  <span className="badge-stat-label">{lang === 'ta' ? 'நட்சத்திரங்கள்' : 'Stars Collected'}</span>
+                </div>
+                <div className="badge-stat-box">
+                  <span className="badge-stat-num">🔥 {streak}</span>
+                  <span className="badge-stat-label">{lang === 'ta' ? 'தொடர் நாட்கள்' : 'Day Streak'}</span>
+                </div>
+                <div className="badge-stat-box">
+                  <span className="badge-stat-num">🏅 {acceptedQuests.length}</span>
+                  <span className="badge-stat-label">{lang === 'ta' ? 'முடித்த பணிகள்' : 'Quests Done'}</span>
+                </div>
+              </div>
+
+              <div className="kids-badges-list">
+                <div className={`badge-item ${stars >= 1 ? 'unlocked' : 'locked'}`}>
+                  <span className="badge-icon">🌟</span>
+                  <div className="badge-info-col">
+                    <strong>{lang === 'ta' ? 'குறள் தொடக்க வீரர்' : 'Kural Starter'}</strong>
+                    <p>{lang === 'ta' ? 'முதல் குறளைக் கேட்டவர்' : 'Listened to your first Kural'}</p>
+                  </div>
+                  <span className="badge-status-tag">{stars >= 1 ? '✓ Unlocked' : '🔒 Locked'}</span>
+                </div>
+
+                <div className={`badge-item ${stars >= 5 ? 'unlocked' : 'locked'}`}>
+                  <span className="badge-icon">📖</span>
+                  <div className="badge-info-col">
+                    <strong>{lang === 'ta' ? 'கதை விரும்பி' : 'Story Explorer'}</strong>
+                    <p>{lang === 'ta' ? '5 குறள் கதைகளைப் படித்தவர்' : 'Read 5 Kural stories'}</p>
+                  </div>
+                  <span className="badge-status-tag">{stars >= 5 ? '✓ Unlocked' : '🔒 5 Stars Needed'}</span>
+                </div>
+
+                <div className={`badge-item ${acceptedQuests.length >= 1 ? 'unlocked' : 'locked'}`}>
+                  <span className="badge-icon">🎯</span>
+                  <div className="badge-info-col">
+                    <strong>{lang === 'ta' ? 'நற்பண்பு நாயகன்' : 'Virtue Champion'}</strong>
+                    <p>{lang === 'ta' ? 'ஒரு நற்பணியை ஏற்று முடித்தவர்' : 'Accepted and practiced a daily quest'}</p>
+                  </div>
+                  <span className="badge-status-tag">{acceptedQuests.length >= 1 ? '✓ Unlocked' : '🔒 Locked'}</span>
+                </div>
+
+                <div className={`badge-item ${stars >= 10 ? 'unlocked' : 'locked'}`}>
+                  <span className="badge-icon">👑</span>
+                  <div className="badge-info-col">
+                    <strong>{lang === 'ta' ? 'வள்ளுவர் மாவீரர்' : 'Valluvar Master'}</strong>
+                    <p>{lang === 'ta' ? '10 நட்சத்திரங்கள் ஈட்டிய மாவீரர்!' : 'Collected 10 wisdom stars!'}</p>
+                  </div>
+                  <span className="badge-status-tag">{stars >= 10 ? '✓ Unlocked' : '🔒 10 Stars Needed'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Celebration Toast */}
       {toastMessage && (
