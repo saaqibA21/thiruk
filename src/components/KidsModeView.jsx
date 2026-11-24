@@ -13,9 +13,6 @@ import {
   Zap, 
   CheckCircle2,
   Heart,
-  Gamepad2,
-  Puzzle,
-  Compass,
   Trophy,
   Award,
   X,
@@ -324,36 +321,6 @@ export default function KidsModeView({
           </div>
 
           <div className="kids-nav-right">
-            {/* Kural Jump Game Launcher Button */}
-            <button 
-              className="kids-game-nav-btn kids-game-jump-btn"
-              onClick={() => setActiveGame('jump')}
-              title="குறள் ஜம்ப் விளையாட்டு (Play Kural Jump Game)"
-            >
-              <Gamepad2 size={17} />
-              <span>{lang === 'ta' ? 'குறள் ஜம்ப் 🐒' : 'Kural Jump 🐒'}</span>
-            </button>
-
-            {/* Kural Scramble Word Puzzle Launcher Button */}
-            <button 
-              className="kids-game-nav-btn kids-game-scramble-btn"
-              onClick={() => setActiveGame('scramble')}
-              title="குறள் புதிர் விளையாட்டு (Play Kural Scramble Word Puzzle)"
-            >
-              <Puzzle size={17} />
-              <span>{lang === 'ta' ? 'குறள் புதிர் 🧩' : 'Kural Puzzle 🧩'}</span>
-            </button>
-
-            {/* Valluvar's Path RPG Game Launcher Button */}
-            <button 
-              className="kids-game-nav-btn kids-game-rpg-btn"
-              onClick={() => setActiveGame('rpg')}
-              title="வள்ளுவர் வழி RPG விளையாட்டு (Play Valluvar's Path RPG)"
-            >
-              <Compass size={17} />
-              <span>{lang === 'ta' ? 'வள்ளுவர் வழி ⚖️' : 'Valluvar RPG ⚖️'}</span>
-            </button>
-
             {/* Star & Streak Counter Pill */}
             <div className="kids-stats-pill" title="உங்கள் நட்சத்திரங்கள் மற்றும் தொடர்ச்சி">
               <span className="kids-stat-badge">⭐ {stars}</span>
@@ -432,52 +399,6 @@ export default function KidsModeView({
         </div>
       </div>
 
-      {/* Thiru Cartoon Avatar & Speech Bubble */}
-      <div className="kids-mascot-section">
-        <div className="kids-mascot-avatar-frame">
-          <img 
-            src="thiru_avatar_circ.png" 
-            alt="திரு (Thiru)" 
-            className="kids-mascot-img"
-            onError={(e) => {
-              e.currentTarget.src = "thiruvalluvar.jpg";
-            }}
-          />
-        </div>
-        <div className="kids-speech-bubble">
-          {lang === 'ta' ? (
-            <span>
-              வணக்கம், நான் <span className="kids-speech-highlight">திரு!</span> குறள் {currentNum} படித்து விளையாடலாம்.
-              <span className="kids-bubble-btns-row">
-                <button className="kids-bubble-game-btn" onClick={() => setActiveGame('jump')}>
-                  🐒 குறள் ஜம்ப்
-                </button>
-                <button className="kids-bubble-game-btn scramble-btn" onClick={() => setActiveGame('scramble')}>
-                  🧩 குறள் புதிர்
-                </button>
-                <button className="kids-bubble-game-btn rpg-btn" onClick={() => setActiveGame('rpg')}>
-                  ⚖️ வள்ளுவர் வழி
-                </button>
-              </span>
-            </span>
-          ) : (
-            <span>
-              Hello, I'm <span className="kids-speech-highlight">Thiru!</span> Let's explore Kural {currentNum} and play.
-              <span className="kids-bubble-btns-row">
-                <button className="kids-bubble-game-btn" onClick={() => setActiveGame('jump')}>
-                  🐒 Kural Jump
-                </button>
-                <button className="kids-bubble-game-btn scramble-btn" onClick={() => setActiveGame('scramble')}>
-                  🧩 Kural Scramble
-                </button>
-                <button className="kids-bubble-game-btn rpg-btn" onClick={() => setActiveGame('rpg')}>
-                  ⚖️ Valluvar RPG
-                </button>
-              </span>
-            </span>
-          )}
-        </div>
-      </div>
 
       {/* Main Content Area */}
       <main className="kids-main-content-container">
@@ -590,74 +511,6 @@ export default function KidsModeView({
 
         </div>
 
-        {/* Interactive Discovery Section: Try a Kural + Popular Kurals + Wisdom Cloud */}
-        <section className="kids-discovery-section">
-          
-          {/* Try a Kural Feature Card */}
-          <div 
-            className="kids-try-kural-container" 
-            onClick={() => { setCurrentNum(111); scrollToKural(); }}
-            role="button"
-            tabIndex={0}
-            title={lang === 'ta' ? 'குறள் 111 கற்க' : 'Try Kural 111'}
-          >
-            <div className="kids-try-card-wrapper">
-              <img 
-                src="kids/card_try_kural.jpg" 
-                alt="Try a Kural! One must walk with virtue and fairness" 
-                className="kids-try-kural-img" 
-              />
-              <div className="kids-try-overlay-action">
-                <button className="kids-try-cta-btn" onClick={(e) => { e.stopPropagation(); setCurrentNum(111); scrollToKural(); }}>
-                  <span>{lang === 'ta' ? 'குறள் 111 கற்க ▶' : 'Learn Kural 111 ▶'}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Popular Topics Card & Wisdom Cloud */}
-          <div className="kids-topics-and-wisdom-col">
-            <div className="kids-popular-topics-card">
-              <img 
-                src="kids/card_popular_kurals.jpg" 
-                alt="Popular Kurals: Love and Kindness, Justice and Fairness, The Value of Education" 
-                className="kids-popular-topics-img" 
-              />
-              <div className="kids-popular-overlay-links">
-                <button 
-                  onClick={() => { setCurrentNum(71); scrollToKural(); }} 
-                  className="kids-topic-link-btn btn-love"
-                  title="அன்புடைமை (Kural 71)"
-                >
-                  ❤️ {lang === 'ta' ? 'அன்புடைமை (71)' : 'Love (71)'}
-                </button>
-                <button 
-                  onClick={() => { setCurrentNum(111); scrollToKural(); }} 
-                  className="kids-topic-link-btn btn-justice"
-                  title="நீதி / நடுவுநிலைமை (Kural 111)"
-                >
-                  ⚖️ {lang === 'ta' ? 'நீதி (111)' : 'Justice (111)'}
-                </button>
-                <button 
-                  onClick={() => { setCurrentNum(391); scrollToKural(); }} 
-                  className="kids-topic-link-btn btn-edu"
-                  title="கல்வி (Kural 391)"
-                >
-                  🎓 {lang === 'ta' ? 'கல்வி (391)' : 'Education (391)'}
-                </button>
-              </div>
-            </div>
-
-            <div className="kids-wisdom-cloud-card">
-              <img 
-                src="kids/card_wisdom_cloud.jpg" 
-                alt="Let's keep the wisdom alive!" 
-                className="kids-wisdom-cloud-img" 
-              />
-            </div>
-          </div>
-
-        </section>
 
         {/* Bottom Navigation & Discovery Bar */}
         <div className="kids-bottom-nav-bar">
