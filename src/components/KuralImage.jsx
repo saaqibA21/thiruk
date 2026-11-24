@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { ZoomIn, X,  Share2, Download } from 'lucide-react';
 import { getCandidateImageUrls } from '../utils/kuralFeatures';
 
@@ -17,6 +18,16 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
     setHasError(false);
     setIsLoaded(false);
   }, [kuralNumber]);
+
+  // Handle Escape key to close fullscreen image
+  useEffect(() => {
+    if (!showZoom) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShowZoom(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showZoom]);
 
   const handleImageError = () => {
     if (candidateIndex < candidates.length - 1) {
@@ -89,11 +100,11 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
         </div>
       </div>
 
-      {showZoom && (
+      {showZoom && typeof document !== 'undefined' && ReactDOM.createPortal(
         <div className="kural-img-zoom-modal-overlay" onClick={() => setShowZoom(false)}>
           <div className="kural-img-zoom-modal-content" onClick={e => e.stopPropagation()}>
             <button className="kural-zoom-close-btn" onClick={() => setShowZoom(false)} aria-label="Close">
-              <X size={20} />
+              <X size={24} />
             </button>
             <div className="kural-zoom-img-box">
               <img
@@ -128,7 +139,8 @@ export const KuralImage = ({ kuralNumber, className = '', title = '', isThumbnai
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

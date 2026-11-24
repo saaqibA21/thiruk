@@ -1316,10 +1316,10 @@ const App = () => {
                                      </div>
                                   </div>
 
-                                  {/* Verse Display */}
+                                  {/* Verse Display - Strictly Two Lines: Line 1 (4 words) & Line 2 (3 words) */}
                                   <div className="m-verse-box">
-                                     <h3>{allWords.slice(0, 4).join(' ')}</h3>
-                                     <h3>{allWords.slice(4).join(' ')}</h3>
+                                     <h3 className="m-verse-line m-verse-line-1">{allWords.slice(0, 4).join(' ')}</h3>
+                                     <h3 className="m-verse-line m-verse-line-2">{allWords.slice(4).join(' ')}</h3>
                                   </div>
 
                                   {/* Kural Visual Representation Image */}
