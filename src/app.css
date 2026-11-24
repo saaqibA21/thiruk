@@ -5400,3 +5400,68 @@ body {
   border-radius: 12px;
   margin-top: 4px;
 }
+
+/* =========================================
+   SPEECH DOWNLOAD BUTTON & BANNER STYLES
+   ========================================= */
+.kb-toggle-v2.speech-dl-input-btn {
+  background: #f0fdf4 !important;
+  color: #16a34a !important;
+  border: 1px solid #86efac !important;
+  transition: all 0.2s ease;
+  animation: speechBtnAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kb-toggle-v2.speech-dl-input-btn:hover {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.speech-download-banner {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed rgba(22, 163, 74, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.speech-download-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1.15rem;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.28);
+  transition: all 0.2s ease;
+}
+
+.speech-download-action-btn:hover {
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.38);
+}
+
+.speech-download-action-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes speechBtnAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

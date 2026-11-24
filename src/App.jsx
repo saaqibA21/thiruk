@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './app.css';
 import { Share2, Search, Send, BookOpen, MessageSquare, Sparkles, User, BrainCircuit, Waves, Cpu, Zap, Info, Feather, Volume2, VolumeX, Play, Square, Headphones, Tag, ArrowLeft, X, Quote, Globe, Award, History as HistoryIcon, Languages, Download, ChevronRight, ChevronLeft, Settings, Image as ImageIcon, Camera, Mic, MicOff, ExternalLink, Menu, Briefcase, Heart, Users, Smile } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { KuralAI, getContextualWordMeaning } from './ai-engine';
+import { KuralAI, getContextualWordMeaning, isSpeechRequest, isSpeechContent } from './ai-engine';
 import {
    MODERN_LIFE_CATEGORIES,
    WHISPER_PROMPTS,
@@ -19,7 +19,7 @@ import HistoryView from './components/HistoryView';
 import AboutView from './components/AboutView';
 import KidsModeView from './components/KidsModeView';
 import { findAthigaram, ATHIGARAMS, ALL_ATHIGARAMS } from './utils/athigaramsData.js';
-import { logQAInteraction, downloadQALogsJSON } from './utils/qaLogger';
+import { logQAInteraction } from './utils/qaLogger';
 
 const TAMIL_KEYS = [
    ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ'],
@@ -213,6 +213,38 @@ const App = () => {
    const [messages, setMessages] = useState([
       { role: 'ai', content: 'வணக்கம்! நான் உங்கள் திருக்குறள் நிபுணர். திருக்குறளின் ஆழமான வாழ்வியல் நெறிகளைப் பற்றி நீங்கள் என்னிடம் உரையாடலாம்.', sources: [] }
    ]);
+
+   const lastSpeechMsg = useMemo(() => {
+      return [...messages].reverse().find(m => m.role === 'ai' && (m.isSpeech || isSpeechContent(m.content)));
+   }, [messages]);
+
+   const handleDownloadSpeech = (speechText, defaultName = 'திருக்குறள்_மேடைப்பேச்சு') => {
+      if (!speechText) return;
+
+      let title = defaultName;
+      const titleMatch = speechText.match(/மேடைப்?\s*பேச்சு[:\s-]+([^\n*]+)/i);
+      if (titleMatch && titleMatch[1]) {
+         title = `மேடைப்பேச்சு_${titleMatch[1].trim().replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_')}`;
+      }
+
+      const header = `=====================================================\nதிருக்குறள் AI நிபுணர் — மேடைப் பேச்சு\nநாள்: ${new Date().toLocaleDateString('ta-IN')}\n=====================================================\n\n`;
+
+      const formattedSpeech = speechText
+         .replace(/\*\*(.*?)\*\*/g, '$1')
+         .replace(/#{1,6}\s?/g, '');
+
+      const fullContent = header + formattedSpeech + `\n\n=====================================================\nவாழ்க தமிழ்! வெல்க திருக்குறள்!\n=====================================================`;
+
+      const blob = new Blob([fullContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+   };
    const [loading, setLoading] = useState(false);
    const [initProgress, setInitProgress] = useState(0);
    const [searchQuery, setSearchQuery] = useState('');
@@ -620,11 +652,13 @@ const App = () => {
 
          const aiAnswer = result.answer || "இதோ உங்களுக்கான குறள்கள்:";
          const aiSources = result.sources || [];
+         const isSpeech = result.isSpeech || isSpeechContent(aiAnswer) || isSpeechRequest(currentText);
          setMessages(prev => [...prev, { 
             role: 'ai', 
             content: aiAnswer, 
             sources: aiSources,
-            searchTerms: result.searchTerms || (result.targetWord ? [result.targetWord] : [])
+            searchTerms: result.searchTerms || (result.targetWord ? [result.targetWord] : []),
+            isSpeech: !!isSpeech
          }]);
 
          // Automatically log question and answer to JSON storage
@@ -901,6 +935,19 @@ const App = () => {
                                        {m.content && (
                                           <div className="bubble-text">{parseFormattedContent(m.content, m.sources, m.searchTerms)}</div>
                                        )}
+                                       {m.role === 'ai' && (m.isSpeech || isSpeechContent(m.content)) && (
+                                          <div className="speech-download-banner">
+                                             <button 
+                                                className="speech-download-action-btn"
+                                                onClick={() => handleDownloadSpeech(m.content)}
+                                                title="இப்பேச்சுக் குறிப்பை பதிவிறக்கம் செய் (Download Speech Text)"
+                                                type="button"
+                                             >
+                                                <Download size={16} />
+                                                <span>மேடைப் பேச்சைப் பதிவிறக்கு (Download Speech .txt)</span>
+                                             </button>
+                                          </div>
+                                       )}
                                        {m.sources && m.sources.length > 0 && (
                                           <div className="kural-source-cards">
                                              {m.sources.slice(0, m.showMore ? m.sources.length : 5).map((s, idx) => (
@@ -972,9 +1019,16 @@ const App = () => {
                                  <button className="kb-toggle-v2" onClick={() => fileInputRef.current?.click()} title="படத்தைப் பதிவேற்றவும் (Upload Image / Puzzle)">
                                     <Camera size={20} />
                                  </button>
-                                 <button className="kb-toggle-v2" onClick={downloadQALogsJSON} title="கேள்வி-பதில் தரவுகளை JSON வடிவில் பதிவிறக்கு (Download Q&A JSON)">
-                                    <Download size={20} />
-                                 </button>
+                                 {lastSpeechMsg && (
+                                    <button 
+                                       className="kb-toggle-v2 speech-dl-input-btn" 
+                                       onClick={() => handleDownloadSpeech(lastSpeechMsg.content)} 
+                                       title="உருவாக்கப்பட்ட மேடைப் பேச்சைப் பதிவிறக்கு (Download Speech Text)"
+                                       type="button"
+                                    >
+                                       <Download size={20} />
+                                    </button>
+                                 )}
                                  <button 
                                     className={`kb-toggle-v2 voice-mic-btn ${isRecording ? 'recording-active' : ''}`} 
                                     onClick={handleToggleVoice}

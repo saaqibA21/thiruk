@@ -550,6 +550,18 @@ export function isEnhanceSpeechRequest(query) {
     return enhanceKeywords.some(kw => q.includes(kw)) || (query.length > 120 && (q.includes('குறள்') || q.includes('kural')));
 }
 
+export function isSpeechContent(text) {
+    if (!text || typeof text !== 'string') return false;
+    return text.includes('செந்தமிழ் மேடைப் பேச்சு') || 
+           text.includes('மேடைப் பேச்சு') || 
+           text.includes('மேடை பேச்சு') || 
+           text.includes('மேடைப்பேச்சு') ||
+           text.includes('திருக்குறள் மேற்கோள்களுடன் கூடிய உரை') ||
+           text.includes('அவையடக்கம் & தொடக்க வணக்கம்') ||
+           text.includes('நிறைவுரை: நன்றி, வணக்கம்') ||
+           text.includes('எழுச்சியூட்டும் நிறைவுரை');
+}
+
 export function buildDeterministicTamilSpeech(topic, kurals) {
     const title = topic.replace(/(?:பற்றி|பற்றிய|ஒரு|மேடை|மேடைப்|பேச்சு|உரை|தயார்|செய்து|தாருங்கள்|வேண்டும்|speech|on)+/gi, '').trim() || 'வாழ்வியல் நெறிகள்';
     
@@ -733,7 +745,8 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
             return {
                 answer: geminiOutput.trim(),
                 sources: enrichedKurals,
-                searchTerms: searchRes.searchTerms
+                searchTerms: searchRes.searchTerms,
+                isSpeech: true
             };
         }
 
@@ -753,7 +766,8 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
                     return {
                         answer: openAiOutput,
                         sources: enrichedKurals,
-                        searchTerms: searchRes.searchTerms
+                        searchTerms: searchRes.searchTerms,
+                        isSpeech: true
                     };
                 }
             } catch (err) {
@@ -769,7 +783,8 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
         return {
             answer: fallbackSpeech,
             sources: enrichedKurals,
-            searchTerms: searchRes.searchTerms
+            searchTerms: searchRes.searchTerms,
+            isSpeech: true
         };
     }
 
@@ -908,7 +923,8 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
 
         // Step 1.5: Tamil Speech Generation & Enhancement Handler (100% Pure Tamil, Kural-Integrated Oratory)
         if (isSpeechRequest(question) || isSpeechRequest(queryForSearch)) {
-            return await this.handleSpeechRequest(question, queryForSearch);
+            const speechRes = await this.handleSpeechRequest(question, queryForSearch);
+            return { ...speechRes, isSpeech: true };
         }
 
         // Step 2: Polysemy / Same Word Different Meanings Query Handler
