@@ -39,6 +39,7 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
   const [showHint, setShowHint] = useState(false);
   const [timeLeft, setTimeLeft] = useState(20);
   const [isTimeUp, setIsTimeUp] = useState(false);
+  const recentQuestionIdsRef = useRef([]);
 
   // Internal Game Engine Mutable Refs (to avoid state lag in 60fps loop)
   const engineRef = useRef({
@@ -177,6 +178,7 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
     engine.player.squashY = 1;
 
     setScore(0);
+    recentQuestionIdsRef.current = [];
     setStreak(0);
     setDistance(0);
     setSelectedOption(null);
@@ -353,7 +355,11 @@ export default function KuralJumpGame({ onExit, onRewardStar, lang = 'ta' }) {
             engine.activeObstacle = obs;
             engine.inQuestionZone = true;
             engine.speed = 0; // Pause
-            const q = getRandomQuestion();
+            const q = getRandomQuestion(recentQuestionIdsRef.current);
+            recentQuestionIdsRef.current.push(q.id);
+            if (recentQuestionIdsRef.current.length > 40) {
+              recentQuestionIdsRef.current.shift();
+            }
             setCurrentQuestion(q);
             setSelectedOption(null);
             setIsAnswerCorrect(null);
