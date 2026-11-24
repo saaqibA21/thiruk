@@ -1271,6 +1271,12 @@ body {
   flex: 4;
 }
 
+/* Hide mobile navigation and menu on desktop */
+.mobile-only,
+.mobile-menu-container {
+  display: none !important;
+}
+
 /* Consolidated Perfect Mobile UI Overhaul */
 /* Perfected & Balanced Mobile UI Overhaul */
 @media (max-width: 768px) {
@@ -1347,7 +1353,9 @@ body {
   }
 
   /* Mobile Dropdown Menu */
+  .mobile-only,
   .mobile-menu-container {
+    display: block !important;
     position: relative;
   }
 

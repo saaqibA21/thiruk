@@ -806,7 +806,7 @@ const App = () => {
                   </nav>
 
                   {/* Mobile Nav Button */}
-                  <div className="mobile-menu-container">
+                  <div className="mobile-menu-container mobile-only">
                      <button className="mobile-menu-btn" onClick={() => setShowMobileMenu(!showMobileMenu)}>
                         <Menu size={24} />
                      </button>
