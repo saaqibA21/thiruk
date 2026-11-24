@@ -1,0 +1,3 @@
+/thiruk/assets/*  /assets/:splat  200
+/thiruk/*         /:splat         200
+/*                /index.html     200

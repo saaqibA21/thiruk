@@ -286,7 +286,7 @@ export const hasKuralImage = (kuralNumber) => {
   return num >= 1 && num <= 1330;
 };
 
-// Targeted Image URL Generator (Checks thiruk_image and kural_images directories for WebP and JPG)
+// Targeted Image URL Generator (Checks kural_images directory for WebP and JPG)
 export const getCandidateImageUrls = (kuralNumber) => {
   const num = Number(kuralNumber);
   if (!num || num < 1 || num > 1330) return [];
@@ -294,8 +294,6 @@ export const getCandidateImageUrls = (kuralNumber) => {
   const base = rawBase.endsWith('/') ? rawBase : (rawBase + '/');
   return [
     `${base}kural_images/${num}.webp`,
-    `${base}kural_images/${num}.jpg`,
-    `${base}thiruk_image/${num}.webp`,
-    `${base}thiruk_image/${num}.jpg`
+    `${base}kural_images/${num}.jpg`
   ];
 };
