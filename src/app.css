@@ -472,7 +472,7 @@ body {
 /* Input Area - Floating input bar, no rectangle background/border */
 .chat-input-sticky-area {
   flex: 0 0 auto;
-  padding: 0.5rem 1.5rem 1.25rem;
+  padding: 0.4rem 1.5rem 0.25rem;
   background: transparent !important;
   border: none !important;
   border-top: none !important;
@@ -1565,7 +1565,7 @@ body {
 
   /* Elegant Floating Input Area - No enclosing rectangle */
   .chat-input-sticky-area {
-    padding: 0.5rem var(--mob-pad) calc(0.6rem + env(safe-area-inset-bottom)) !important;
+    padding: 0.35rem var(--mob-pad) calc(0.25rem + env(safe-area-inset-bottom)) !important;
     background: transparent !important;
     position: fixed;
     bottom: 0;
