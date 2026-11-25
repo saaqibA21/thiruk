@@ -35,6 +35,13 @@ export default function AboutView({ onNavigateTab }) {
           />
           <span className="about-logo-separator">&times;</span>
           <img 
+            src="cintel_logo.png" 
+            alt="CINTEL Association" 
+            className="about-cintel-logo" 
+            title="CINTEL Association"
+          />
+          <span className="about-logo-separator">&times;</span>
+          <img 
             src="mozhi_to_machine.png" 
             alt="Mozhi to Machine" 
             className="about-mozhi-logo" 

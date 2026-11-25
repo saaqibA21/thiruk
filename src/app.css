@@ -104,6 +104,18 @@ body {
   object-fit: contain;
 }
 
+.cintel-logo-top {
+  height: 44px;
+  max-width: 50px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+.cintel-logo-top:hover {
+  transform: scale(1.06);
+}
+
 .mozhi-logo-top {
   height: 46px;
   width: 46px;
@@ -1342,6 +1354,14 @@ body {
     height: 30px;
     width: auto;
     max-width: 90px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .cintel-logo-top {
+    height: 30px;
+    width: auto;
+    max-width: 36px;
     object-fit: contain;
     flex-shrink: 0;
   }
@@ -4095,6 +4115,15 @@ body {
 }
 
 .about-mozhi-logo {
+  height: 52px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 4px 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.about-cintel-logo {
   height: 52px;
   border-radius: 10px;
   object-fit: contain;

@@ -838,6 +838,7 @@ const App = () => {
             <div className="header-container-inner">
                <div className="header-left-group">
                   <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM" className="srm-logo-top" />
+                  <img src="cintel_logo.png" alt="CINTEL Association" className="cintel-logo-top" title="CINTEL Association" />
                   <img src="mozhi_to_machine.png" alt="Mozhi to Machine" className="mozhi-logo-top" title="Mozhi to Machine" />
                   <div className="app-title-group">
                      <h1 className="main-title">திருக்குறள் AI</h1>
