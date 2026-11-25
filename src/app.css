@@ -312,10 +312,13 @@ body {
 }
 
 .user .chat-bubble {
-  background: linear-gradient(135deg, #b45309 0%, #8c2e0b 100%);
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.45) 0%, rgba(140, 46, 11, 0.55) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   color: white;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
   border-bottom-right-radius: 0.5rem;
-  box-shadow: 0 4px 16px rgba(140, 46, 11, 0.22);
+  box-shadow: 0 8px 24px rgba(140, 46, 11, 0.16);
   max-width: 85%;
 }
 
