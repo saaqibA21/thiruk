@@ -4577,6 +4577,87 @@ body {
   margin-top: 2px;
 }
 
+/* Developers Section */
+.about-developers-card {
+  background: #ffffff;
+  border: 1.5px solid rgba(180, 83, 9, 0.2);
+  border-radius: 2rem;
+  padding: 2.2rem 2.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.about-developers-card h3 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #78350f;
+  margin: 0 0 0.3rem 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.developers-subtext {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0 0 1.6rem 0;
+}
+
+.developers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.developer-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1.2rem 1.4rem;
+  background: linear-gradient(135deg, #fdfaf6 0%, #fff7ed 100%);
+  border: 1.5px solid rgba(180, 83, 9, 0.16);
+  border-radius: 1.25rem;
+  transition: all 0.25s ease;
+}
+
+.developer-item:hover {
+  transform: translateY(-3px);
+  border-color: #b45309;
+  box-shadow: 0 8px 20px rgba(180, 83, 9, 0.1);
+}
+
+.developer-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 1rem;
+  background: #fef3c7;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(180, 83, 9, 0.12);
+}
+
+.developer-info strong {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.developer-info span {
+  font-size: 0.8rem;
+  color: #78350f;
+  font-weight: 600;
+  background: rgba(180, 83, 9, 0.08);
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
 /* Responsive adjustments */
 @media (max-width: 950px) {
   .about-hero-title {
@@ -4591,6 +4672,7 @@ body {
   .flagship-milestones-grid,
   .about-activities-grid,
   .mentors-grid,
+  .developers-grid,
   .about-contact-card {
     grid-template-columns: 1fr;
   }

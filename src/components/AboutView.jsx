@@ -16,6 +16,7 @@ import {
   Mail,
   MapPin,
   Building2,
+  Terminal,
   Lightbulb,
   CheckCircle2
 } from 'lucide-react';
@@ -234,6 +235,49 @@ export default function AboutView({ onNavigateTab }) {
           <div className="contact-row">
             <Mail size={16} className="contact-icon" />
             <span>tamilmandram@srmist.edu.in</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Developers Section */}
+      <div className="about-developers-card">
+        <h3>
+          <Code size={24} style={{ color: '#b45309' }} />
+          உருவாக்கக் குழு (Developers)
+        </h3>
+        <p className="developers-subtext">
+          திருக்குறள் AI தளம் மற்றும் மென்பொருள் வடிவமைப்பாளர்கள் (Engineered & Developed by)
+        </p>
+
+        <div className="developers-grid">
+          <div className="developer-item">
+            <div className="developer-icon">
+              <Code size={22} />
+            </div>
+            <div className="developer-info">
+              <strong>MOHAMMED SAAQIB</strong>
+              <span>Lead Developer</span>
+            </div>
+          </div>
+
+          <div className="developer-item">
+            <div className="developer-icon">
+              <Cpu size={22} />
+            </div>
+            <div className="developer-info">
+              <strong>TAMIL SELVAN</strong>
+              <span>Developer</span>
+            </div>
+          </div>
+
+          <div className="developer-item">
+            <div className="developer-icon">
+              <Terminal size={22} />
+            </div>
+            <div className="developer-info">
+              <strong>VIGNESH DHARMARAJ</strong>
+              <span>Developer</span>
+            </div>
           </div>
         </div>
       </div>
