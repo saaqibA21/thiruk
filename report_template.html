@@ -51,22 +51,6 @@
     text-align: center;
   }
 
-  .logo-elroi {
-    font-family: 'Outfit', sans-serif;
-    font-weight: 800;
-    font-size: 19pt;
-    color: #0284c7;
-    letter-spacing: 1px;
-    line-height: 1;
-  }
-  .logo-elroi span {
-    font-size: 6.5pt;
-    letter-spacing: 2px;
-    color: #475569;
-    display: block;
-    font-weight: 600;
-  }
-
   .logo-m2m {
     width: 62px;
     height: 62px;
@@ -259,6 +243,49 @@
     font-weight: 600;
     color: #0f172a;
   }
+
+  /* Kids Mode Styles */
+  .kids-banner {
+    width: 100%;
+    max-height: 130px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px solid #fed7aa;
+  }
+  .kids-cards-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 12px 0 16px 0;
+  }
+  .kids-card {
+    flex: 1;
+    background: #fff7ed;
+    border: 1.5px solid #fdba74;
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+  }
+  .kids-card img {
+    width: 100%;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .kids-card .title {
+    font-family: 'Outfit', 'Noto Sans Tamil', sans-serif;
+    font-weight: 700;
+    font-size: 9.5pt;
+    color: #9a3412;
+  }
+  .kids-card .desc {
+    font-size: 7.8pt;
+    color: #7c2d12;
+    line-height: 1.35;
+    margin-top: 3px;
+  }
 </style>
 </head>
 <body>
@@ -267,7 +294,14 @@
   <!-- Header with 3 Logos -->
   <div class="header-logos">
     <div class="logo-box">
-      <div class="logo-elroi">ÉLROI<span>AUTOMATION PVT LTD</span></div>
+      <div class="logo-srm">
+        <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM Logo" />
+        <div class="srm-text">
+          <div class="srm-title">SRM</div>
+          <div class="srm-sub">Institute of Science & Technology</div>
+          <div class="srm-sub">(Deemed to be University u/s 3 of UGC Act, 1956)</div>
+        </div>
+      </div>
     </div>
     <div class="logo-box">
       <div class="logo-m2m">
@@ -276,13 +310,9 @@
       </div>
     </div>
     <div class="logo-box">
-      <div class="logo-srm">
-        <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/SRM_Institute_of_Science_and_Technology_Logo.svg" alt="SRM Logo" />
-        <div class="srm-text">
-          <div class="srm-title">SRM</div>
-          <div class="srm-sub">Institute of Science & Technology</div>
-          <div class="srm-sub">(Deemed to be University u/s 3 of UGC Act, 1956)</div>
-        </div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <img src="tamil mandram logo.png" style="height: 48px; border-radius: 4px;" alt="Tamil Mandram" />
+        <div style="font-family:'Noto Sans Tamil', sans-serif; font-size:7.5pt; color:#475569; font-weight:700; margin-top:2px;">தமிழ் மன்றம்</div>
       </div>
     </div>
   </div>
@@ -363,14 +393,42 @@
 
   <div class="page-break"></div>
 
-  <h2>Industry Collaboration</h2>
+  <h2>குழந்தைகள் பிரிவு (Kids Mode & Gamified Learning Suite)</h2>
   <p>
-    The project receives industry-level architecture mentorship and technology guidance through <strong>ÉLROI Automation Pvt Ltd</strong>, founded by <strong>Dr. R. Annie Uthra</strong>, contributing to:
+    To ensure classical Tamil literature bridges generational gaps and inspires young children, <strong>Thirukkural AI</strong> features an interactive, pedagogically engineered <strong>Kids Mode (குழந்தைகள் பிரிவு)</strong>. This module transforms complex <em>Venpaa</em> couplets into vibrant moral narratives, educational minigames, and gamified daily challenges.
   </p>
+
+  <img src="public/kids/kids_hero_banner.jpg" class="kids-banner" alt="Kids Mode Banner" />
+
+  <div class="kids-cards-grid">
+    <div class="kids-card">
+      <img src="public/kids/card_stories.png" alt="Stories" />
+      <div class="title">நீதிக் கதைகள் (Stories)</div>
+      <div class="desc">Child-friendly illustrated moral stories explaining Kural wisdom in simple everyday Tamil.</div>
+    </div>
+    <div class="kids-card">
+      <img src="public/kids/card_quiz.png" alt="Quiz" />
+      <div class="title">அறிவு வினாடி-வினா (Quiz)</div>
+      <div class="desc">Interactive comprehension quizzes with celebratory audio chimes, star multipliers, and badges.</div>
+    </div>
+    <div class="kids-card">
+      <img src="public/kids/card_games.png" alt="Games" />
+      <div class="title">கல்வி விளையாட்டுகள் (Games)</div>
+      <div class="desc">Kural Scramble, Kural Jump, and Valluvar RPG adventure connecting ethics to interactive play.</div>
+    </div>
+  </div>
+
+  <h3>Key Architectural Components of Kids Mode:</h3>
   <ul>
-    <li>Strategic alignment with real-world Tamil LangTech applications and scalable deployment architectures.</li>
-    <li>Mentorship on ethical AI, zero-hallucination guardrails, and enterprise-grade system resilience.</li>
+    <li><strong>Multi-User Learner Profiles:</strong> Isolated learner progress tracking with 8 customizable avatars (🌟, 👦, 👧, 🦁, 🐘, 🦚, 🚀, 👑), maintaining individual learning streaks, starred verses, and star balances.</li>
+    <li><strong>Kural Scramble Metrical Puzzle (<code>KuralScrambleGame.jsx</code>):</strong> Hands-on drag-and-drop game that shuffles the 7 words of a Kural and guides young minds to reconstruct the exact 4+3 metrical sequence, fostering syntactic memory.</li>
+    <li><strong>Kural Jump Platformer (<code>KuralJumpGame.jsx</code>):</strong> Fast-paced educational runner reinforcing moral choices and vocabulary retention under fun time-based challenges.</li>
+    <li><strong>Valluvar RPG Historical Adventure (<code>ValluvarRPGGame.jsx</code>):</strong> Role-playing narrative quest where children solve dilemmas across ancient Madurai and Kaveripattinam using Thirukkural principles.</li>
+    <li><strong>Daily Moral Quests (செயல் திட்டங்கள்):</strong> Actionable ethical missions (e.g., <em>இனியவை கூறல்</em> — "Speak kindly without anger") that translate classical maxims into real-world habits.</li>
+    <li><strong>Child-Friendly Audio Feedback:</strong> Web audio chimes and voice synthesis reinforcing phonetics and pronunciation.</li>
   </ul>
+
+  <div class="page-break"></div>
 
   <h2>Academic Guidance</h2>
   <p>

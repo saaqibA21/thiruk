@@ -4,7 +4,6 @@ import {
    
   BookOpen, 
   Cpu, 
-  Award, 
   Globe, 
   Users, 
   Feather, 
@@ -202,16 +201,6 @@ export default function AboutView({ onNavigateTab }) {
             <div>
               <strong>SRM Institute of Science and Technology</strong>
               <span>Department of Computational Intelligence (CINTEL) • School of Computing</span>
-            </div>
-          </div>
-
-          <div className="mentor-item">
-            <div className="mentor-icon">
-              <Award size={24} />
-            </div>
-            <div>
-              <strong>ELROI Automation Pvt Ltd</strong>
-              <span>தொழில்துறை கூட்டாண்மை & வழிகாட்டுதல் (Industry Mentor)</span>
             </div>
           </div>
         </div>
