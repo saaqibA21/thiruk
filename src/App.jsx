@@ -687,6 +687,35 @@ const App = () => {
       if (lines.length === 0) return null;
 
       return lines.map((line, idx) => {
+         // If cards are displayed below, suppress duplicate Kural bullets or Kural couplets in text
+         if (msgSources && msgSources.length > 0) {
+            if (line.startsWith('• **குறள்') || line.startsWith('• குறள்')) {
+               const matchNum = line.match(/•\s*\**குறள்\s*(\d+)/i);
+               if (matchNum) {
+                  const kNum = parseInt(matchNum[1], 10);
+                  if (msgSources.some(s => s.Number === kNum)) {
+                     return null;
+                  }
+               }
+            }
+
+            const cleanLine = line.replace(/^[*"'\s]+|[*"'\s]+$/g, '').trim();
+            if (cleanLine.length > 10) {
+               const isDuplicateVerse = msgSources.some(s => 
+                  s.Line1 && s.Line2 && (
+                     cleanLine === s.Line1.trim() || 
+                     cleanLine === s.Line2.trim() || 
+                     cleanLine === `${s.Line1.trim()} ${s.Line2.trim()}`
+                  )
+               );
+               if (isDuplicateVerse) return null;
+            }
+
+            if (line.includes('**Tamil:**')) {
+               return null;
+            }
+         }
+
          // If line contains analytical bullet or contextual phrase, format as clean readable text
          if (line.startsWith('• **குறள்') || line.startsWith('• குறள்') || line.includes('இக்குறளில்') || line.startsWith('•') || line.startsWith('*') || line.includes('விளக்கம்:')) {
             const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>');
@@ -733,7 +762,7 @@ const App = () => {
          }
          
          const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-         return <p key={idx} style={{ margin: '0.35rem 0' }} dangerouslySetInnerHTML={{ __html: formattedLine }} />;;
+         return <p key={idx} style={{ margin: '0.35rem 0' }} dangerouslySetInnerHTML={{ __html: formattedLine }} />;
       });
    };
 

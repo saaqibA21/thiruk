@@ -933,7 +933,6 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
             let polysemyText = `**ஒரே சொல் வெவ்வேறு பொருள்களில் வரும் புகழ்பெற்ற குறள்கள் (சொல் பின்வரு நிலையணி):**\n\n`;
             polysemyList.forEach(item => {
                 polysemyText += `**குறள் ${item.Number} (${item.figureOfSpeech}):**\n` +
-                                `**"${item.Line1}\n${item.Line2}"**\n` +
                                 `• **பயன்படுத்தப்பட்ட சொல்:** ${item.word}\n` +
                                 `• **பொருள் விளக்கம்:**\n` +
                                 item.meaningBreakdown.map(m => `  ${m}`).join('\n') + `\n\n`;
@@ -953,8 +952,6 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
                 const enrichedKural = ctx ? { ...kural, contextMeaning: ctx.meaning, contextTargetWord: ctx.word } : kural;
                 let text = `**குறள் எண் ${kural.Number}ல் "${targetWord}" என்ற சொல் ஆய்வு:**\n\n` +
                            `• **இக்குறளில் "${targetWord}" என்ற சொல் மொத்தம் ${count} முறை வந்துள்ளது.**\n\n` +
-                           `**குறள்:**\n` +
-                           `"${kural.Line1}\n${kural.Line2}"\n\n` +
                            `**இடம்பெற்றுள்ள சீர்கள்:**\n` +
                            matches.map(m => `• சீர் ${m.seerNum}: **${m.word}**`).join('\n') + `\n\n` +
                            (ctx ? `**இக்குறளில் '${targetWord}' குறிப்பது:** ${ctx.meaning}\n\n` : '') +
@@ -966,7 +963,7 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
                 };
             } else {
                 return {
-                    answer: `குறள் எண் ${kural.Number}ல் "${targetWord}" என்ற சொல் இடம்பெறவில்லை.\n\n**குறள் ${kural.Number}:**\n"${kural.Line1}\n${kural.Line2}"`,
+                    answer: `குறள் எண் ${kural.Number}ல் "${targetWord}" என்ற சொல் இடம்பெறவில்லை.`,
                     sources: [kural],
                     searchTerms: [targetWord]
                 };
@@ -1029,7 +1026,6 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
                 const chInfo = ALL_ATHIGARAMS.find(a => a.n === chNum);
                 const chTitle = chInfo ? `${chInfo.name} (${chInfo.paal})` : `அதிகாரம் ${chNum}`;
                 const text = `**திருக்குறள் ${kural.Number} - அதிகாரம் ${chNum}: ${chTitle}**\n\n` +
-                             `**"${kural.Line1}\n${kural.Line2}"**\n\n` +
                              (kural.mv ? `• **மு. வரதராசனார் உரை:** ${kural.mv}\n` : '') +
                              (kural.sp ? `• **சாலமன் பாப்பையா உரை:** ${kural.sp}\n` : '') +
                              (kural.mk ? `• **மு. கருணாநிதி உரை:** ${kural.mk}\n` : '') +
@@ -1129,19 +1125,17 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
 
             if (!isDirect && (isStructural || (!isQuestion && finalSources.length > 0)) && !imageBase64) {
                 const count = finalSources.length;
-                const topSources = finalSources.slice(0, 5);
                 const hasContextWord = finalTargetWord && finalTargetWord.length > 1;
 
                 let customAnswer = '';
                 if (hasContextWord) {
                     customAnswer = `**'${finalTargetWord}' என்ற சொல்லின் வாழ்வியல் சூழல் ஆய்வு (Contextual Word Analysis):**\n\n` +
-                                   `திருக்குறளில் **'${finalTargetWord}'** என்ற சொல் சூழலுக்கு ஏற்ப தனித்துவமான ஆழமான பொருளைக் குறிக்கிறது (கண்டறியப்பட்ட குறள்கள்: **${count}**):\n\n` +
-                                   topSources.map(k => `• **குறள் ${k.Number}:** இக்குறளில் '${finalTargetWord}' குறிப்பது: **${k.contextMeaning || k.mv || k.sp || ''}**`).join('\n') +
-                                   (count > 5 ? `\n\n*(மேலும் கீழேயுள்ள குறள் அட்டைகளில் விரிவான உரை விளக்கங்களைக் காணலாம்)*` : '');
+                                   `திருக்குறளில் **'${finalTargetWord}'** என்ற சொல் சூழலுக்கு ஏற்ப தனித்துவமான ஆழமான பொருள்களைக் குறிக்கிறது (கண்டறியப்பட்ட மொத்தக் குறள்கள்: **${count}**).\n\n` +
+                                   `இச்சொல் உணர்த்தும் சூழல் விளக்கங்களையும் குறட்பாக்களையும் கீழே உள்ள அட்டைகளில் விரிவாகக் காணலாம்:`;
                 } else {
                     customAnswer = count > 1 
-                        ? `**தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
-                        : `இதோ நீங்கள் கேட்ட குறள்:`;
+                        ? `**தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன. முழுமையான குறட்பாக்களையும் உரை விளக்கங்களையும் கீழே உள்ள அட்டைகளில் காணலாம்:` 
+                        : `இதோ நீங்கள் கேட்ட குறளுக்கான உரை விளக்கம்:`;
                 }
 
                 return { 
@@ -1158,19 +1152,17 @@ CRITICAL RULES (ABSOLUTE TRUTH & ZERO HALLUCINATION):
         if (!isValidKey) {
             if (finalSources.length > 0) {
                 const count = finalSources.length;
-                const topSources = finalSources.slice(0, 5);
                 const hasContextWord = finalTargetWord && finalTargetWord.length > 1;
 
                 let customAnswer = '';
                 if (hasContextWord) {
                     customAnswer = `**'${finalTargetWord}' என்ற சொல்லின் வாழ்வியல் சூழல் ஆய்வு (Contextual Word Analysis):**\n\n` +
-                                   `திருக்குறளில் **'${finalTargetWord}'** என்ற சொல் சூழலுக்கு ஏற்ப தனித்துவமான ஆழமான பொருளைக் குறிக்கிறது (கண்டறியப்பட்ட குறள்கள்: **${count}**):\n\n` +
-                                   topSources.map(k => `• **குறள் ${k.Number}:** இக்குறளில் '${finalTargetWord}' குறிப்பது: **${k.contextMeaning || k.mv || k.sp || ''}**`).join('\n') +
-                                   (count > 5 ? `\n\n*(மேலும் கீழேயுள்ள குறள் அட்டைகளில் விரிவான உரை விளக்கங்களைக் காணலாம்)*` : '');
+                                   `திருக்குறளில் **'${finalTargetWord}'** என்ற சொல் சூழலுக்கு ஏற்ப தனித்துவமான ஆழமான பொருள்களைக் குறிக்கிறது (கண்டறியப்பட்ட மொத்தக் குறள்கள்: **${count}**).\n\n` +
+                                   `இச்சொல் உணர்த்தும் சூழல் விளக்கங்களையும் குறட்பாக்களையும் கீழே உள்ள அட்டைகளில் விரிவாகக் காணலாம்:`;
                 } else {
                     customAnswer = count > 1 
-                        ? `**தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன:` 
-                        : `இதோ நீங்கள் கேட்ட குறள்:`;
+                        ? `**தேடல் முடிவுகள்:** மொத்தம் **${count} குறள்கள்** கண்டறியப்பட்டன. முழுமையான குறட்பாக்களையும் உரை விளக்கங்களையும் கீழே உள்ள அட்டைகளில் காணலாம்:` 
+                        : `இதோ நீங்கள் கேட்ட குறளுக்கான உரை விளக்கம்:`;
                 }
 
                 return { 

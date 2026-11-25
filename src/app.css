@@ -320,12 +320,14 @@ body {
 }
 
 .ai .chat-bubble {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   color: var(--text);
-  border: 1px solid rgba(180, 83, 9, 0.18);
-  border-left: 3.5px solid #b45309;
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  border-left: 4px solid #b45309;
   border-bottom-left-radius: 0.5rem;
-  box-shadow: 0 4px 18px rgba(120, 53, 15, 0.05);
+  box-shadow: 0 8px 32px rgba(120, 53, 15, 0.08);
   max-width: 96%;
   width: 100%;
 }
@@ -386,8 +388,10 @@ body {
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.15rem 1.4rem;
-  background: #fff7ed;
-  border: 1.5px solid #ffedd5;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(254, 215, 170, 0.7);
   border-radius: 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -396,10 +400,10 @@ body {
 }
 
 .kural-mini-card:hover {
-  background: #ffedd5;
+  background: rgba(255, 255, 255, 0.85);
   border-color: var(--primary);
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(180, 83, 9, 0.08);
+  box-shadow: 0 6px 18px rgba(180, 83, 9, 0.12);
 }
 
 .k-mini-header {
